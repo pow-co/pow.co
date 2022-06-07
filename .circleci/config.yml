@@ -8,8 +8,25 @@ workflows:
           filters:
             branches:
               only: master
+      - build_docker
 
 jobs:
+  build_docker:
+      docker:
+        - image: circleci/node:14
+      steps:
+        - checkout
+        - setup_remote_docker
+        - run:
+            name: Build docker image
+            command: docker build -t $DOCKER_REPO:$CIRCLE_BRANCH . 
+        - run:
+            name: Push to Docker Hub
+            command: |
+              docker login --username $DOCKER_USER --password $DOCKER_PASSWORD 
+              docker push $DOCKER_REPO:$CIRCLE_BRANCH
+
+
   build_and_deploy:
     docker:
       - image: circleci/node:14
