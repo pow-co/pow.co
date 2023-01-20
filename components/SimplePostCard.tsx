@@ -1,20 +1,43 @@
 import React from "react";
-import { UserIcon, PostDescription, PostMedia } from ".";
+import UserIcon from "./UserIcon";
+import PostDescription from "./PostDescription";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import moment from "moment";
-import likeTwetch from "../services/twetch/like-twetch";
 import BoostButton from "./BoostButton";
 import { useEffect } from "react";
 import { useTuning } from "../context/TuningContext";
 
 import Linkify from "linkify-react";
 
-const SimplePostCard = ({ post }) => {
+interface Question {
+  tx_id: string;
+  content: string;
+}
+
+interface Answer {
+  tx_id: string;
+  content: string;
+
+}
+interface PostProps {
+  answers?: Array<Answer>;
+  tx_id: string;
+  createdAt: Date;
+  question?: Question;
+  content: string;
+  difficulty: number;
+}
+
+interface SimplePostCardProps {
+  post: PostProps;
+}
+
+const SimplePostCard = ({ post }:SimplePostCardProps) => {
   const router = useRouter();
   const { zenMode } = useTuning();
 
-  const navigate = (e) => {
+  const navigate = (e: any) => {
     e.stopPropagation();
     if (post.answers) {
       router.push(`/questions/${post.tx_id}`);
@@ -23,7 +46,7 @@ const SimplePostCard = ({ post }) => {
     }
   };
 
-  const handleLike = (e) => {};
+  const handleLike = (e: any) => {};
   if (!post) {
     return <></>;
   } else {
@@ -83,7 +106,7 @@ const SimplePostCard = ({ post }) => {
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
-                    router.push(`/questions/${post.question.tx_id}`);
+                    router.push(`/questions/${post.question?.tx_id}`);
                   }}
                   className="cursor-pointer relative flex flex-col bg-gray-300 dark:bg-gray-700 m-4 p-4 border-l-4 border-gray-500 "
                 >

@@ -26,7 +26,7 @@ const Drawer= ({ children, selector, isOpen, onClose }: DrawerProps) => {
 
    const DrawerLayout = (props:{children: React.ReactNode}) => {
        return (
-        <div className="fixed inset-0 w-screen h-screen" style={{zIndex:"1001"}}>
+        <div className="fixed inset-0 w-screen h-screen" style={{zIndex:"1010"}}>
             <div className="fixed inset-0 w-screen h-screen bg-black opacity-50" onClick={onClose}></div>
                <div>{props.children}</div>
         </div>)

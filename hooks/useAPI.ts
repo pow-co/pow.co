@@ -1,11 +1,11 @@
-import useSWR from "swr";
+import useSWR, { Fetcher} from "swr";
+import axios, { AxiosRequestConfig } from "axios"
 
-const baseURL = "https://askbitcoin.ai";
+const baseURL = "https://pow.co";
 //const baseURL = "http://localhost:5200";
 
 export const BASE = `${baseURL}/api/v1`;
 
-import axios from "../utils/axios";
 
 //const axiosInstance = axios.create({ baseURL: process.env.HOST_API_KEY || '' });
 const axiosInstance = axios.create({ baseURL });
@@ -20,13 +20,13 @@ axiosInstance.interceptors.response.use(
 
 export default axiosInstance;
 
-export function fetcher(params) {
+export function fetcher(params: AxiosRequestConfig<any>) {
   return axios(params).then(({ data }) => {
     return data;
   });
 }
 
-export function useAPI(path, queryParams) {
+export function useAPI(path: string, queryParams: string) {
   let params = queryParams || "";
   let {
     data,

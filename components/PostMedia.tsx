@@ -1,6 +1,10 @@
 import React from 'react'
 
-const PostMedia = ({files}) => {
+interface PostMediaProps {
+  files: Array<string>;
+}
+
+const PostMedia = ({files}:PostMediaProps) => {
     if(!files){
         return null
     }
