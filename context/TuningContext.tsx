@@ -7,7 +7,7 @@ import moment from "moment";
 import { config } from "../template_config"
 
 function ago(period: moment.DurationInputArg2) {
-  return moment().subtract(1, period).unix() * 1000;
+  return moment().subtract(1, period).unix();
 }
 
 type ContextValue = {
@@ -17,6 +17,7 @@ type ContextValue = {
     setLocale: (locale: string) => void;
     zenMode: boolean;
     setZenMode: (zenMode: boolean) => void;
+    startTimestamp: number;
 
 }
 

@@ -31,7 +31,7 @@ const SideBarDrawer = () => {
     }
 
   return (
-    <div className="fixed inset-0 w-9/12 h-screen ">
+    <div className="fixed inset-0 w-9/12 h-screen">
         <div className='py-6 items-center bg-primary-200 dark:bg-primary-900 w-full h-full flex flex-col'>
             {authenticated ?(<div className='px-4 w-full flex mb-2.5 items-center'>
                 {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
@@ -97,7 +97,7 @@ const SideBarDrawer = () => {
                         <div className='text-base leading-4 grow'>Chat</div>
                     </div>
                 </Link> */}
-                {/* <Link href="/meet">
+                <Link href="/meet">
                     <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 mr-2.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -105,16 +105,16 @@ const SideBarDrawer = () => {
                         </svg>
                         <div className='text-base leading-4 grow'>Meet</div>
                     </div>
-                </Link> */}
+                </Link>
                 
-                <Link href="/market">
+                {/* <Link href="/market">
                     <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                         <div className='text-base leading-4 grow'><FormattedMessage id="Market"/></div>
                     </div>
-                </Link>
+                </Link> */}
                 {/* <Link href="/discover">
                     <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
