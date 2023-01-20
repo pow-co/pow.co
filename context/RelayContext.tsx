@@ -85,18 +85,23 @@ type RelayContextValue = {
    relayOne: RelayOne | undefined;
    runOwner: string;
    paymail: string | undefined;
+   relayAuthToken: string | undefined;
    authenticate: () => Promise<void>;
    authenticated: boolean;
+   tokenBalance: number;
    ready: boolean;
    isApp: boolean;
+   setRelayAuthToken:(relayAuthToken: string | undefined) => void 
    setPaymail: (paymail: string | undefined) => void;
    setRunOwner: (runOwner: string) => void;
+   logout: () => void;
 };
 
 const RelayContext = createContext<RelayContextValue | undefined>(undefined);
 
 const RelayProvider = (props: { children: React.ReactNode }) => {
   const [paymail, setPaymail] = useLocalStorage(paymailStorageKey);
+  const [relayAuthToken, setRelayAuthToken] = useLocalStorage(tokenStorageKey);
   const [runOwner, setRunOwner] = useLocalStorage(runOwnerStorageKey);
   const [relayOne, setRelayOne] = useState<RelayOne>();
   const [tokenBalance, setTokenBalance] = useState(0);
@@ -150,6 +155,7 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
 
     //@ts-ignore
     if (token && !token.error) {
+      setRelayAuthToken(token)
       const payloadBase64 = token.split(".")[0]; // Token structure: "payloadBase64.signature"
       const { paymail: returnedPaymail } = JSON.parse(atob(payloadBase64));
       // localStorage.setItem('paymail', returnedPaymail);
@@ -177,7 +183,8 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
 
   const logout = () => {
     setPaymail("");
-    setTokenBalance(0)
+    setTokenBalance(0);
+    setRelayAuthToken(undefined)
     localStorage.clear();
   };
 
@@ -187,6 +194,8 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       relayOne,
       setPaymail,
       paymail,
+      relayAuthToken,
+      setRelayAuthToken,
       runOwner,
       setRunOwner,
       authenticate,
@@ -200,9 +209,11 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       avatar,
       relayOne,
       setPaymail,
+      setRelayAuthToken,
       runOwner, 
       setRunOwner,
       paymail,
+      relayAuthToken,
       authenticate,
       logout,
       ready,
@@ -230,3 +241,4 @@ export { RelayProvider, useRelay };
 
 const paymailStorageKey = `${config.appname}__RelayProvider_paymail`;
 const runOwnerStorageKey = `${config.appname}__RelayProvider_runOwner`;
+const tokenStorageKey = `${config.appname}__RelayProvider_token`
