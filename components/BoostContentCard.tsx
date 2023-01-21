@@ -5,6 +5,7 @@ import UserIcon from './UserIcon';
 import { Id, toast } from 'react-toastify';
 import OnchainEvent from './OnChainEvent';
 import Twetch from './Twetch';
+import { useRouter } from 'next/router';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -37,8 +38,8 @@ export interface Ranking {
 
 const BoostContentCard = ({ content_txid, content_type, content_text, count, difficulty, createdAt }: Ranking) => {
     const author = null 
+    const router = useRouter()
 
-    console.log(content_type)
 
     let toastId:Id;
 
@@ -87,9 +88,13 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         
     }
 
+    const navigate = () => {
+        router.push(`/${content_txid}`)
+    }
+
 
   return (
-    <div className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
+    <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
         <div className='col-span-12'>
             <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
                 {author && (

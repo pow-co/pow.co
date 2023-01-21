@@ -21,7 +21,6 @@ const customFetcher = async (url: string) => {
 
 export default function OnchainEvent({ txid }: {txid: string}) {
     const theme = useTheme()
-    console.log(theme)
 
     // @ts-ignore
     const { data, isLoading } = useSWR(`https://onchain.sv/api/v1/events/${txid}`, fetcher)
@@ -80,7 +79,7 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       if (event.type === 'answer') {
   
         return <>
-          <h3><a className="askbitcoinLink" href={`https://askbitcoin.ai/answers/${event.txid}`}>AskBitcoin.AI Answer:</a></h3>
+          <h3><a className="text-xl font-semibold hover:underline " href={`https://askbitcoin.ai/answers/${event.txid}`}>AskBitcoin.AI Answer:</a></h3>
           <PostDescription bContent={event.content.content}/>
         </>
       }

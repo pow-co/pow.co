@@ -5,6 +5,7 @@ import { useRelay } from '../context/RelayContext'
 const Header = dynamic(() => import('./Header'), { ssr: false})
 const SideBar = dynamic(() => import ('./SideBar'), { ssr: false })
 const SidebarTuning = dynamic(() => import('./SidebarTuning'), { ssr: false })
+const SidebarTopics = dynamic(() => import('./SidebarTopics'), { ssr: false })
 
 const ThreeColumnLayout = (props: { children: React.ReactNode }) => {
   const { authenticated } = useRelay()
@@ -41,6 +42,10 @@ const ThreeColumnLayout = (props: { children: React.ReactNode }) => {
           <div className='fixed top-[102px] z-50 w-[344px]'>
             <SidebarTuning/>
           </div>
+          <div className='fixed top-[333px] z-50 w-[344px]'>
+            <SidebarTopics/>
+          </div>
+
         </div>
       </div>
     </div>

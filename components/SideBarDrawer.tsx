@@ -141,6 +141,14 @@ const SideBarDrawer = () => {
                         <div className='text-base leading-4 grow'>Features</div>
                     </div>
                 </Link>  */}
+                <Link href="/topics">
+                    <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-6 h-6 mr-2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5l-3.9 19.5m-2.1-19.5l-3.9 19.5" />
+                        </svg>
+                        <div className='text-base leading-4 grow'>Topics</div>
+                    </div>
+                </Link> 
                 <Link href="/settings">
                     <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
