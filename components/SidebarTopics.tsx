@@ -84,7 +84,7 @@ const SidebarTopics = () => {
             </thead>
             <tbody>
               {tags?.slice(0,15).map((el) => (
-                <tr className=' hover:bg-primary-200 hover:dark:bg-primary-500/20'>
+                <tr key={el.tag} className=' hover:bg-primary-200 hover:dark:bg-primary-500/20'>
                     <th>
                       <Link href={`/topics/${el.tag}`}>
                       {el.tag}

@@ -14,9 +14,11 @@ import { config } from "../template_config"
 
 export interface RelaySignResult {
    algorithm: 'bitcoin-signed-message';
+   address: string;
    key: 'identity';
    data: string; // data you passed in
    value: string; // signature
+   
 }
 
 export interface RelayBroadcastResponse {

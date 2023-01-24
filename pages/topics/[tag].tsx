@@ -49,7 +49,7 @@ export default function TopicPage() {
     <div className="col-span-12 lg:col-span-6 min-h-screen">
       <div className="mt-5 lg:mt-10 mb-[200px]">
         {rankings?.map((post: Ranking) => {
-          return <BoostContentCard {...post}/>
+          return <BoostContentCard key={post.content_txid} {...post}/>
         } )}
       </div>
     </div>

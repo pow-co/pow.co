@@ -13,7 +13,7 @@ const SidebarTuning = () => {
       <div className='flex items-center p-4'>
         <p className='text-lg font-bold text-gray-900 dark:text-white'><FormattedMessage id="Tuning Panel"/></p>
       </div>
-      <div className='flex flex-col p-2'>
+      <div className='flex flex-col px-4 pb-10 '>
         <TuningPanel/>
       </div>
     </div>

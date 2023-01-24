@@ -99,7 +99,7 @@ export default function TopicList() {
                     </thead>
                     <tbody>
                     {tags.map((el:Ranking) => (
-                        <tr className=' hover:bg-primary-200 hover:dark:bg-primary-500/20'>
+                        <tr key={el.tag} className=' hover:bg-primary-200 hover:dark:bg-primary-500/20'>
                         <Link href={`/topics/${el.tag}`}>
                             <th>{el.tag}</th>
                         </Link>

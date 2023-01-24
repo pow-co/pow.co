@@ -28,7 +28,14 @@ export default function Home() {
   if (error) {
     return (
       <ThreeColumnLayout>
-        Error, something happened
+         <div className='grid grid-cols-12 h-screen w-full' >
+          <div className="mt-5 lg:mt-10 col-span-12">
+            <p className="text-center text-5xl">🐛</p>
+            <p className="text-xl text-center font-semibold">Error: something happened.</p>
+            <p className="your post is probably on chain already but our API has trouble catching up right now."></p>
+            <p className="text-center">We are working on fixing our API, please be patient</p>
+          </div>
+         </div>
       </ThreeColumnLayout>
     )
   }

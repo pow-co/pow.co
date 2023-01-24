@@ -1,9 +1,12 @@
 import moment from 'moment';
 import { BoostButton } from 'myboostpow-lib';
-import React from 'react'
+import React from 'react';
+
+import { toast } from 'react-hot-toast';
+
 import UserIcon from './UserIcon';
-import { Id, toast } from 'react-toastify';
 import OnchainEvent from './OnChainEvent';
+
 import Twetch from './Twetch';
 import { useRouter } from 'next/router';
 const Markdown = require('react-remarkable')
@@ -40,28 +43,36 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const author = null 
     const router = useRouter()
 
-
-    let toastId:Id;
-
     const handleBoostLoading = () => {
-        toastId = toast.loading("Transaction pending...", {
-          autoClose: 5000,
-        });
+        toast('Publishing Your Boost Job to the Network', {
+            icon: '⛏️',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
       };
     
       const handleBoostSuccess = () => {
-        toast.update(toastId, {
-          render: "Transaction Successful",
-          type: "success",
-          isLoading: false,
-        });
+        toast('Success!', {
+            icon: '✅',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
       };
     
       const handleBoostError = () => {
-        toast.update(toastId, {
-          render: "Transaction Failed",
-          type: "error",
-          isLoading: false,
+        toast('Error!', {
+            icon: '🐛',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
         });
       };
 

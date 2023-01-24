@@ -8,6 +8,7 @@ import { config } from "../template_config"
 import { RelayProvider } from '../context/RelayContext'
 import { TuneProvider } from '../context/TuningContext'
 import Locales from '../context/LocalContext'
+import { Toaster } from 'react-hot-toast'
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -32,6 +33,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <TuneProvider>
             <Locales>
               <Component {...pageProps} />
+              <Toaster/>
             </Locales>
           </TuneProvider>
         </RelayProvider>
