@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { BoostButton } from 'myboostpow-lib';
+import 'myboostpow-lib/dist/tailwind.css'
 import React from 'react';
 
 import { toast } from 'react-hot-toast';
