@@ -2,7 +2,6 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 const Header = dynamic(() => import('./Header'), { ssr: false})
 const SideBar = dynamic(() => import ('./SideBar'), { ssr: false })
-import SideBarNotifications from './SideBarNotifications'
 
 const PanelLayout = (props: { children: React.ReactNode }) => {
   return (

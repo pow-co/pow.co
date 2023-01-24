@@ -122,7 +122,7 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       return <>
         <LinkPreview  url={url} fetcher={customFetcher}  showLoader showPlaceholderIfNoImage 
         fallback={<>  
-          <a target='_blank' href={event.content.html_url} className='cursor-pointer text-blue-500 hover:underline'>{event.content.html_url}</a>
+          <a target='_blank' rel='noreferrer' href={event.content.html_url} className='cursor-pointer text-blue-500 hover:underline'>{event.content.html_url}</a>
           <h3 className=''>{event.content.url}</h3>
         </>}
          />

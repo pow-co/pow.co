@@ -28,7 +28,7 @@ export default function Compose() {
             d="M15.75 19.5L8.25 12l7.5-7.5"
           />
         </svg>
-        <div className="mt-3 lg:mt-8 mb-[200px] lg:rounded-xl bg-gray-100 dark:bg-gray-700 px-4 pt-4 pb-3">
+        <div className="mt-3 lg:mt-8 mb-[200px] lg:rounded-xl bg-gray-100 dark:bg-gray-700 pt-4 pb-3">
             <MarkdownComposer/>
         </div>
       </div>

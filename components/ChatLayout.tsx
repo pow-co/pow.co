@@ -4,7 +4,7 @@ const Header = dynamic(() => import('./Header'), { ssr: false})
 const SideBar = dynamic(() => import ('./SideBar'), { ssr: false })
 const SidebarTuning = dynamic(() => import ('./SidebarTuning'), { ssr: false})
 
-const ThreeColumnLayout = ({ children }) => {
+const ThreeColumnLayout = (props:{children: React.ReactNode}) => {
   return (
     <div className='bg-gray-300 dark:bg-gray-700'>
       <Header/>
@@ -17,7 +17,7 @@ const ThreeColumnLayout = ({ children }) => {
         </div>
         <div className='col-span-12 lg:col-span-11 xl:col-span-7 grid grid-cols-12'>
           <div className='col-span-12 '>
-            {children}
+            {props.children}
           </div>
         </div>
         <div className='hidden xl:block col-span-2 sticky top-[72px] w-full px-7'>

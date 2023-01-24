@@ -4,7 +4,7 @@ import { useTuning } from '../context/TuningContext'
 const LocaleSelect = () => {
     const { locale, setLocale } = useTuning()
 
-    const handleChange = (e) => {
+    const handleChange = (e:any) => {
         setLocale(e.target.value)
     }
   return (
