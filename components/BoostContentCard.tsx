@@ -1,6 +1,5 @@
 import moment from 'moment';
 import { BoostButton } from 'myboostpow-lib';
-import 'myboostpow-lib/dist/tailwind.css'
 import React from 'react';
 
 import { toast } from 'react-hot-toast';
@@ -10,6 +9,7 @@ import OnchainEvent from './OnChainEvent';
 
 import Twetch from './Twetch';
 import { useRouter } from 'next/router';
+import { useTheme } from 'next-themes';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -43,6 +43,7 @@ export interface Ranking {
 const BoostContentCard = ({ content_txid, content_type, content_text, count, difficulty, createdAt }: Ranking) => {
     const author = null 
     const router = useRouter()
+    const theme = useTheme()
 
     const handleBoostLoading = () => {
         toast('Publishing Your Boost Job to the Network', {
@@ -100,7 +101,8 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         
     }
 
-    const navigate = () => {
+    const navigate = (e: any) => {
+        e.stopPropagation()
         router.push(`/${content_txid}`)
     }
 
@@ -145,6 +147,8 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             <BoostButton
                                 content={content_txid}
                                 difficulty={difficulty || 0}
+                                //@ts-ignore
+                                theme={theme.theme}
                                 showDifficulty
                                 onSending={handleBoostLoading}
                                 onError={handleBoostError}
