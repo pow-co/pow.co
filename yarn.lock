@@ -2985,13 +2985,13 @@
   "resolved" "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
   "version" "2.0.0"
 
-"myboostpow-lib@^0.1.10":
-  "integrity" "sha512-VAEeNC42+P4/rDVz3RJLWph60jayAe4QdCVGaMhskkLJPoQnHYiMTVcOE2N6rzRMTlQZjn9/GXf/fAF9UdYCyQ=="
-  "resolved" "https://registry.npmjs.org/myboostpow-lib/-/myboostpow-lib-0.1.10.tgz"
-  "version" "0.1.10"
+"myboostpow-lib@^0.1.11":
+  "integrity" "sha512-pKS+MDTpimPDi3V7tgWGYzoIuhWNcDc0kt/W4vsFyIayomDXGTLRfDBlnIJT/C7z9jjEMeZp6Rvc0JoLpQePdA=="
+  "resolved" "https://registry.npmjs.org/myboostpow-lib/-/myboostpow-lib-0.1.11.tgz"
+  "version" "0.1.11"
   dependencies:
     "axios" "^1.2.2"
-    "stag-relayx" "^0.2.8"
+    "stag-relayx" "^0.2.10"
     "styled-components" "^5.3.6"
 
 "nanoid@^3.3.4":
@@ -3841,10 +3841,10 @@
   "resolved" "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz"
   "version" "1.0.3"
 
-"stag-relayx@^0.2.8":
-  "integrity" "sha512-siaRTHMj+r1nc6NyTvuXIH9oiv1LMayc/+uMBN2Z8Ny5VjtEscNEXDyw0LG3r8Ioi0I4/AllUngfttlVFbDNEw=="
-  "resolved" "https://registry.npmjs.org/stag-relayx/-/stag-relayx-0.2.9.tgz"
-  "version" "0.2.9"
+"stag-relayx@^0.2.10":
+  "integrity" "sha512-L/SN7/DE/enHWkIWPwwhLRqeo+twB1gRhTwwwIfMllTs5uBB0kZLMTdPUM4gyTRjVKw/Txsi5lupZcj37H8pMA=="
+  "resolved" "https://registry.npmjs.org/stag-relayx/-/stag-relayx-0.2.10.tgz"
+  "version" "0.2.10"
   dependencies:
     "@runonbitcoin/nimble" "^1.0.14"
     "axios" "^1.2.0"
