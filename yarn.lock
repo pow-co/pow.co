@@ -2985,10 +2985,10 @@
   "resolved" "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
   "version" "2.0.0"
 
-"myboostpow-lib@^0.1.11":
-  "integrity" "sha512-pKS+MDTpimPDi3V7tgWGYzoIuhWNcDc0kt/W4vsFyIayomDXGTLRfDBlnIJT/C7z9jjEMeZp6Rvc0JoLpQePdA=="
-  "resolved" "https://registry.npmjs.org/myboostpow-lib/-/myboostpow-lib-0.1.11.tgz"
-  "version" "0.1.11"
+"myboostpow-lib@^0.1.12":
+  "integrity" "sha512-80I3GtRCXncjkuCO3UVgETwgM+Eaf00EynoYbdb/y26iN+I/pxPwr/SiChRJ13ngNh5axLV5S9J+16iX2xbStQ=="
+  "resolved" "https://registry.npmjs.org/myboostpow-lib/-/myboostpow-lib-0.1.12.tgz"
+  "version" "0.1.12"
   dependencies:
     "axios" "^1.2.2"
     "stag-relayx" "^0.2.10"

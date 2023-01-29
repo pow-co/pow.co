@@ -129,7 +129,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             </div>
                             )}
                             <div className='grow'/>
-                            <a 
+                            <a  onClick={(e:any)=>e.stopPropagation()}
                                 target="_blank"
                                 rel="noreferrer"
                                 href={`https://whatsonchain.com/tx/${content_txid}`}
