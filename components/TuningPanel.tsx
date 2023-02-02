@@ -9,7 +9,7 @@ interface TuningPanelProps {
 }
 
 const TuningPanel = ({ closeAction }: TuningPanelProps) => {
-    const { filter, setFilter, zenMode, setZenMode } = useTuning()
+    const { filter, setFilter} = useTuning()
 
     const handleChange = (e:any) => {
       setFilter(e.target.value);
@@ -19,13 +19,7 @@ const TuningPanel = ({ closeAction }: TuningPanelProps) => {
       }
       
     }
-    const toggleZen = () => {
-      setZenMode(!zenMode)
-      if (closeAction){
-
-        closeAction()     
-      }
-    }
+    
   return (
     <div className='flex flex-col'>
       <div className='flex items-center w-full'>
@@ -38,16 +32,6 @@ const TuningPanel = ({ closeAction }: TuningPanelProps) => {
             <option value="last-year"><FormattedMessage id="Last Year"/></option>
             <option value="all-time"><FormattedMessage id="All"/></option>
           </select>
-      </div>
-      <div className='py-5 flex items-center w-full cursor-pointer'>
-          <label htmlFor="zenMode" className="text-sm font-medium text-gray-700 dark:text-gray-200"><FormattedMessage id="Zen Mode"/>:</label>
-          <div className="relative ml-5">
-          <label className="inline-flex relative items-center cursor-pointer">
-          <input type="checkbox" onChange={toggleZen} 
-           checked={zenMode} className="sr-only peer"/>
-          <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none  rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-        </label>
-      </div>
       </div>
     </div>
   )

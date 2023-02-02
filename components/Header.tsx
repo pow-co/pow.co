@@ -41,7 +41,7 @@ const Header = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>}
             </div>
-            <Link href="/search" className="h-8">
+           {/*  <Link href="/search" className="h-8">
               <div className="ml-4 h-8 w-8 flex justify-center items-center cursor-pointer relative">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +58,7 @@ const Header = () => {
                   />
                 </svg>
               </div>
-            </Link>
+            </Link> */}
           </div>
           <div className='w-full flex items-center justify-center sm:justify-start'>
             <Link href="/">
@@ -70,7 +70,7 @@ const Header = () => {
             <SideBarDrawer/>
           </Drawer>
           <div className='hidden lg:flex grow justify-end items-center'>
-            <Link href="/search">
+            {/* <Link href="/search">
               <div className="ml-4 h-8 w-8 flex justify-center items-center cursor-pointer relative">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +87,7 @@ const Header = () => {
                   />
                 </svg>
               </div>
-            </Link>
+            </Link> */}
             {/* <Link href="/chat">
               <div className="ml-4 h-8 w-8 flex justify-center items-center cursor-pointer relative">
                 <svg

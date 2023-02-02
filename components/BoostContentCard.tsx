@@ -1,10 +1,15 @@
 import moment from 'moment';
 import { BoostButton } from 'myboostpow-lib';
-import React from 'react'
+import React from 'react';
+
+import { toast } from 'react-hot-toast';
+
 import UserIcon from './UserIcon';
-import { Id, toast } from 'react-toastify';
 import OnchainEvent from './OnChainEvent';
+
 import Twetch from './Twetch';
+import { useRouter } from 'next/router';
+import { useTheme } from 'next-themes';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -37,30 +42,39 @@ export interface Ranking {
 
 const BoostContentCard = ({ content_txid, content_type, content_text, count, difficulty, createdAt }: Ranking) => {
     const author = null 
-
-    console.log(content_type)
-
-    let toastId:Id;
+    const router = useRouter()
+    const theme = useTheme()
 
     const handleBoostLoading = () => {
-        toastId = toast.loading("Transaction pending...", {
-          autoClose: 5000,
-        });
+        toast('Publishing Your Boost Job to the Network', {
+            icon: '⛏️',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
       };
     
       const handleBoostSuccess = () => {
-        toast.update(toastId, {
-          render: "Transaction Successful",
-          type: "success",
-          isLoading: false,
-        });
+        toast('Success!', {
+            icon: '✅',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
       };
     
       const handleBoostError = () => {
-        toast.update(toastId, {
-          render: "Transaction Failed",
-          type: "error",
-          isLoading: false,
+        toast('Error!', {
+            icon: '🐛',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
         });
       };
 
@@ -87,9 +101,14 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         
     }
 
+    const navigate = (e: any) => {
+        e.stopPropagation()
+        router.push(`/${content_txid}`)
+    }
+
 
   return (
-    <div className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
+    <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
         <div className='col-span-12'>
             <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
                 {author && (
@@ -110,7 +129,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             </div>
                             )}
                             <div className='grow'/>
-                            <a 
+                            <a  onClick={(e:any)=>e.stopPropagation()}
                                 target="_blank"
                                 rel="noreferrer"
                                 href={`https://whatsonchain.com/tx/${content_txid}`}
@@ -128,6 +147,8 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             <BoostButton
                                 content={content_txid}
                                 difficulty={difficulty || 0}
+                                //@ts-ignore
+                                theme={theme.theme}
                                 showDifficulty
                                 onSending={handleBoostLoading}
                                 onError={handleBoostError}

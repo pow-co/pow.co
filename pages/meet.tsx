@@ -67,7 +67,7 @@ const events = [
     'peerConnectionFailure'
 ]
 
-const meet = () => {
+export default function MeetingPage() {
 
     const router = useRouter()
 
@@ -332,4 +332,3 @@ interface audioMuteStatusChanged {
     muted: boolean // new muted status - boolean
 }
 
-export default meet

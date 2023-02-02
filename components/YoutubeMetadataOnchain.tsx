@@ -10,6 +10,11 @@ export function YoutubeMetadataOnchain({event}: {txid: string, event: any}) {
         autoplay: 0,
       },
     };
+    if (!event.content){
+      return <>
+      <a target="_blank" rel="noreferrer" href={`https://whatsonchain.com/tx/${event.txid}`}>txid: {event.txid}</a>
+      </>
+    }
   
     return (
       <>

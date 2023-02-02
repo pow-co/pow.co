@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from 'react'
 
-const loadingEmoji = ["🧠", "⛏️", "🦚", "🦌"]
+export const loadingEmoji = ["🧠", "⛏️", "🦚", "🦌"]
 
 const Loader = () => {
   const [emoji, setEmoji] = useState("")

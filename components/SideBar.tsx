@@ -153,7 +153,8 @@ const SideBar = () => {
             <button 
                 className=' w-full hidden xl:flex text-sm leading-4 text-white font-semibold mt-12 mb-6 border-none rounded-md bg-gradient-to-tr from-blue-400 to-blue-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'
             >
-                <FormattedMessage id="Ask Bitcoin"/>
+                {/* <FormattedMessage id="Ask Bitcoin"/> */}
+                Create Post
             </button>
         </Link>}
         <div className='grow'/>

@@ -6,7 +6,6 @@ import bops from "bops";
 import bsv from "bsv";
 //import Buffer from "Buffer";
 import { last } from "lodash";
-import { useDispatch, useSelector } from "react-redux";
 //import { useBap } from "../../context/bap";
 //import { useHandcash } from "../../context/handcash";
 import { useRelay } from "../context/RelayContext";
@@ -28,7 +27,7 @@ const ChatComposer = () => {
   let timeout = undefined;
 
   const handleSubmit = useCallback(
-    async (event) => {
+    async (event: any) => {
       //console.log(event)
       event.preventDefault()
       if (!paymail){
@@ -52,7 +51,7 @@ const ChatComposer = () => {
   );
 
   const sendMessage = useCallback(
-    async (pm, content, channel) => {
+    async (pm: string, content: string, channel:string) => {
         let dataPayload = [
           B_PREFIX, // B Prefix
           content,
@@ -81,7 +80,7 @@ const ChatComposer = () => {
               .join(" ")
         );
         let outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
-        let resp = await relayOne.send({ outputs });
+        let resp = await relayOne!.send({ outputs });
 
         console.log("Sent", resp);
         let txid = resp.txid;
@@ -92,7 +91,7 @@ const ChatComposer = () => {
   //const typingUser = useSelector((state) => state.chat.typingUser);
 
   // TODO: Detect whether the user is typing
-  const handleKeyDown = (event) => {
+  const handleKeyDown = (event: any) => {
     let ctrlDown = false;
     let ctrlKey = 17;
     let cmdKey = 91;
@@ -105,7 +104,7 @@ const ChatComposer = () => {
     if (ctrlDown && event.keyCode == vKey) console.log("Document catch Ctrl+V");
   };
 
-  const handleKeyUp = (event) => {
+  const handleKeyUp = (event: any) => {
     const enterKey = 13;
     let ctrlDown = false;
     let ctrlKey = 17;
