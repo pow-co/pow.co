@@ -14,7 +14,7 @@ const ThreeColumnLayout = (props: { children: React.ReactNode }) => {
     return (
       <div className="fixed bottom-0 left-0 right-0 flex items-center justify-center p-4 ">
         <div className="bg-orange-500 text-white p-4 rounded-md">
-          <p className='text-white'>Have trouble login in? <Link href="/questions/08b40f405f9575e5b1d5489b7f5fe8353645f74816371214c3997aad3f4e1d6d"><span className='ml-2 underline'>Troubleshoot</span></Link></p> 
+          <p className='text-white'>Have trouble login in? <a target="_blank" rel="noreferrer" href="https://askbitcoin.com/questions/08b40f405f9575e5b1d5489b7f5fe8353645f74816371214c3997aad3f4e1d6d"><span className='ml-2 underline'>Troubleshoot</span></a></p> 
         </div>
       </div>
     )

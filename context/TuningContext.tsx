@@ -44,7 +44,7 @@ const sort = {
 
 const TuneProvider = (props: { children: React.ReactNode }) => {
   const router = useRouter();
-  const [filter, setFilter] = useLocalStorage(filterStorageKey, "all-time");
+  const [filter, setFilter] = useLocalStorage(filterStorageKey, "last-day");
   const [zenMode, setZenMode] = useLocalStorage(zenModeStorageKey, false);
   const [locale, setLocale] = useLocalStorage(langStorageKey, "en");
   const [sort, setSort] = useLocalStorage(sortStorageKey, "latest");

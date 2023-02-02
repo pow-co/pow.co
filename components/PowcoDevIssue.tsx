@@ -12,8 +12,6 @@ const customFetcher = async (url: string) => {
 };  
 
 export default function PowcoDevIssue({ event }: {event: any}) {
-
-
     
 
     if (linkPreviewEnabled) { 
