@@ -236,13 +236,13 @@ export const RelayClubCard = (props: any) => {
                       <p className="">{props.jig.name} #{props.jig.no}/{props.jig.total}</p>
                     </div>
                   </div>
-                  <div className="mr-5">
+                  {props.jig.order && <div className="mr-5">
                     {props.jig.order.status === "sold" ? (
                       <div className="px-5 py-2 bg-red-600 rounded-2xl text-white">Sold</div>
                     ):(
                       <div className="px-5 py-2 bg-blue-600 rounded-2xl text-white">Buy</div>
                     )}
-                  </div>
+                  </div>}
                 </div>
               </div>
             </div>
