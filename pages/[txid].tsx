@@ -3,45 +3,108 @@ import Loader from "../components/Loader"
 import { useTuning } from "../context/TuningContext"
 import { useAPI } from "../hooks/useAPI"
 import BoostContentCard from "../components/BoostContentCard";
+import { BoostButton } from "myboostpow-lib";
 import { Ranking } from "../components/BoostContentCard";
+import { toast } from "react-hot-toast"
 import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
+import { TwetchCard, twetchDetailQuery } from "../components/Twetch";
+import { RelayClubCard, relayDetailQuery } from "../components/RelayClub";
+import axios from "axios";
+import UserIcon from "../components/UserIcon";
+import moment from "moment";
+import PostDescription from "../components/PostDescription";
+import { useTheme } from "next-themes";
+const Markdown = require('react-remarkable')
+import OnchainEvent from "../components/OnChainEvent";
+
+const RemarkableOptions = {
+    breaks: true,
+    html: true,
+    typographer: true,
+    /* highlight: function (str: any, lang: any) {
+      if (lang && hljs.getLanguage(lang)) {
+        try {
+          return hljs.highlight(lang, str).value;
+        } catch (err) {}
+      }
+  
+      try {
+        return hljs.highlightAuto(str).value;
+      } catch (err) {}
+  
+      return ''; // use external default escaping
+    } */
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { txid } = context.query
+  const twetchResult = await twetchDetailQuery(txid?.toString())
+  const relayResult = await relayDetailQuery(txid?.toString())
+  let boostResult
+
+  try {
+    const boostResponse = await axios.get(`https://pow.co/api/v1/content/${txid}`)
+    boostResult=boostResponse.data
+  } catch (error) {
+    boostResult=null
+  }
+  
+  return {
+    props: {
+      twetch: twetchResult,
+      relay: relayResult,
+      boost: boostResult
+    }
+  }
+}
 
 
-export default function Home() {
+export default function DetailPage({ twetch, relay, boost }: any) {
   const { startTimestamp } = useTuning()
   const router = useRouter()
+  const theme = useTheme()
   const query = router.query
-  const { data, error, loading } = useAPI(`/content/${query.txid}`, '')
+  const author = null
+  let content;
 
-  if (loading){
-    return (
-      <>
-      <ThreeColumnLayout>
-        <div className="mt-5 lg:mt-10">
-          <Loader/>
-        </div>
-      </ThreeColumnLayout>
-      </>
-    )
-  }
 
-  if (error) {
-    return (
-      <ThreeColumnLayout>
-         <div className='grid grid-cols-12 h-screen w-full' >
-          <div className="mt-5 lg:mt-10 col-span-12">
-            <p className="text-center text-5xl">🐛</p>
-            <p className="text-xl text-center font-semibold">Error: something happened.</p>
-            <p className="your post is probably on chain already but our API has trouble catching up right now."></p>
-            <p className="text-center">We are working on fixing our API, please be patient</p>
-          </div>
-         </div>
-      </ThreeColumnLayout>
-    )
-  }
+  console.log(boost)
+
+  const handleBoostLoading = () => {
+    toast('Publishing Your Boost Job to the Network', {
+        icon: '⛏️',
+        style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+        },
+      });
+  };
+
+  const handleBoostSuccess = () => {
+    toast('Success!', {
+        icon: '✅',
+        style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+        },
+      });
+  };
+
+  const handleBoostError = () => {
+    toast('Error!', {
+        icon: '🐛',
+        style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+        },
+    });
+  };
 
   
-  var content = {...data.content, content_txid: data.content.txid}
   
   return (
     <>
@@ -63,7 +126,72 @@ export default function Home() {
           />
         </svg>
       <div className="mt-5 lg:mt-10 mb-[200px]">
-         <BoostContentCard {...content}/>
+        {relay && <RelayClubCard {...relay} difficulty={boost.content.difficulty || 0}/>}
+        {twetch && <TwetchCard {...twetch} difficulty={boost.content.difficulty || 0} />}
+        {!twetch && !relay && boost && (
+          <div className='col-span-12'>
+            <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
+              {author && (
+                  <div className='col-span-1'>
+                      <a>
+                          <UserIcon src={"https://a.relayx.com/u/anon@relayx.com"} size={46}/>
+                      </a>
+                  </div>
+              )}
+              <div className={`col-span-${author? 11 : 12} ml-6`}>
+                <div className='flex'>
+                  {author && (
+                  <div 
+                      onClick={(e:any) => e.stopPropagation()}
+                      className="text-base leading-4 font-bold text-gray-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis hover:underline"
+                  >
+                      1anon
+                  </div>
+                  )}
+                  <div className='grow'/>
+                  <a  onClick={(e:any)=>e.stopPropagation()}
+                      target="_blank"
+                      rel="noreferrer"
+                      href={`https://whatsonchain.com/tx/${boost.content.content_txid}`}
+                      className="text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500"
+                  >
+                      {/* {moment(createdAt).fromNow()} */}
+                      txid
+                  </a>
+                </div>
+                <>
+                  {boost.content.content_type?.match('image') && (
+                      <div className=''>
+                          <img alt='bitcoin file server image' src={`https://bitcoinfileserver.com/${boost.content_txid}`}/>
+                      </div>
+                  )}
+                  {boost.content.content_type?.match('text/plain') && (
+                      <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'>{boost.content_text}</div>
+                  )}
+                  {boost.content.content_type?.match('markdown') && (
+                      <article className='prose dark:prose-invert prose-a:text-blue-600'>
+                          <Markdown options={RemarkableOptions} source={boost.content.content_text!}/>
+                      </article>
+                  )}
+                  <OnchainEvent txid={boost.content.txid}/>
+                </>
+                <div className='flex w-full px-16'>
+                    <div className='grow'/>
+                    <BoostButton
+                        content={boost.content.txid}
+                        difficulty={boost.content.difficulty || 0}
+                        //@ts-ignore
+                        theme={theme.theme}
+                        showDifficulty
+                        onSending={handleBoostLoading}
+                        onError={handleBoostError}
+                        onSuccess={handleBoostSuccess}
+                    />
+                </div>
+              </div> 
+            </div>
+          </div>
+        )}
       </div>
     </div>
     </ThreeColumnLayout>

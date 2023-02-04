@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { BoostButton } from 'myboostpow-lib';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { toast } from 'react-hot-toast';
 
@@ -10,6 +10,7 @@ import OnchainEvent from './OnChainEvent';
 import Twetch from './Twetch';
 import { useRouter } from 'next/router';
 import { useTheme } from 'next-themes';
+import RelayClub from './RelayClub';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -35,13 +36,15 @@ export interface Ranking {
     content_txid: string;
     content_text?: string;
     content_type?:string;
-    count: number;
-    difficulty: number;
+    count?: number;
+    difficulty?: number;
     createdAt?: Date;
 }
 
 const BoostContentCard = ({ content_txid, content_type, content_text, count, difficulty, createdAt }: Ranking) => {
     const author = null 
+    const [isTwetch, setIsTwetch] = useState(false)
+    const [isClub, setIsClub] = useState(false)
     const router = useRouter()
     const theme = useTheme()
 
@@ -95,7 +98,6 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                 </article>
             )}
             <OnchainEvent txid={content_txid}/>
-            <Twetch txid={content_txid}/>
             </>
         )
         
@@ -109,7 +111,9 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
 
   return (
     <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
-        <div className='col-span-12'>
+        <Twetch setIsTwetch={setIsTwetch} txid={content_txid} difficulty={difficulty || 0}/>
+        <RelayClub setIsClub={setIsClub} txid={content_txid} difficulty={difficulty || 0}/>
+        {!(isTwetch || isClub) && <div className='col-span-12'>
             <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
                 {author && (
                     <div className='col-span-1'>
@@ -119,7 +123,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                     </div>
                 )}
                 <div className={`col-span-${author? 11 : 12} ml-6`}>
-                        <div className='flex'>
+                       <div className='flex'>
                             {author && (
                             <div 
                                 onClick={(e:any) => e.stopPropagation()}
@@ -141,24 +145,22 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
 
                         </div>
                     <PostContent/>
-                    <div className='ml-1'>
-                        <div className='flex w-full px-16'>
-                            <div className='grow'/>
-                            <BoostButton
-                                content={content_txid}
-                                difficulty={difficulty || 0}
-                                //@ts-ignore
-                                theme={theme.theme}
-                                showDifficulty
-                                onSending={handleBoostLoading}
-                                onError={handleBoostError}
-                                onSuccess={handleBoostSuccess}
-                            />
-                        </div>
+                    <div className='flex w-full px-16'>
+                        <div className='grow'/>
+                        <BoostButton
+                            content={content_txid}
+                            difficulty={difficulty || 0}
+                            //@ts-ignore
+                            theme={theme.theme}
+                            showDifficulty
+                            onSending={handleBoostLoading}
+                            onError={handleBoostError}
+                            onSuccess={handleBoostSuccess}
+                        />
                     </div>
                 </div> 
             </div>
-        </div>
+        </div>}
     </div>
   )
 }
