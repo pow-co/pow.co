@@ -129,7 +129,7 @@ export default function DetailPage({ twetch, relay, boost }: any) {
         {relay && <RelayClubCard {...relay} difficulty={boost?.content.difficulty || 0}/>}
         {twetch && <TwetchCard {...twetch} difficulty={boost?.content.difficulty || 0} />}
         {!twetch && !relay && boost && (
-          <div className='col-span-12'>
+          <div className='col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 sm:rounded-lg'>
             <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
               {author && (
                   <div className='col-span-1'>
