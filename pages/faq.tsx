@@ -1,5 +1,5 @@
 import React from "react";
-import { ThreeColumnLayout } from "../components";
+import ThreeColumnLayout from "../components/ThreeColumnLayout";
 import FAQItem from "../components/FAQItem";
 import { FormattedMessage } from "react-intl";
 
