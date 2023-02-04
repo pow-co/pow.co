@@ -34,5 +34,42 @@
     "Tag": "Tag",
     "We reserve ability to search askbitcoin to our token holders.": "Nous réservons la possibilité de rechercher askbitcoin aux détenteurs de notre jeton.",
     "Go buy one now!": "Aller en acheter un maintenant !",
-    "No, I hate knowledge.": "Non, je déteste la connaissance."
+    "No, I hate knowledge.": "Non, je déteste la connaissance.",
+    "faq1-title":"Bienvenue sur Ask Bitcoin!",
+    "faq1-tldr":"AskBitcoin.com est une application open-source, communautaire pour apprendre et résoudre des problèmes en tant qu'esprit collectif. Le site classe de nombreuses questions et réponses intéressantes postées par les utilisateurs. Le meilleur contenu gravite vers le haut à mesure que les utilisateurs ajoutent de la puissance. Les publications sont stockées sur la blockchain de BitCoin et sont indexées en utilisant le protocole BoostPOW onchain.",
+    "faq2-title":"Qu'est-ce que Boost?",
+    "faq2-tldr":"(n) un concept pour attirer l'attention sur le contenu en y attachant preuve de travail. (v) ajouter preuve de travail au contenu. Exemple 1: 'Je considérerai cette idée une fois qu'elle aura un peu de boost derrière elle.' Exemple 2: 'Bonne idée! Je vais booster ça!' Boost est également connu sous le nom de 'BoostPOW' (Boost Preuve de Travail).",
+    "faq3-title":"Boosting",
+    "faq3-tldr":"En cliquant sur le bouton de boost, vous ouvrez une fenêtre contextuelle qui vous permet de configurer votre Boost en termes de difficulté, de prix et de balise.",
+    "faq4-title":"Difficulté",
+    "faq4-tldr":"Qu'est-ce que 'difficulté'? (n) une unité de mesure pour preuve de travail. 1 difficulté égale à la quantité de puissance de hachage requise pour miner le bloc de génèse.",
+    "faq5-title":"Prix",
+    "faq5-tldr":"Les prix sont fixés par l'utilisateur. Les utilisateurs déplacent le curseur dans la fenêtre contextuelle de boost vers la gauche ou vers la droite pour sélectionner combien de satoshis payer. Vers la gauche vers l'icône de tortue signifie moins de satoshis et une livraison plus lente. Vers la droite vers l'icône de lapin signifie plus de satoshis et une livraison plus rapide.",
+    "faq6-title":"Balises",
+    "faq6-tldr":"Chaque boost porte avec lui une opportunité d'attacher un peu de métadonnées appelées 'balise'. Les utilisateurs ajoutent une balise à tout boost en tapant un mot ou une phrase dans la fenêtre contextuelle de boost. Les utilisateurs peuvent ensuite classer le contenu par balise pour affiner encore plus leurs résultats de recherche.",
+    "faq7-title":"Classement",
+"faq7-tldr":"Le site web AskBitcoin.com classe les Questions et les Réponses en fonction de la quantité de Boost qu'elles ont reçues. Lorsqu'une question ou une réponse est Boostée, elle monte dans le classement. Cela aide les utilisateurs à se concentrer sur le contenu ayant le plus de preuve de travail attachée.",
+
+"faq8-title":"Temps",
+"faq8-tldr":"AskBitcoin.com affiche par défaut les meilleures Questions et Réponses des dernières 24 heures. Étendez la fenêtre de temps d'une recherche en utilisant le panneau de réglage sur le côté de la page.",
+
+"faq9-title":"Utilisations",
+"faq9-tldr":"Il y a trois façons d'utiliser AskBitcoin.com : 1. Lire le site pour trouver des informations intéressantes. 2. Publier vos propres Questions ou Réponses. 3. Boostez le contenu.",
+
+"faq10-title":"Qui reçoit les satoshis?",
+"faq10-tldr":"N'importe qui exécutant le logiciel de mine de Boost peut gagner des satoshis.",
+
+"faq11-title":"Comment cela fonctionne-t-il?",
+"faq11-tldr":"Acheter un Boost place une commande pour une preuve de travail. Les satoshis sont verrouillés dans un script qui dit : 'Ajoutez X difficulté, obtenez Y satoshis.'",
+
+"faq12-title":"Et ensuite?",
+"faq12-tldr":"Cette commande est diffusée sur le réseau via l'API BoostPOW. Ceux qui exécutent le logiciel de mine open-source BoostPOW seront informés de votre commande.",
+
+"faq13-title":"Rentabilité",
+"faq13-tldr":"Les mineurs déterminent si votre offre de satoshis pour le travail en vaut la peine de dépenser de l'énergie. Ensuite, ils vont soit se mettre au travail pour ajouter de la difficulté à votre contenu, soit passer. C'est pourquoi le prix payé impacte la vitesse de livraison. Ajouter plus de satoshis par difficulté signifie une rentabilité plus élevée et donc une plus grande concurrence pour miner votre Boost.",
+"faq14-title": "Distribué",
+"faq14-tldr":"La commande est en attente et reste valable jusqu'à ce qu'elle soit remplie. De cette façon, un réseau distribué de mineurs exécutant un logiciel open-source effectue les travaux nécessaires pour perpétuer le système BoostPOW. Un mineur est libre de miner n'importe quel travail, quelle que soit la rentabilité, tant qu'il y a au moins un satoshi verrouillé dans le script.",
+
+"faq15-title": "Pourquoi utiliser cela?",
+"faq15-tldr":"Le système BoostPOW aide à réduire les problèmes liés à l'overdose d'informations. Il y a trop d'informations et trop peu de temps pour tout évaluer. Le classement des données par preuve de travail peut réduire considérablement le volume d'informations à considérer à un niveau plus gérable. Et il le fait de manière ouverte, transparente et résistante à la manipulation."
 }
