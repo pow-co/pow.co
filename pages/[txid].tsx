@@ -126,8 +126,8 @@ export default function DetailPage({ twetch, relay, boost }: any) {
           />
         </svg>
       <div className="mt-5 lg:mt-10 mb-[200px]">
-        {relay && <RelayClubCard {...relay} difficulty={boost.content.difficulty || 0}/>}
-        {twetch && <TwetchCard {...twetch} difficulty={boost.content.difficulty || 0} />}
+        {relay && <RelayClubCard {...relay} difficulty={boost?.content.difficulty || 0}/>}
+        {twetch && <TwetchCard {...twetch} difficulty={boost?.content.difficulty || 0} />}
         {!twetch && !relay && boost && (
           <div className='col-span-12'>
             <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">

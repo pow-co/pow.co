@@ -7,6 +7,7 @@ import BoostContentCard from "../components/BoostContentCard";
 import { Ranking } from "../components/BoostContentCard";
 import { useRelay } from "../context/RelayContext"
 import { FormattedMessage } from "react-intl"
+import BitcoinBrowser from "../components/BitcoinBrowser"
 
 
 
@@ -42,6 +43,9 @@ export default function Home() {
   return (
     <>
     <ThreeColumnLayout>
+    <div className="sm:hidden">
+      <BitcoinBrowser/>
+    </div>
     <div className="col-span-12 lg:col-span-6 min-h-screen">
       <div className="mt-5 lg:mt-10 mb-[200px]">
         {rankings?.map((post: Ranking) => {

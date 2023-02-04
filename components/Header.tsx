@@ -10,6 +10,7 @@ import { useRelay } from '../context/RelayContext';
 import { useRouter } from 'next/router';
 
 import { FormattedMessage } from 'react-intl';
+import BitcoinBrowser from './BitcoinBrowser';
 
 
 
@@ -70,6 +71,7 @@ const Header = () => {
             <SideBarDrawer/>
           </Drawer>
           <div className='hidden lg:flex grow justify-end items-center'>
+            <BitcoinBrowser/>
             {/* <Link href="/search">
               <div className="ml-4 h-8 w-8 flex justify-center items-center cursor-pointer relative">
                 <svg
