@@ -79,6 +79,131 @@ const faqs = [
     tldr: <FormattedMessage id="faq15-tldr" />,
     content: ``,
   },
+  {
+    title: <FormattedMessage id="faq16-title" />,
+    tldr: <FormattedMessage id="faq16-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq17-title" />,
+    tldr: <FormattedMessage id="faq17-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq18-title" />,
+    tldr: <FormattedMessage id="faq18-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq19-title" />,
+    tldr: <FormattedMessage id="faq19-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq20-title" />,
+    tldr: <FormattedMessage id="faq20-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq21-title" />,
+    tldr: <FormattedMessage id="faq21-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq22-title" />,
+    tldr: <FormattedMessage id="faq22-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq23-title" />,
+    tldr: <FormattedMessage id="faq23-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq24-title" />,
+    tldr: <FormattedMessage id="faq24-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq25-title" />,
+    tldr: <FormattedMessage id="faq25-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq26-title" />,
+    tldr: <FormattedMessage id="faq26-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq27-title" />,
+    tldr: <FormattedMessage id="faq27-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq28-title" />,
+    tldr: <FormattedMessage id="faq28-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq29-title" />,
+    tldr: <FormattedMessage id="faq29-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq30-title" />,
+    tldr: <FormattedMessage id="faq30-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq31-title" />,
+    tldr: <FormattedMessage id="faq31-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq32-title" />,
+    tldr: <FormattedMessage id="faq32-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq33-title" />,
+    tldr: <FormattedMessage id="faq33-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq34-title" />,
+    tldr: <FormattedMessage id="faq34-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq35-title" />,
+    tldr: <FormattedMessage id="faq35-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq36-title" />,
+    tldr: <FormattedMessage id="faq36-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq37-title" />,
+    tldr: <FormattedMessage id="faq37-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq38-title" />,
+    tldr: <FormattedMessage id="faq38-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq39-title" />,
+    tldr: <FormattedMessage id="faq39-tldr" />,
+    content: ``,
+  },
+  {
+    title: <FormattedMessage id="faq40-title" />,
+    tldr: <FormattedMessage id="faq40-tldr" />,
+    content: ``,
+  },
 ];
 const faq = () => {
   return (
