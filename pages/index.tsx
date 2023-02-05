@@ -44,7 +44,7 @@ export default function Home() {
     <>
     <ThreeColumnLayout>
     <div className="sm:hidden">
-      <BitcoinBrowser/>
+      {/* <BitcoinBrowser/> */}
     </div>
     <div className="col-span-12 lg:col-span-6 min-h-screen">
       <div className="mt-5 lg:mt-10 mb-[200px]">
