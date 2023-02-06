@@ -1,13 +1,10 @@
-import React from "react";
-import Head from "next/head";
-import ThreeColumnLayout from "../../components/ThreeColumnLayout";
-import Composer from "../../components/Composer";
-import MarkdownComposer from "../../components/MarkdownComposer"
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router'
+import React from 'react'
+import FileInput from '../../components/FileInput'
+import ThreeColumnLayout from '../../components/ThreeColumnLayout'
 
-export default function Compose() {
-  const router = useRouter();
-  
+const image = () => {
+    const router = useRouter()
   return (
     <ThreeColumnLayout>
       <div className="col-span-12 lg:col-span-6 min-h-screen">
@@ -26,10 +23,12 @@ export default function Compose() {
             d="M15.75 19.5L8.25 12l7.5-7.5"
           />
         </svg>
-        <div className="mt-3 lg:mt-8 mb-[200px] lg:rounded-xl bg-gray-100 dark:bg-gray-700 pt-4 pb-3">
-            <MarkdownComposer/>
+        <div className="mt-3 lg:mt-8 mb-[200px] lg:rounded-xl bg-primary-100 dark:bg-primary-700/20 pt-4 pb-3">
+            <FileInput/>
         </div>
       </div>
     </ThreeColumnLayout>
-  );
+  )
 }
+
+export default image

@@ -61,7 +61,7 @@ export default function WriteNewArticle() {
 
       const post = bsocial.post();
 
-      post.addText(value)
+      post.addMarkdown(value)
 
       const hexArrayOps = post.getOps('hex');
 
