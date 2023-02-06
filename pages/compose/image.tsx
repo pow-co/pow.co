@@ -3,7 +3,7 @@ import React from 'react'
 import FileInput from '../../components/FileInput'
 import ThreeColumnLayout from '../../components/ThreeColumnLayout'
 
-const image = () => {
+const ComposeImage = () => {
     const router = useRouter()
   return (
     <ThreeColumnLayout>
@@ -31,4 +31,4 @@ const image = () => {
   )
 }
 
-export default image
+export default ComposeImage
