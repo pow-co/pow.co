@@ -47,7 +47,7 @@ const SideBar = () => {
                 {/* </Link> */}
                 {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
                     <a className='block text-xs leading-4 text-gray-500 hover:underline'>
-                        {paymail}
+                        1{paymail?.split("@")[0]}
                     </a>
                 {/* </Link> */}
             </div>
