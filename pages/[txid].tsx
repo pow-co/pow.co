@@ -17,6 +17,7 @@ import PostDescription from "../components/PostDescription";
 import { useTheme } from "next-themes";
 const Markdown = require('react-remarkable')
 import OnchainEvent from "../components/OnChainEvent";
+import PostMedia from "../components/PostMedia";
 
 const RemarkableOptions = {
     breaks: true,
@@ -69,7 +70,7 @@ export default function DetailPage({ twetch, relay, boost }: any) {
   let content;
 
 
-  console.log(boost)
+  console.log(boost.content)
 
   const handleBoostLoading = () => {
     toast('Publishing Your Boost Job to the Network', {
@@ -152,7 +153,7 @@ export default function DetailPage({ twetch, relay, boost }: any) {
                   <a  onClick={(e:any)=>e.stopPropagation()}
                       target="_blank"
                       rel="noreferrer"
-                      href={`https://whatsonchain.com/tx/${boost.content.content_txid}`}
+                      href={`https://whatsonchain.com/tx/${boost.content.txid}`}
                       className="text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500"
                   >
                       {/* {moment(createdAt).fromNow()} */}
@@ -161,12 +162,10 @@ export default function DetailPage({ twetch, relay, boost }: any) {
                 </div>
                 <>
                   {boost.content.content_type?.match('image') && (
-                      <div className=''>
-                          <img alt='bitcoin file server image' src={`https://bitcoinfileserver.com/${boost.content_txid}`}/>
-                      </div>
+                    <PostMedia files={[boost.content.txid]}/>
                   )}
                   {boost.content.content_type?.match('text/plain') && (
-                      <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'>{boost.content_text}</div>
+                      <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'>{boost.content.content_text}</div>
                   )}
                   {boost.content.content_type?.match('markdown') && (
                       <article className='prose dark:prose-invert prose-a:text-blue-600'>

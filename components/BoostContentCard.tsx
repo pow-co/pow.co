@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { BoostButton } from 'myboostpow-lib';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { toast } from 'react-hot-toast';
 
@@ -11,6 +11,7 @@ import Twetch from './Twetch';
 import { useRouter } from 'next/router';
 import { useTheme } from 'next-themes';
 import RelayClub from './RelayClub';
+import PostMedia from './PostMedia';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -47,6 +48,10 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const [isClub, setIsClub] = useState(false)
     const router = useRouter()
     const theme = useTheme()
+
+    useEffect(()=>{
+        console.log(content_txid, content_type, content_text, count, difficulty, createdAt)
+    },[])
 
     const handleBoostLoading = () => {
         toast('Publishing Your Boost Job to the Network', {
@@ -85,9 +90,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         return (
             <>
             {content_type?.match('image') && (
-                <div className=''>
-                    <img alt='bitcoin file server image' src={`https://bitcoinfileserver.com/${content_txid}`}/>
-                </div>
+                <PostMedia files={[content_txid]}/>
             )}
             {content_type?.match('text/plain') && (
                 <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'>{content_text}</div>
