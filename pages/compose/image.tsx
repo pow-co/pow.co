@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router'
 import React from 'react'
 import Dropzone from '../../components/Dropzone'
-import FileInput from '../../components/FileInput'
 import ThreeColumnLayout from '../../components/ThreeColumnLayout'
 
 const ComposeImage = () => {
