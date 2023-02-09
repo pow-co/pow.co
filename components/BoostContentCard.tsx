@@ -90,7 +90,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         return (
             <>
             {content_type?.match('image') && (
-                <PostMedia files={[content_txid]}/>
+                content_text ? <img src={`data:image/jpeg;base64,${content_text}`} className="w-full h-full rounded-lg"/> : <PostMedia files={[content_txid]}/>
             )}
             {content_type?.match('text/plain') && (
                 <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'>{content_text}</div>

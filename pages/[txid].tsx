@@ -162,7 +162,7 @@ export default function DetailPage({ twetch, relay, boost }: any) {
                 </div>
                 <>
                   {boost.content.content_type?.match('image') && (
-                    <PostMedia files={[boost.content.txid]}/>
+                    boost.content_text ? <img src={`data:image/jpeg;base64,${boost.content_text}`} className="w-full h-full rounded-lg"/> : <PostMedia files={[boost.content.txid]}/>
                   )}
                   {boost.content.content_type?.match('text/plain') && (
                       <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'>{boost.content.content_text}</div>

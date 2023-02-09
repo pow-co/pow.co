@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router'
 import React from 'react'
+import Dropzone from '../../components/Dropzone'
 import FileInput from '../../components/FileInput'
 import ThreeColumnLayout from '../../components/ThreeColumnLayout'
 
@@ -24,7 +25,8 @@ const ComposeImage = () => {
           />
         </svg>
         <div className="mt-3 lg:mt-8 mb-[200px] lg:rounded-xl bg-primary-100 dark:bg-primary-700/20 pt-4 pb-3">
-            <FileInput/>
+            {/* <FileInput/> */}
+            <Dropzone/>
         </div>
       </div>
     </ThreeColumnLayout>
