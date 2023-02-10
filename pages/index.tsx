@@ -44,9 +44,9 @@ export default function Home() {
   return (
     <>
     <ThreeColumnLayout>
-      <div className="mt-5 sm:mt-10">
+      {authenticated && <div className="mt-5 sm:mt-10">
         <FindOrCreate/>
-      </div>
+      </div>}
       <div className="col-span-12 lg:col-span-6 min-h-screen">
         <div className="mt-5 lg:mt-10 mb-[200px]">
           {rankings?.map((post: Ranking) => {
