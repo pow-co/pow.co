@@ -18,6 +18,7 @@ import { useTheme } from "next-themes";
 const Markdown = require('react-remarkable')
 import OnchainEvent from "../components/OnChainEvent";
 import PostMedia from "../components/PostMedia";
+import Linkify from "linkify-react";
 
 const RemarkableOptions = {
     breaks: true,
@@ -165,7 +166,7 @@ export default function DetailPage({ twetch, relay, boost }: any) {
                     boost.content_text ? <img src={`data:image/jpeg;base64,${boost.content_text}`} className="w-full h-full rounded-lg"/> : <PostMedia files={[boost.content.txid]}/>
                   )}
                   {boost.content.content_type?.match('text/plain') && (
-                      <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'>{boost.content.content_text}</div>
+                      <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover'}}>{boost.content.content_text}</Linkify></div>
                   )}
                   {boost.content.content_type?.match('markdown') && (
                       <article className='prose dark:prose-invert prose-a:text-blue-600'>

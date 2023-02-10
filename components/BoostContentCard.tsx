@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import { useTheme } from 'next-themes';
 import RelayClub from './RelayClub';
 import PostMedia from './PostMedia';
+import Linkify from 'linkify-react';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -93,7 +94,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                 content_text ? <img src={`data:image/jpeg;base64,${content_text}`} className="w-full h-full rounded-lg"/> : <PostMedia files={[content_txid]}/>
             )}
             {content_type?.match('text/plain') && (
-                <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'>{content_text}</div>
+                <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover'}}>{content_text}</Linkify></div>
             )}
             {content_type?.match('markdown') && (
                 <article className='prose dark:prose-invert prose-a:text-blue-600'>
