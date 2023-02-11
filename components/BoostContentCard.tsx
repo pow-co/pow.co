@@ -50,10 +50,6 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const router = useRouter()
     const theme = useTheme()
 
-    useEffect(()=>{
-        console.log(content_txid, content_type, content_text, count, difficulty, createdAt)
-    },[])
-
     const handleBoostLoading = () => {
         toast('Publishing Your Boost Job to the Network', {
             icon: '⛏️',

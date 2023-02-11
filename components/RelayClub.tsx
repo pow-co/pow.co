@@ -2,6 +2,7 @@
 import { request } from 'graphql-request'
 import moment from 'moment';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 import { BoostButton } from 'myboostpow-lib';
 const graphqlAPI = "https://graphql.relayx.com";
 
@@ -114,9 +115,12 @@ import PostDescription from './PostDescription';
 import PostMedia from './PostMedia';
 import UserIcon from './UserIcon';
 import { useTheme } from 'next-themes';
+import { useRelay } from '../context/RelayContext';
+import { useRouter } from 'next/router';
 
 export default function RelayClub({ txid, setIsClub, difficulty }: { txid: string, setIsClub: Dispatch<SetStateAction<boolean>>, difficulty: number }) {
     const [loading, setLoading] = useState(false)
+    
 
     const [post, setPost] = useState<any>()
 
@@ -164,6 +168,9 @@ export default function RelayClub({ txid, setIsClub, difficulty }: { txid: strin
 
 export const RelayClubCard = (props: any) => {
     const theme = useTheme()
+    const { relayOne } = useRelay()
+    const router = useRouter()
+
     const handleBoostLoading = () => {
         toast('Publishing Your Boost Job to the Network', {
             icon: '⛏️',
@@ -196,6 +203,68 @@ export const RelayClubCard = (props: any) => {
             },
         });
       };
+
+      const buyItem = async () => {
+        const ownerResponse = await relayOne!.alpha.run.getOwner();
+        
+        try {
+
+            const response = await axios.post(
+                "https://staging-backend.relayx.com/api/dex/buy2",
+                    {
+                    buyer: ownerResponse,
+                    cls: props.jig.cls.origin,
+                    location: props.jig.location,
+                    }
+            );
+    
+            const sendResponse = await relayOne!.send(response.data.data.rawtx);
+            console.log(sendResponse)
+            return sendResponse
+            
+        } catch (error) {
+          console.log(error)
+            throw error
+            
+        }
+            
+      };
+
+      const handleBuy = async (e: any) => {
+        e.preventDefault()
+        toast('Publishing Your Buy Order to the Network', {
+          icon: '⛏️',
+          style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          },
+        });
+        try {
+            const resp = await buyItem()
+            toast('Success!', {
+              icon: '✅',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+            router.reload()
+        } catch (error) {
+            console.log(error)
+            toast('Error!', {
+              icon: '🐛',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+          });
+        }
+
+    }
+
     return (
         <div className="col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 sm:rounded-lg">
           <div className='mb-0.5  grid items-start grid-cols-12 max-w-screen '>
@@ -232,7 +301,7 @@ export const RelayClubCard = (props: any) => {
                   </div>
                   <div className="grow">
                     <div className="flex flex-col">
-                      <h2 className="text-xl font-bold">{props.jig.cls.user.paymail}</h2>
+                      <h2 className="text-xl font-bold">1{props.jig.cls.user.paymail.split('@')[0]}</h2>
                       <p className="">{props.jig.name} #{props.jig.no}/{props.jig.total}</p>
                     </div>
                   </div>
@@ -240,7 +309,7 @@ export const RelayClubCard = (props: any) => {
                     {props.jig.order.status === "sold" ? (
                       <div className="px-5 py-2 bg-red-600 rounded-2xl text-white">Sold</div>
                     ):(
-                      <div className="px-5 py-2 bg-blue-600 rounded-2xl text-white">Buy</div>
+                      <div onClick={handleBuy} className="px-5 py-2 bg-blue-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
                     )}
                   </div>}
                 </div>
