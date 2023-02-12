@@ -1072,6 +1072,12 @@ video {
 .to-indigo-50 {
   --tw-gradient-to: #eef2ff;
 }
+.to-gray-100 {
+  --tw-gradient-to: #f3f4f6;
+}
+.to-gray-600 {
+  --tw-gradient-to: #4b5563;
+}
 .bg-clip-text {
   -webkit-background-clip: text;
           background-clip: text;
