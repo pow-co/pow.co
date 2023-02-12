@@ -1,6 +1,6 @@
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 baseurl: "https://afomi.github.io/relayx.pro/" # the subpath of your site, e.g. /blog
-title: "" # the name of your site, e.g. ACME Corp.
+title: "RelayX Browser Extension | for Chrome and Firefox" # the name of your site, e.g. ACME Corp.
 
 plugins:
   - jekyll-postcss
