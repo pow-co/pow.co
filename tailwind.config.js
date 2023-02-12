@@ -1,30 +1,16 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
+    './_drafts/**/*.html',
+    './_includes/**/*.html',
+    './_layouts/**/*.html',
+    './_posts/*.md',
+    './*.md',
+    './*.html',
   ],
-  darkMode: "class",
   theme: {
-    extend: {
-      colors: {
-        transparent: "transparent",
-        black: "#000",
-        white: "#fff",
-        primary: {
-          100: "#f3e5f5",
-          200: "#e1bee7",
-          300: "#ce93d8",
-          400: "#ba68c8",
-          500: "#ab47bc",
-          600: "#8e24aa",
-          700: "#7b1fa2",
-          800: "#67169a",
-          900: "#531182",
-        },
-        // ...
-      },
+    theme: {
+      extend: {},
     },
   },
-  plugins: [require("@tailwindcss/typography")],
-};
+  plugins: []
+}
