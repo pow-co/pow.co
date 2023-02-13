@@ -1,7 +1,7 @@
 
 import useSWR from 'swr'
 
-import { YoutubeMetadataOnchain } from "./YoutubeMetadataOnchain"
+import { YoutubeMetadataOnchain, youtubePlayerOpts } from "./YoutubeMetadataOnchain"
 
 import { LinkPreview } from '@dhaiwat10/react-link-preview';
 
@@ -11,6 +11,7 @@ import PowcoDevIssue from './PowcoDevIssue';
 import Gist from "react-gist";
 import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
+import YouTube from 'react-youtube';
 
 
 const customFetcher = async (url: string) => {
@@ -23,7 +24,7 @@ export default function OnchainEvent({ txid }: {txid: string}) {
     const theme = useTheme()
 
     // @ts-ignore
-    const { data, isLoading } = useSWR(`https://onchain.sv/api/v1/events/${txid}`, fetcher)
+    const { data, isLoading } = useSWR(`https://onchain.sv/api/v1/events/${txid}`, fetcher) // TODO remove this data fetch and take data from higher in the app
 
     if (isLoading){
         return (
@@ -118,8 +119,20 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       }
       
       const url = event.content.url || event.content
-  
-      return <>
+
+      console.log(url)
+
+      // 1. check if url is youtube 
+      const youtubeLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+
+      const youtubeMatch = youtubeLinkRegex.exec(url)
+      if(youtubeMatch){
+        // 2. get the youtube video id
+        const videoId = youtubeMatch[1]
+        console.log(videoId)
+        return <YouTube videoId={videoId} opts={youtubePlayerOpts}/>
+      } else {
+        return <>
         <LinkPreview  url={url} fetcher={customFetcher}  showLoader showPlaceholderIfNoImage 
         fallback={<>  
           <a onClick={(e:any) => e.stopPropagation()} target='_blank' rel='noreferrer' href={url} className='cursor-pointer text-ellipsis break-words text-blue-500 hover:underline'>{url}</a>
@@ -127,6 +140,9 @@ export default function OnchainEvent({ txid }: {txid: string}) {
          />
   
       </>
+
+      }
+  
   
     }
   

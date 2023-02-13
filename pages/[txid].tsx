@@ -70,6 +70,27 @@ export default function DetailPage({ twetch, relay, boost }: any) {
   const author = null
   let content;
 
+  console.log(boost)
+
+  /* from youtube Link {
+    "id": 1783,
+    "txid": "7daa300c98f5c7adda09cc48de097009059e34f78029e28c90d558b197d538e3",
+    "content_type": "application/json",
+    "content_json": {
+        "url": "https://www.youtube.com/watch?v=AaBc1MCX-Xg",
+        "_app": "pow.co",
+        "_type": "url",
+        "_nonce": "a6a6e28f-9a1a-4b79-a964-28025e8b50b7"
+    },
+    "content_text": null,
+    "content_bytes": null,
+    "map": {
+        "app": "pow.co",
+        "type": "url"
+    },
+    "createdAt": "2023-02-12T23:05:14.544Z",
+    "updatedAt": "2023-02-12T23:05:14.544Z"
+  } */
 
 
   const handleBoostLoading = () => {
