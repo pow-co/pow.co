@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { wrapRelayx } from "stag-relayx"
+import { toast } from 'react-hot-toast'
 import { useRelay } from '../context/RelayContext'
 
 const FindOrCreate = () => {
@@ -68,6 +69,14 @@ const FindOrCreate = () => {
         const enterKey = 13
         if (e.keyCode === enterKey){
             console.log("typed enter", url)
+            toast('Loading data...', {
+                icon: '⛏️',
+                style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+                },
+              });
             findOrCreate(url)
         }   
     }

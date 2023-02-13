@@ -71,7 +71,6 @@ export default function DetailPage({ twetch, relay, boost }: any) {
   let content;
 
 
-  console.log(boost.content)
 
   const handleBoostLoading = () => {
     toast('Publishing Your Boost Job to the Network', {
