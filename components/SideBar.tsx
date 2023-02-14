@@ -105,6 +105,15 @@ const SideBar = () => {
                     <div className='hidden xl:block text-base leading-4 grow'>Meet</div>
                 </div>
             </Link>
+            <Link href="/watch">
+                <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 xl:mr-2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
+                    </svg>
+                    <div className='hidden xl:block text-base leading-4 grow'>Watch</div>
+                </div>
+            </Link>
             {/* <Link href="/market">
                 <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 xl:mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
