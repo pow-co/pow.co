@@ -19,6 +19,7 @@ const Markdown = require('react-remarkable')
 import OnchainEvent from "../components/OnChainEvent";
 import PostMedia from "../components/PostMedia";
 import Linkify from "linkify-react";
+import { BFILE_REGEX } from "../components/BoostContentCard";
 
 const RemarkableOptions = {
     breaks: true,
@@ -38,6 +39,8 @@ const RemarkableOptions = {
       return ''; // use external default escaping
     } */
 }
+
+
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { txid } = context.query
@@ -189,8 +192,8 @@ export default function DetailPage({ twetch, relay, boost }: any) {
                       <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover'}}>{boost.content.content_text}</Linkify></div>
                   )}
                   {boost.content.content_type?.match('markdown') && (
-                      <article className='prose dark:prose-invert prose-a:text-blue-600'>
-                          <Markdown options={RemarkableOptions} source={boost.content.content_text!}/>
+                      <article className='prose dark:prose-invert prose-a:text-blue-600 break-words'>
+                          <Markdown options={RemarkableOptions} source={boost.content.content_text!.replace(BFILE_REGEX, `https://dogefiles.twetch.app/$1`)}/>
                       </article>
                   )}
                   <OnchainEvent txid={boost.content.txid}/>
