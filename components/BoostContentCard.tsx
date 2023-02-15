@@ -34,6 +34,8 @@ const RemarkableOptions = {
     } */
 }
 
+export const BFILE_REGEX = /b:\/\/([a-fA-F0-9]{64})/g;
+
 export interface Ranking {
     content_txid: string;
     content_text?: string;
@@ -93,8 +95,8 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                 <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover'}}>{content_text}</Linkify></div>
             )}
             {content_type?.match('markdown') && (
-                <article className='prose dark:prose-invert prose-a:text-blue-600'>
-                    <Markdown options={RemarkableOptions} source={content_text!}/>
+                <article className='prose dark:prose-invert prose-a:text-blue-600 break-words'>
+                    <Markdown options={RemarkableOptions} source={content_text!.replace(BFILE_REGEX, `https://dogefiles.twetch.app/$1`)}/>
                 </article>
             )}
             <OnchainEvent txid={content_txid}/>
