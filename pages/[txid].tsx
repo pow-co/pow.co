@@ -260,10 +260,10 @@ export default function DetailPage({ twetch, relay, boost, replies }: any) {
           </div>}
         {twetch?.postsByReplyPostId.edges.map((t:any)=>{
           
-          return <TwetchCard {...t.node}/>
+          return <TwetchCard key={t.node.transaction} {...t.node}/>
         })}
         {replies.map((reply:BMAPData)=>{
-          return <ReplyCard {...reply} />
+          return <ReplyCard key={reply.tx.h} {...reply} />
         })}
       </div>
     </div>
