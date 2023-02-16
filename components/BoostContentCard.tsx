@@ -162,7 +162,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                                 ></path>
                             </svg>
                             <p className="text-gray-500 dark:text-gray-300 group-hover:text-green-500">
-                                {0}
+                                {/* {0} */}
                             </p>
                         </div>
                         <BoostButton

@@ -84,7 +84,7 @@ export default function VideoCard({ txid, difficulty }: {txid: string, difficult
               ></path>
             </svg>
             <p className="text-gray-500 dark:text-gray-300 group-hover:text-green-500">
-              {0}
+              {/* {0} */}
             </p>
           </div>
           <BoostButton

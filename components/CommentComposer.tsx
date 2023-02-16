@@ -96,7 +96,10 @@ const CommentComposer = ({replyTx}: CommentComposerProps) => {
           },
         });
         console.log("relayx.response", resp)
-        router.replace(`/${resp.txid}`)
+        const bMapResult = await axios.post('https://b.map.sv/ingest', {
+            rawTx: resp.rawTx
+          })
+        router.reload()
       } catch (error) {
         toast('Error!', {
           icon: '🐛',
@@ -142,7 +145,7 @@ const CommentComposer = ({replyTx}: CommentComposerProps) => {
   return (
      
 <form onSubmit={submitPost}>
-   <div className="w-full mb-4 sm:rounded-lg">
+   <div className="w-full sm:rounded-lg">
        <div className="px-4 py-2 bg-white rounded-lg dark:bg-primary-800/20">
            <label htmlFor="post" className="sr-only">Your post</label>
            <textarea 
