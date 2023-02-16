@@ -20,6 +20,8 @@ import OnchainEvent from "../components/OnChainEvent";
 import PostMedia from "../components/PostMedia";
 import Linkify from "linkify-react";
 import { BFILE_REGEX } from "../components/BoostContentCard";
+import CommentComposer from "../components/CommentComposer";
+import ReplyCard, { BMAPData } from "../components/ReplyCard";
 
 const RemarkableOptions = {
     breaks: true,
@@ -40,13 +42,36 @@ const RemarkableOptions = {
     } */
 }
 
-
+const queryComments = (replyTx: string) => {
+  return {
+    "v": 3,
+    "q": {
+      "find": {
+        "MAP.type": "reply",
+        "MAP.context": "tx",
+        "MAP.tx": replyTx
+      },
+      "project": {
+        "out": 0,
+        "in": 0
+      }
+    }
+  }
+}
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { txid } = context.query
   const twetchResult = await twetchDetailQuery(txid?.toString())
   const relayResult = await relayDetailQuery(txid?.toString())
   let boostResult
+  let comments: any =[]
+  try {
+    const queryB64 = txid && btoa(JSON.stringify(queryComments(txid?.toString())))
+    const commentsResponse = await axios.get(`https://b.map.sv/q/${queryB64}`)
+    comments = commentsResponse.data.c
+  } catch (error) {
+    console.log(error)
+  }
 
   try {
     const boostResponse = await axios.get(`https://pow.co/api/v1/content/${txid}`)
@@ -59,22 +84,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       twetch: twetchResult,
       relay: relayResult,
-      boost: boostResult
+      boost: boostResult,
+      replies: comments
     }
   }
 }
 
 
-export default function DetailPage({ twetch, relay, boost }: any) {
+export default function DetailPage({ twetch, relay, boost, replies }: any) {
   const { startTimestamp } = useTuning()
   const router = useRouter()
   const theme = useTheme()
   const query = router.query
   const author = null
   let content;
-
-  console.log(boost)
-
   /* from youtube Link {
     "id": 1783,
     "txid": "7daa300c98f5c7adda09cc48de097009059e34f78029e28c90d558b197d538e3",
@@ -150,11 +173,11 @@ export default function DetailPage({ twetch, relay, boost }: any) {
             d="M15.75 19.5L8.25 12l7.5-7.5"
           />
         </svg>
-      <div className="mt-5 lg:mt-10 mb-[200px]">
+      <div className="mt-5 lg:mt-10 pb-[200px]">
         {relay && <RelayClubCard {...relay} difficulty={boost?.content.difficulty || 0}/>}
         {twetch && <TwetchCard {...twetch} difficulty={boost?.content.difficulty || 0} />}
         {!twetch && !relay && boost && (
-          <div className='col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 sm:rounded-lg'>
+          <div className='col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 sm:rounded-t-lg'>
             <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
               {author && (
                   <div className='col-span-1'>
@@ -200,6 +223,22 @@ export default function DetailPage({ twetch, relay, boost }: any) {
                 </>
                 <div className='flex w-full px-16'>
                     <div className='grow'/>
+                    <div className={`min-w-[111px] justify-center flex group items-center w-fit relative`}>
+                      <svg
+                        viewBox="0 0 40 40"
+                        fill="none"
+                        className="h-[40px] w-[40px] fill-gray-500 dark:fill-gray-300 group-hover:fill-green-500"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M16.7698 26.04L16.7796 26.0214C16.8013 25.98 16.8245 25.9351 16.8491 25.8873C17.03 25.5371 17.2911 25.0314 17.6274 24.6275C18.0608 24.1068 18.7281 23.6137 19.6907 23.6137C22.7525 23.6137 24.8033 23.173 26.0492 22.4503C27.1805 21.794 27.7035 20.8819 27.7035 19.5258C27.7035 16.3261 24.3811 13.2965 19.6907 13.2965C15.2771 13.2965 12.2965 16.1275 12.2965 19.5258C12.2965 20.3629 12.6319 22.2529 13.4911 23.5026L13.4978 23.5125L13.4978 23.5125C14.3586 24.7897 15.3301 25.7902 16.4883 26.5864C16.5026 26.5622 16.5179 26.5356 16.5341 26.5064C16.6042 26.3801 16.6748 26.2365 16.7606 26.059L16.7698 26.04ZM17.9278 26.6233C17.9537 26.574 17.9795 26.5244 18.0053 26.4748C18.4108 25.6944 18.8183 24.9101 19.6907 24.9101C25.9691 24.9101 29 23.1358 29 19.5258C29 15.3652 24.8247 12 19.6907 12C14.7423 12 11 15.2428 11 19.5258C11 20.5354 11.3711 22.7075 12.4227 24.2371C13.4124 25.7055 14.5567 26.8681 15.9485 27.7858C16.1649 27.9388 16.3814 28 16.5979 28C17.2474 28 17.5876 27.327 17.9278 26.6233Z"
+                        ></path>
+                      </svg>
+                      <p className="text-gray-500 dark:text-gray-300 group-hover:text-green-500">
+                        {0}
+                      </p>
+                    </div>
                     <BoostButton
                         content={boost.content.txid}
                         difficulty={boost.content.difficulty || 0}
@@ -215,6 +254,17 @@ export default function DetailPage({ twetch, relay, boost }: any) {
             </div>
           </div>
         )}
+        {query.txid && 
+          <div className="mt-1 bg-primary-100 dark:bg-primary-600/20 px-4 pt-2 pb-1 sm:last:rounded-b-lg">
+            <CommentComposer replyTx={query.txid?.toString()}/>
+          </div>}
+        {twetch?.postsByReplyPostId.edges.map((t:any)=>{
+          
+          return <TwetchCard key={t.node.transaction} {...t.node}/>
+        })}
+        {replies.map((reply:BMAPData)=>{
+          return <ReplyCard key={reply.tx.h} {...reply} />
+        })}
       </div>
     </div>
     </ThreeColumnLayout>
