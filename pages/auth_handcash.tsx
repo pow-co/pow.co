@@ -1,5 +1,4 @@
 import {useState} from "react";
-//@ts-ignore
 import HandCashService from "../services/HandCashService";
 import SessionTokenRepository from "../repositories/SessionTokenRepository";
 import CodeSnippet from "../components/CodeSnippet";

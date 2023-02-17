@@ -1,6 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
 import AuthTokenRepository from "../../../../repositories/AuthTokenRepository";
-//@ts-ignore
 import HandCashService from "../../../../services/HandCashService";
 import SessionTokenRepository from "../../../../repositories/SessionTokenRepository";
 import type { NextApiRequest, NextApiResponse } from 'next'

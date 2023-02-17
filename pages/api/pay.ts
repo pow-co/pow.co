@@ -1,5 +1,4 @@
 import AuthTokenRepository from "../../repositories/AuthTokenRepository";
-//@ts-ignore
 import HandCashService from "../../services/HandCashService";
 import SessionTokenRepository from "../../repositories/SessionTokenRepository";
 import type { NextApiRequest, NextApiResponse } from 'next'

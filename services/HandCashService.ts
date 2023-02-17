@@ -14,7 +14,7 @@ export default class HandCashService {
     constructor(authToken?: string) {
         if (authToken) {
             this.account = handCashConnect.getAccountFromAuthToken(authToken);
-        }
+        } 
     }
 
     async getProfile() {
