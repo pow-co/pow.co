@@ -11,8 +11,10 @@ const handCashConnect = new HandCashConnect({
 
 export default class HandCashService {
     account: any;
-    constructor(authToken: string) {
-        this.account = handCashConnect.getAccountFromAuthToken(authToken);
+    constructor(authToken?: string) {
+        if (authToken) {
+            this.account = handCashConnect.getAccountFromAuthToken(authToken);
+        }
     }
 
     async getProfile() {

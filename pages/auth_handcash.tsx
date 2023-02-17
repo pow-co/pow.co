@@ -1,10 +1,11 @@
 import {useState} from "react";
+//@ts-ignore
 import HandCashService from "../services/HandCashService";
 import SessionTokenRepository from "../repositories/SessionTokenRepository";
 import CodeSnippet from "../components/CodeSnippet";
 
 
-export function getServerSideProps({query}) {
+export function getServerSideProps({query}: any) {
     const {sessionToken} = query;
     const redirectionUrl = new HandCashService().getRedirectionUrl();
     try {
@@ -40,10 +41,16 @@ const codeExample =
     '};\n' +
     'await account.wallet.pay(paymentParameters);\n';
 
-export default function Home({redirectionUrl, sessionToken, user}) {
+interface ServerProps {
+    redirectionUrl: string;
+    sessionToken: string;
+    user: any;
+}
+
+export default function Home({redirectionUrl, sessionToken, user}: ServerProps) {
     console.log('AuthHandcash', { redirectionUrl, sessionToken, user })
 
-    const [paymentResult, setPaymentResult] = useState({status: 'none'});
+    const [paymentResult, setPaymentResult] = useState<any>({status: 'none'});
 
     const pay = async () => {
         setPaymentResult({status: 'pending'});
@@ -113,7 +120,7 @@ export default function Home({redirectionUrl, sessionToken, user}) {
                 </div>
                 <div
                     className={"flex px-4 h-8 items-center rounded-full border bg-gradient-to-r from-brandNormal to-brandDark hover:opacity-90 text-sm font-semibold hover:cursor-pointer" + (paymentResult?.status === 'pending' ? 'animate-pulse' : '')}
-                    onClick={paymentResult?.status === 'pending' ? null : pay}>
+                    onClick={paymentResult?.status === 'pending' ? () => {} : pay}>
                     <p>{paymentResult?.status === 'pending' ? 'Running...' : 'Run this code'}</p>
                 </div>
             </div>
