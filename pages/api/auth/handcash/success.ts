@@ -29,5 +29,11 @@ export default async function handler(
     };
     const sessionToken = SessionTokenRepository.generate(payload);
     AuthTokenRepository.setAuthToken(authToken, payload.sessionId);
-    return res.redirect(`/auth_handcash/?sessionToken=${sessionToken}`);
+
+    console.log('session', { payload, sessionToken})
+
+    //setHandCashAuthToken(authToken)
+    //setHandCashSessionToken(sessionToken)
+
+    return res.redirect(`/auth_handcash_new/?sessionToken=${sessionToken}`);
 }

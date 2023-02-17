@@ -6,6 +6,7 @@ import '../styles/globals.css'
 import { ThemeProvider } from 'next-themes'
 import { config } from "../template_config"
 import { RelayProvider } from '../context/RelayContext'
+import { HandCashProvider } from '../context/HandCashContext'
 import { TuneProvider } from '../context/TuningContext'
 import Locales from '../context/LocalContext'
 import { Toaster } from 'react-hot-toast'
@@ -30,12 +31,14 @@ export default function App({ Component, pageProps }: AppProps) {
       />
       <ThemeProvider attribute='class' enableSystem={false} disableTransitionOnChange={true}>
         <RelayProvider>
-          <TuneProvider>
-            <Locales>
-              <Component {...pageProps} />
-              <Toaster/>
-            </Locales>
-          </TuneProvider>
+          <HandCashProvider>
+            <TuneProvider>
+              <Locales>
+                <Component {...pageProps} />
+                <Toaster/>
+              </Locales>
+            </TuneProvider>
+          </HandCashProvider>        
         </RelayProvider>
       </ThemeProvider>
     </>
