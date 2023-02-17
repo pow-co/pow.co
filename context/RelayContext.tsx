@@ -1,5 +1,4 @@
 import axios from "axios";
-import Script from "next/script";
 import React, {
   createContext,
   useCallback,
