@@ -7,6 +7,7 @@ import SideBarDrawer from './SideBarDrawer';
 import LogoTitle from './LogoTitle';
 import TuningProviderPopUp from './TuningProviderPopup';
 import { useRelay } from '../context/RelayContext';
+import { useBitcoin } from '../context/BitcoinContext';
 import { useRouter } from 'next/router';
 
 import { FormattedMessage } from 'react-intl';
@@ -15,7 +16,7 @@ import BitcoinBrowser from './BitcoinBrowser';
 
 
 const Header = () => {
-  const { authenticated, avatar, authenticate, paymail } = useRelay()
+  const { authenticated, avatar, authenticate, paymail } = useBitcoin()
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [walletPopupOpen, setWalletPopupOpen] = useState(false);
   const [tuningPopupOpen, setTuningPopupOpen] = useState(false);
@@ -37,7 +38,7 @@ const Header = () => {
         <div className="px-4 lg:px-7 h-[50px] lg:h-16 relative flex justify-between items-center">
           <div className="lg:hidden w-24 flex items-center">
             <div className='cursor-pointer' onClick={openDrawer}>
-              {authenticated ? <UserIcon src={avatar} size={36} /> : 
+              {authenticated ? <UserIcon src={avatar!} size={36} /> : 
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
               </svg>}
@@ -129,7 +130,7 @@ const Header = () => {
             </Link> */}
             {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
               <div className="ml-4 h-8 w-8 flex justify-center items-center cursor-pointer relative">
-                <UserIcon src={avatar} size={36} />
+                <UserIcon src={avatar!} size={36} />
               </div>
             {/* </Link> */}
             </>): (

@@ -51,9 +51,8 @@ export default function Home({sessionToken, user}: ServerProps) {
 
     const [paymentResult, setPaymentResult] = useState<any>({status: 'none'});
 
-    const { paymail, authenticate, authenticated, logout } = useHandCash()
+    const { handcashPaymail, handcashAuthenticate, handcashAuthenticated, handcashLogout } = useHandCash()
 
-    console.log('useHandcash', { paymail, authenticate, authenticated, logout })
 
     const pay = async () => {
         setPaymentResult({status: 'pending'});
@@ -83,7 +82,7 @@ export default function Home({sessionToken, user}: ServerProps) {
                                   href="https://docs.handcash.io/docs/overview-1">HandCash Connect</a>
                 </h1>
 
-                <a onClick={authenticate}
+                <a onClick={handcashAuthenticate}
                    className="group flex w-full m-6 border p-4 rounded-xl bg-darkBackground-900 gap-x-6 items-center hover:border-white">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5}
                          stroke="currentColor" className="w-8 h-8">

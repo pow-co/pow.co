@@ -9,11 +9,12 @@ import LogoTitle from './LogoTitle';
 import LocaleSelect from './LocaleSelect';
 
 import { FormattedMessage } from 'react-intl';
+import { useBitcoin } from '../context/BitcoinContext';
 
 
 const SideBarDrawer = () => {
     const { theme, setTheme } = useTheme()
-    const { authenticated, authenticate, avatar, paymail } = useRelay()
+    const { authenticated, authenticate, avatar, paymail } = useBitcoin()
     const [walletPopupOpen, setWalletPopupOpen] = useState(false);
 
     const toggleTheme =  () => {
@@ -36,7 +37,7 @@ const SideBarDrawer = () => {
             {authenticated ?(<div className='px-4 w-full flex mb-2.5 items-center'>
                 {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
                     <a  className='cursor-pointer'>
-                        <UserIcon src={avatar} size={36}/>
+                        <UserIcon src={avatar!} size={36}/>
                     </a>
                 {/* </Link> */}
                 <div className='ml-3'>

@@ -10,6 +10,8 @@ import { HandCashProvider } from '../context/HandCashContext'
 import { TuneProvider } from '../context/TuningContext'
 import Locales from '../context/LocalContext'
 import { Toaster } from 'react-hot-toast'
+import { BitcoinProvider } from '../context/BitcoinContext'
+import { TwetchProvider } from '../context/TwetchContext'
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -31,14 +33,18 @@ export default function App({ Component, pageProps }: AppProps) {
       />
       <ThemeProvider attribute='class' enableSystem={false} disableTransitionOnChange={true}>
         <RelayProvider>
-          <HandCashProvider>
-            <TuneProvider>
-              <Locales>
-                <Component {...pageProps} />
-                <Toaster/>
-              </Locales>
-            </TuneProvider>
-          </HandCashProvider>        
+          <TwetchProvider>
+            <HandCashProvider>
+              <BitcoinProvider>
+                <TuneProvider>
+                  <Locales>
+                    <Component {...pageProps} />
+                    <Toaster/>
+                  </Locales>
+                </TuneProvider>
+              </BitcoinProvider>
+            </HandCashProvider>
+          </TwetchProvider>        
         </RelayProvider>
       </ThemeProvider>
     </>

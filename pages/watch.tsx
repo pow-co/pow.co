@@ -14,12 +14,13 @@ import YouTube from "react-youtube"
 import { youtubePlayerOpts } from "../components/YoutubeMetadataOnchain"
 import VideoCard from "../components/VideoCard"
 import TuningPanel from "../components/TuningPanel"
+import { useBitcoin } from "../context/BitcoinContext"
 
 
 
 export default function Watch() {
   const { startTimestamp, filter, setFilter } = useTuning()
-  const { authenticated } = useRelay()
+  const { authenticated } = useBitcoin()
   const { data, error, loading } = useAPI(`/boost/rankings?start_date=${startTimestamp}`, '')
 
   if (loading){

@@ -82,32 +82,36 @@ interface RelayOtc {
 } // TODO: Complete
 
 type RelayContextValue = {
-   avatar: string;
+   relayxAvatar: string;
    relayOne: RelayOne | undefined;
    runOwner: string;
-   paymail: string | undefined;
+   relayxPaymail: string | undefined;
+   relayxUserName: string | undefined;
    relayAuthToken: string | undefined;
-   authenticate: () => Promise<void>;
-   authenticated: boolean;
+   hasTwetchPrivilege: boolean;
+   relayxAuthenticate: () => Promise<void>;
+   relayxAuthenticated: boolean;
    tokenBalance: number;
    ready: boolean;
    isApp: boolean;
    setRelayAuthToken:(relayAuthToken: string | undefined) => void 
-   setPaymail: (paymail: string | undefined) => void;
+   setRelayxPaymail: (paymail: string | undefined) => void;
    setRunOwner: (runOwner: string) => void;
-   logout: () => void;
+   relayxLogout: () => void;
 };
 
 const RelayContext = createContext<RelayContextValue | undefined>(undefined);
 
 const RelayProvider = (props: { children: React.ReactNode }) => {
-  const [paymail, setPaymail] = useLocalStorage(paymailStorageKey);
+  const [relayxPaymail, setRelayxPaymail] = useLocalStorage(paymailStorageKey);
   const [relayAuthToken, setRelayAuthToken] = useLocalStorage(tokenStorageKey);
   const [runOwner, setRunOwner] = useLocalStorage(runOwnerStorageKey);
   const [relayOne, setRelayOne] = useState<RelayOne>();
   const [tokenBalance, setTokenBalance] = useState(0);
+  const [hasTwetchPrivilege, setHasTwetchPrivilege] = useState(false)
 
   const token_contract = config.token;
+  const TWETCH_PRIVILEGE_CONTRACT = "011a97bdc1868fc53342cb9bffdc3e42782a9c258fbb6597cd20effa3a4d6077_o2"
 
   const [ready, setReady] = useState(false);
 
@@ -126,23 +130,41 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       );
 
       const [owner] = data.data.owners.filter((owner : RunOwner) => {
-        return owner.paymail === paymail;
+        return owner.paymail === relayxPaymail;
       });
 
-      if (paymail && owner?.amount) {
+      if (relayxPaymail && owner?.amount) {
         setTokenBalance(owner?.amount);
       } else {
         setTokenBalance(0);
       }
     })();
-  }, [paymail]);
+  }, [relayxPaymail]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await axios.get(
+        `https://staging-backend.relayx.com/api/token/${TWETCH_PRIVILEGE_CONTRACT}/owners`
+      );
+
+      const [owner] = data.data.owners.filter((owner : RunOwner) => {
+        return owner.paymail === relayxPaymail;
+      });
+
+      if (relayxPaymail && owner?.amount) {
+        setHasTwetchPrivilege(true);
+      } else {
+        setHasTwetchPrivilege(false);
+      }
+    })();
+  }, [relayxPaymail]);
 
   const isApp = useMemo(
     () => (relayOne && relayOne.isApp()) || false,
     [relayOne]
   );
 
-  const authenticate = useCallback(async () => {
+  const relayxAuthenticate = useCallback(async () => {
     if (!relayOne) {
       throw new Error("Relay script not yet loaded!");
     }
@@ -151,7 +173,6 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
     if (!lsTest()) {
       throw new Error("localStorage is not available");
     }
-
     const token = await relayOne.authBeta();
 
     //@ts-ignore
@@ -160,7 +181,7 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       const payloadBase64 = token.split(".")[0]; // Token structure: "payloadBase64.signature"
       const { paymail: returnedPaymail } = JSON.parse(atob(payloadBase64));
       // localStorage.setItem('paymail', returnedPaymail);
-      setPaymail(returnedPaymail);
+      setRelayxPaymail(returnedPaymail);
       const owner = await relayOne?.alpha.run.getOwner();
       setRunOwner(owner);
     } else {
@@ -168,55 +189,61 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
         "If you are in private browsing mode try again in a normal browser window. (Relay requires localStorage)"
       );
     }
-  }, [relayOne, setPaymail]);
+  }, [relayOne, setRelayxPaymail]);
     
-  const authenticated = useMemo(() => !!paymail, [paymail]);
+  const relayxAuthenticated = useMemo(() => !!relayxPaymail, [relayxPaymail]);
 
-  const avatar = useMemo(() => `https://a.relayx.com/u/${paymail}`, [paymail])
+  const relayxAvatar = useMemo(() => `https://a.relayx.com/u/${relayxPaymail}`, [relayxPaymail])
+
+  const relayxUserName = useMemo(() => relayxPaymail ? `1${relayxPaymail.split("@")[0]}` : "", [relayxPaymail])
 
 
   // Auto Authenticate when inside the Relay app
   useEffect(() => {
     if (isApp) {
-      authenticate();
+      relayxAuthenticate();
     }
-  }, [authenticate, isApp]);
+  }, [relayxAuthenticate, isApp]);
 
-  const logout = () => {
-    setPaymail("");
+  const relayxLogout = () => {
+    setRelayxPaymail("");
     setTokenBalance(0);
+    setHasTwetchPrivilege(false)
     setRelayAuthToken(undefined)
-    localStorage.clear();
   };
 
   const value = useMemo(
     () => ({
-      avatar,
+      relayxAvatar,
+      relayxUserName,
       relayOne,
-      setPaymail,
-      paymail,
+      setRelayxPaymail,
+      relayxPaymail,
       relayAuthToken,
       setRelayAuthToken,
+      hasTwetchPrivilege,
       runOwner,
       setRunOwner,
-      authenticate,
-      authenticated,
-      logout,
+      relayxAuthenticate,
+      relayxAuthenticated,
+      relayxLogout,
       ready,
       tokenBalance,
       isApp,
     }),
     [
-      avatar,
+      relayxAvatar,
+      relayxUserName,
       relayOne,
-      setPaymail,
+      setRelayxPaymail,
       setRelayAuthToken,
+      hasTwetchPrivilege,
       runOwner, 
       setRunOwner,
-      paymail,
+      relayxPaymail,
       relayAuthToken,
-      authenticate,
-      logout,
+      relayxAuthenticate,
+      relayxLogout,
       ready,
       tokenBalance,
       isApp,

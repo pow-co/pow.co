@@ -6,19 +6,20 @@ import { createContext, useCallback, useContext, useMemo, useState } from "react
 import { useRouter } from "next/router";
 
 type HandCashContextValue = {
-    avatar: string;
+    handcashAvatar: string;
+    handcashUserName: string;
     runOwner: string;
-    paymail: string | undefined;
-    authenticate: () => Promise<void>;
-    authenticated: boolean;
+    handcashPaymail: string | undefined;
+    handcashAuthenticate: () => Promise<void>;
+    handcashAuthenticated: boolean;
     tokenBalance: number;
     handCashAuthToken: string | undefined;
     setHandCashAuthToken:(authToken: string | undefined) => void 
     handCashSessionToken: string | undefined;
     setHandCashSessionToken:(authToken: string | undefined) => void 
-    setPaymail: (paymail: string | undefined) => void;
+    setHandcashPaymail: (paymail: string | undefined) => void;
     setRunOwner: (runOwner: string) => void;
-    logout: () => void;
+    handcashLogout: () => void;
 };
  
 const HandCashContext = createContext<HandCashContextValue | undefined>(undefined);
@@ -28,29 +29,29 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
     const [handCashAuthToken, setHandCashAuthToken] = useLocalStorage(tokenStorageKey);
     const [handCashSessionToken, setHandCashSessionToken] = useLocalStorage(sessionStorageKey)
 
-    const [paymail, setPaymail] = useLocalStorage(paymailStorageKey);
+    const [handcashPaymail, setHandcashPaymail] = useLocalStorage(paymailStorageKey);
     const [runOwner, setRunOwner] = useLocalStorage(runOwnerStorageKey);
     const [tokenBalance, setTokenBalance] = useState(0);
 
-    const authenticated = useMemo(() => !!paymail, [paymail]);
+    const handcashAuthenticated = useMemo(() => !!handcashPaymail, [handcashPaymail]);
 
-    const avatar = useMemo(() => `https://a.relayx.com/u/${paymail}`, [paymail])
+    const handcashAvatar = useMemo(() => `https://a.relayx.com/u/${handcashPaymail}`, [handcashPaymail])
+    const handcashUserName = useMemo(() => handcashPaymail ? handcashPaymail.split('$')[1] : "", [handcashPaymail])
 
     const router = useRouter();
 
-    const authenticate = useCallback(async () => {
+    const handcashAuthenticate = useCallback(async () => {
 
         // TODO: Implement HandCash authentication
 
         window.location.href = `https://app.handcash.io/#/authorizeApp?appId=63a825594c80646cee9dca84`;
 
-    }, [setPaymail]);
+    }, [setHandcashPaymail]);
 
-    const logout = () => {
-        setPaymail("");
+    const handcashLogout = () => {
+        setHandcashPaymail("");
         setTokenBalance(0);
         setHandCashAuthToken(undefined)
-        localStorage.clear();
       };
 
     const value = useMemo(
@@ -61,12 +62,13 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
           setRunOwner,
           tokenBalance,
           setTokenBalance,
-          paymail,
-          setPaymail,
-          logout,
-          authenticated,
-          authenticate,
-          avatar,
+          handcashPaymail,
+          handcashUserName,
+          setHandcashPaymail,
+          handcashLogout,
+          handcashAuthenticated,
+          handcashAuthenticate,
+          handcashAvatar,
           handCashSessionToken,
           setHandCashSessionToken
         }),
@@ -77,12 +79,13 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
           setRunOwner,
           tokenBalance,
           setTokenBalance,
-          paymail,
-          setPaymail,
-          logout,
-          authenticated,
-          authenticate,
-          avatar,
+          handcashPaymail,
+          handcashUserName,
+          setHandcashPaymail,
+          handcashLogout,
+          handcashAuthenticated,
+          handcashAuthenticate,
+          handcashAvatar,
           handCashSessionToken,
           setHandCashSessionToken
         ]
@@ -93,8 +96,6 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
 }
 
 export const useHandCash = () => {
-
-    console.log('HandCashContext', HandCashContext)
     
     const context = useContext(HandCashContext);
     if (context === undefined) {
