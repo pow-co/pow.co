@@ -97,6 +97,7 @@ export default function DetailPage({ twetch, relay, boost, replies }: any) {
   const theme = useTheme()
   const query = router.query
   const author = null
+
   let content;
   /* from youtube Link {
     "id": 1783,
@@ -152,6 +153,13 @@ export default function DetailPage({ twetch, relay, boost, replies }: any) {
     });
   };
 
+  if(!twetch && !relay && !boost) {
+    return (<ThreeColumnLayout>
+      <div className="mt-5 lg:mt-10 h-screen">
+        Data unavailable
+      </div>
+    </ThreeColumnLayout>)
+  }
   
   
   return (

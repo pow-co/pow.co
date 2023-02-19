@@ -12,9 +12,11 @@ import { toast } from 'react-hot-toast';
 import 'react-markdown-editor-lite/lib/index.css';
 
 import {wrapRelayx} from 'stag-relayx'
+import TwetchWeb3 from "@twetch/web3"
 
 import BSocial from 'bsocial';
 import { signOpReturn } from '../utils/bap';
+import { useBitcoin } from '../context/BitcoinContext';
 
 export const MarkdownLogo = () => {
   return (
@@ -29,6 +31,7 @@ export const MarkdownLogo = () => {
 export default function WriteNewArticle() {
 
   const router = useRouter()
+  const { wallet } = useBitcoin()
 
         //@ts-ignore
     const stag = wrapRelayx(window.relayone)
@@ -45,7 +48,7 @@ export default function WriteNewArticle() {
 
     const [value, setValue] = useState<any>("");
 
-    function submitPost() {
+    async function submitPost() {
 
         console.log('submit post!', value)
         toast('Publishing Your Post to the Network', {
@@ -69,45 +72,90 @@ export default function WriteNewArticle() {
 
       console.log({hexArrayOps, opReturn})
 
-      const send = {
-        to: 'johngalt@relayx.io',
-        amount: 0.001,
-        currency: 'BSV',
-        opReturn
-        /*opReturn: [
-            '19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAutM',
-            value,
-            'text/markdown',
-            'UTF-8',
-            '|',
-            "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
-            "SET",
-            "app",
-            "pow.co",
-            "type",
-            "post"
-          ]*/
+      toast('Publishing Your Post to the Network', {
+        icon: '⛏️',
+        style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+        },
+      });
+      switch (wallet) {
+        case "relayx":
+          const send = {
+            to: 'johngalt@relayx.io',
+            amount: 0.001,
+            currency: 'BSV',
+            opReturn
+          }
+          console.log("relayone.send", send)
+          try {
+            let resp: any = await stag.relayone!.send(send)
+            toast('Success!', {
+              icon: '✅',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+            console.log("relayx.response", resp)
+            router.push(`/${resp.txid}`)
+          } catch (error) {
+            console.log(error)
+            toast('Error!', {
+              icon: '🐛',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+          }
+          break;
+        case "twetch":
+          try {
+            const outputs = [{
+              sats:0,
+              args: opReturn,
+              address: null
+            },{
+              to: 'johngalt@relayx.io',
+              sats: 0.001 * 1e8
+            }]
+            const resp = await TwetchWeb3.abi({
+              contract: "payment",
+              outputs: outputs,
+            })
+            toast('Success!', {
+              icon: '✅',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+            console.log("twetch.response", resp)
+            router.push(`/${resp.txid}`)
+
+          } catch (error) {
+            console.log(error)
+            toast('Error!', {
+              icon: '🐛',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+          }
+          break;
+        case "handcash":
+          //TODO
+          break;
+        default: 
+          console.log("no wallet selected")
       }
-
-      console.log("relayone.send", send)
-
-      return stag.relayone.send(send)        
-        .then((result: any) => {
-          console.log('relayone.result', result)
-
-          toast('Success!', {
-            icon: '✅',
-            style: {
-            borderRadius: '10px',
-            background: '#333',
-            color: '#fff',
-            },
-        });
-
-          router.replace(`/${result.txid}`)
-
-          return result
-        })
         
     }
 
