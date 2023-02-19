@@ -11,8 +11,21 @@ import { TuneProvider } from '../context/TuningContext'
 import Locales from '../context/LocalContext'
 import { Toaster } from 'react-hot-toast'
 
+import { init } from "@socialgouv/matomo-next";
+import { useEffect } from 'react'
+
+
 export default function App({ Component, pageProps }: AppProps) {
 
+  useEffect(() => {
+
+    const MATOMO_URL = String(process.env.NEXT_PUBLIC_MATOMO_URL);
+    
+    const MATOMO_SITE_ID = String(process.env.NEXT_PUBLIC_MATOMO_SITE_ID);
+
+    init({ url: MATOMO_URL, siteId: MATOMO_SITE_ID });
+
+  }, []);
 
   return (
     <>

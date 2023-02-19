@@ -13,6 +13,7 @@
     "@handcash/handcash-connect": "^0.6.9",
     "@next/font": "13.1.1",
     "@runonbitcoin/nimble": "^1.0.14",
+    "@socialgouv/matomo-next": "^1.6.1",
     "@tailwindcss/typography": "^0.5.9",
     "@types/node": "18.11.18",
     "@types/react": "18.0.26",
