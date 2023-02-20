@@ -22,6 +22,7 @@ import Linkify from "linkify-react";
 import { BFILE_REGEX } from "../components/BoostContentCard";
 import CommentComposer from "../components/CommentComposer";
 import ReplyCard, { BMAPData } from "../components/ReplyCard";
+import { useBitcoin } from "../context/BitcoinContext";
 
 const RemarkableOptions = {
     breaks: true,
@@ -97,7 +98,7 @@ export default function DetailPage({ twetch, relay, boost, replies }: any) {
   const theme = useTheme()
   const query = router.query
   const author = null
-
+  const { wallet } = useBitcoin()
   let content;
   /* from youtube Link {
     "id": 1783,
@@ -248,6 +249,7 @@ export default function DetailPage({ twetch, relay, boost, replies }: any) {
                       </p>
                     </div>
                     <BoostButton
+                        wallet={wallet}
                         content={boost.content.txid}
                         difficulty={boost.content.difficulty || 0}
                         //@ts-ignore

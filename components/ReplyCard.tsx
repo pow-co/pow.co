@@ -5,6 +5,7 @@ import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import { toast } from 'react-hot-toast';
 import { BoostButton } from 'myboostpow-lib';
+import { useBitcoin } from '../context/BitcoinContext';
 
 export interface BMAPData {
     AIP: any;
@@ -21,6 +22,7 @@ const ReplyCard = (props: BMAPData) => {
    const { AIP, B, MAP, tx, timestamp } = props
    const theme = useTheme()
    console.log(props)
+   const { wallet } = useBitcoin()
 
    const handleBoostLoading = () => {
     toast('Publishing Your Boost Job to the Network', {
@@ -103,6 +105,7 @@ const ReplyCard = (props: BMAPData) => {
                             </p>
                         </div>
                         <BoostButton
+                            wallet={wallet}
                             content={tx.h}
                             difficulty={0}
                             //@ts-ignore

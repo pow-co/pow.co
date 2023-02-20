@@ -13,6 +13,7 @@ import { useTheme } from 'next-themes';
 import RelayClub from './RelayClub';
 import PostMedia from './PostMedia';
 import Linkify from 'linkify-react';
+import { useBitcoin } from '../context/BitcoinContext';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -51,6 +52,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const [isClub, setIsClub] = useState(false)
     const router = useRouter()
     const theme = useTheme()
+    const { wallet } = useBitcoin()
 
     const handleBoostLoading = () => {
         toast('Publishing Your Boost Job to the Network', {
@@ -166,6 +168,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             </p>
                         </div>
                         <BoostButton
+                            wallet={wallet}
                             content={content_txid}
                             difficulty={difficulty || 0}
                             //@ts-ignore
