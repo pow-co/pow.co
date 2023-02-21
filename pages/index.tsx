@@ -9,6 +9,7 @@ import { useRelay } from "../context/RelayContext"
 import { FormattedMessage } from "react-intl"
 import BitcoinBrowser from "../components/BitcoinBrowser"
 import FindOrCreate from "../components/FindOrCreate"
+import 'react-tooltip/dist/react-tooltip.css'
 
 
 

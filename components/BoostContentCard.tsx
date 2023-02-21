@@ -13,6 +13,8 @@ import { useTheme } from 'next-themes';
 import RelayClub from './RelayClub';
 import PostMedia from './PostMedia';
 import Linkify from 'linkify-react';
+import { Tooltip } from 'react-tooltip'
+
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -135,16 +137,35 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             </div>
                             )}
                             <div className='grow'/>
+                            
                             <a  onClick={(e:any)=>e.stopPropagation()}
                                 target="_blank"
                                 rel="noreferrer"
                                 href={`https://whatsonchain.com/tx/${content_txid}`}
                                 className="text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500"
+                                id="txid"
                             >
                                 {/* {moment(createdAt).fromNow()} */}
                                 txid
                             </a>
-
+                            {/*tooltip*/}
+                            <Tooltip
+                            anchorSelect="#txid" 
+                            place="right" 
+                            className="dark:bg-gray-100 text-white dark:text-black italic"
+                            clickable
+                                
+                            >
+                                <a 
+                                href="https://learnmeabitcoin.com/technical/txid"
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e:any)=>e.stopPropagation()}
+                                >
+                                    What is a txid?
+                                </a>
+                                {/* <span>{content_txid}</span> */}
+                            </Tooltip>
                         </div>
                     <PostContent/>
                     <div className='flex w-full px-16'>
