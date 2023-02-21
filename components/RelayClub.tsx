@@ -207,6 +207,7 @@ export const RelayClubCard = (props: any) => {
       };
 
       const buyItem = async () => {
+        
         const ownerResponse = await relayOne!.alpha.run.getOwner();
         
         try {
@@ -234,6 +235,17 @@ export const RelayClubCard = (props: any) => {
 
       const handleBuy = async (e: any) => {
         e.preventDefault()
+        if (wallet !== "relayx"){
+          toast('Cannot buy run NFTs with Twetch Wallet. Please switch to RelayX', {
+            icon: '🛑',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
+          return
+        }
         toast('Publishing Your Buy Order to the Network', {
           icon: '⛏️',
           style: {
