@@ -26,6 +26,14 @@ export default function OnchainEvent({ txid }: {txid: string}) {
     // @ts-ignore
     const { data, isLoading } = useSWR(`https://onchain.sv/api/v1/events/${txid}`, fetcher) // TODO remove this data fetch and take data from higher in the app
 
+    if (data) {
+      var [event] = data.events
+    }
+
+    // Check if the event is a RelayX Marketplace Link and fetch the NFT data
+    const relayItemOrigin = event?.content?.url?.split('/').pop()
+    const {data: nftData} =  useSWR(`https://staging-backend.relayx.com/api/market/${relayItemOrigin}`, fetcher)
+
     if (isLoading){
       return (
           <div className=''>
@@ -45,15 +53,6 @@ export default function OnchainEvent({ txid }: {txid: string}) {
     if (!data || data.events.length === 0) {
       return <></>
     }
-
-    if (data) {
-      var [event] = data.events
-    }
-
-
-    // Check if the event is a RelayX Marketplace Link and fetch the NFT data
-    const relayItemOrigin = event?.content?.url?.split('/').pop()
-    const {data: nftData} =  useSWR(`https://staging-backend.relayx.com/api/market/${relayItemOrigin}`, fetcher)
 
     // Render RelayX MarketPlace Events
     if (event?.content?.url?.startsWith('https://relayx.com/market/')) {
