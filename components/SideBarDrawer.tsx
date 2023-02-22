@@ -14,7 +14,7 @@ import { useBitcoin } from '../context/BitcoinContext';
 
 const SideBarDrawer = () => {
     const { theme, setTheme } = useTheme()
-    const { authenticated, authenticate, avatar, paymail } = useBitcoin()
+    const { authenticated, authenticate, avatar, userName, paymail } = useBitcoin()
     const [walletPopupOpen, setWalletPopupOpen] = useState(false);
 
     const toggleTheme =  () => {
@@ -35,20 +35,16 @@ const SideBarDrawer = () => {
     <div className="fixed inset-0 w-9/12 h-screen">
         <div className='py-6 items-center bg-primary-200 dark:bg-primary-900 w-full h-full flex flex-col'>
             {authenticated ?(<div className='px-4 w-full flex mb-2.5 items-center'>
-                {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
-                    <a  className='cursor-pointer'>
+                <Link className='cursor-pointer' href={`/profile/${paymail}`}>
                         <UserIcon src={avatar!} size={36}/>
-                    </a>
-                {/* </Link> */}
+                </Link>
                 <div className='ml-3'>
-                    {/* <Link href={`/u/${paymail.split("@")[0]}`} > */}
-                        <a className='block text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline'>{paymail!.split("@")[0]}</a>
-                    {/* </Link> */}
-                    {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
-                        <a className='block text-xs leading-4 text-gray-500 hover:underline'>
-                            1{paymail?.split("@")[0]}
-                        </a>
-                    {/* </Link> */}
+                    <Link className='block text-sm cursor-pointer leading-4 font-semibold text-gray-900 dark:text-white hover:underline' href={`/profile/${paymail}`}>  
+                        {userName}
+                    </Link>
+                    <Link className='block text-xs leading-4 cursor-pointer text-gray-500 hover:underline' href={`/profile/${paymail}`}>
+                        {paymail}
+                    </Link>
                 </div>
                 <div className='grow'/>
                 <div className='block'>

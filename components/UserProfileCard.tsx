@@ -25,7 +25,7 @@ const UserProfileCard = (props: UserProfileCardProps) => {
             />
             </span>
         </div>
-        <div className="flex flex-col relative sm:rounded-b-xl px-8 pb-8 bg-primary-100 dark:bg-primary-600/20">
+        <div className="flex flex-col relative sm:rounded-b-xl px-8 pb-8 bg-primary-200 dark:bg-primary-600/20">
             <div className="flex flex-row justify-center">
                 <div className="-mt-8 mb-1.5 bg-primary-100 dark:bg-primary-600/20 h-16 w-16 rounded-full cursor-pointer">
                     <div 
@@ -55,7 +55,7 @@ const UserProfileCard = (props: UserProfileCardProps) => {
                 {paymail}
                 </p>}
                 {description && (
-                <p className="text-base leading-5 text-gray-900 dark:text-white mt-4 mb-3">
+                <p className="text-base text-center leading-5 text-gray-900 dark:text-white mt-4 mb-3">
                     {description}
                 </p>
                 )}

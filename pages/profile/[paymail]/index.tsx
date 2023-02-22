@@ -144,7 +144,7 @@ const ProfilePage = (props: ProfileCardProps ) => {
                 setCursor("")
             })
         }
-      }, [paymail]);
+      }, [paymail, hasTwetchPrivilege]);
     
       const refresh = async () => {
         setPosts([]);

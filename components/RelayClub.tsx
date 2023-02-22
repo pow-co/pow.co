@@ -3,6 +3,7 @@ import { request } from 'graphql-request'
 import moment from 'moment';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import Link from 'next/link';
 import { BoostButton } from 'myboostpow-lib';
 const graphqlAPI = "https://graphql.relayx.com";
 
@@ -288,19 +289,18 @@ export const RelayClubCard = (props: any) => {
         <div onClick={navigate} className="cursor-pointer col-span-12 px-4 pt-4 pb-1 mt-1 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 sm:first:rounded-t-lg sm:last:rounded-b-lg">
           <div className='mb-0.5  grid items-start grid-cols-12 max-w-screen '>
             <div className="col-span-1">
-              {/* <Link  href={`/u/${post.userId}`}> */}
-                <a onClick={(e:any)=> e.stopPropagation()}>
-                  <UserIcon src={`https://a.relayx.com/u/${props.user.paymail}`} size={46}/>
-                </a>
-              {/* </Link> */}
+              <Link onClick={(e:any)=> e.stopPropagation()}  href={`/profile/${props.user?.paymail}`}>
+                  <UserIcon src={`https://a.relayx.com/u/${props.user?.paymail}`} size={46}/>
+              </Link>
             </div>
             <div className="col-span-11 ml-6">
               <div className="flex">
-              {/* <Link  href={`/u/${post.userId}`}> */}
-                <div onClick={(e)=>e.stopPropagation()} className='text-base leading-4 font-bold text-gray-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis	hover:underline'>
+              <Link 
+                onClick={(e)=>e.stopPropagation()} 
+                className='text-base leading-4 font-bold text-gray-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis	hover:underline' 
+                href={`/profile/${props.user?.paymail}`}>
                 {props.user.name || `1${props.user.paymail.split('@')[0]}`}
-                </div>
-              {/* </Link> */}
+              </Link>
               <div className="grow"/>
               <a target="_blank" rel="noreferrer" href={`https://whatsonchain.com/tx/${props.txid}`} className='text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500'>
                 {moment(props.time *1000).fromNow()}
@@ -316,11 +316,15 @@ export const RelayClubCard = (props: any) => {
                 <img alt="berry" src={`https://berry.relayx.com/${props.jig.image}`} className="rounded-t-lg object-cover object-center"/>
                 <div className="flex items-center p-2">
                   <div className="mr-2">
-                    <UserIcon size={36} src={`https://a.relayx.com/u/${props.jig.cls.user?.paymail}`}/>
+                    <Link onClick={(e:any)=> e.stopPropagation()}  href={`/profile/${props.jig.cls.user?.paymail}`}>
+                      <UserIcon size={36} src={`https://a.relayx.com/u/${props.jig.cls.user?.paymail}`}/>
+                    </Link>
                   </div>
                   <div className="grow">
                     <div className="flex flex-col">
-                      <h2 className="text-xl font-bold">1{props.jig.cls.user?.paymail.split('@')[0]}</h2>
+                      <Link onClick={(e:any)=> e.stopPropagation()}  href={`/profile/${props.jig.cls.user?.paymail}`}>
+                        <h2 className="cursor-pointer text-xl font-bold hover:underline">1{props.jig.cls.user?.paymail.split('@')[0]}</h2>
+                      </Link>
                       <p className="">{props.jig.name} #{props.jig.no}/{props.jig.total}</p>
                     </div>
                   </div>

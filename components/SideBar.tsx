@@ -37,20 +37,16 @@ const SideBar = () => {
     <div className='py-6 xl:p-6 items-center bg-primary-200 dark:bg-primary-800/20 w-full h-full flex flex-col'>
         <div className='w-fit xl:w-full flex mb-2.5 items-center '>
             {authenticated ? (<>
-            {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
-                <a  className='cursor-pointer'>
+            <Link className='cursor-pointer' href={`/profile/${paymail}`}>
                     <UserIcon src={avatar!} size={36}/>
-                </a>
-            {/* </Link> */}
+            </Link>
             <div className='ml-3 hidden xl:block'>
-                {/* <Link  href={`/u/${paymail.split("@")[0]}`} > */}
-                    <a className='block text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline'>{userName}</a>
-                {/* </Link> */}
-                {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
-                    <a className='block text-xs leading-4 text-gray-500 hover:underline'>
-                       {paymail}
-                    </a>
-                {/* </Link> */}
+                <Link className='block text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline' href={`/profile/${paymail}`} >
+                    {userName}
+                </Link>
+                <Link className='block text-xs leading-4 text-gray-500 hover:underline' href={`/profile/${paymail}`}>
+                    {paymail}
+                </Link>
             </div>
             <div className='grow'/>
             <div className='hidden xl:block'>
