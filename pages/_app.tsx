@@ -10,6 +10,7 @@ import { HandCashProvider } from '../context/HandCashContext'
 import { TuneProvider } from '../context/TuningContext'
 import Locales from '../context/LocalContext'
 import { Toaster } from 'react-hot-toast'
+import 'react-tooltip/dist/react-tooltip.css'
 
 import { init } from "@socialgouv/matomo-next";
 import { useEffect } from 'react'
