@@ -279,8 +279,13 @@ export const RelayClubCard = (props: any) => {
 
     }
 
+    const navigate = (e:any) => {
+      e.preventDefault()
+      e.stopPropagation()
+      router.push(`/${props.txid}`)
+    }
     return (
-        <div className="col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 sm:rounded-t-lg sm:last:rounded-b-lg">
+        <div onClick={navigate} className="cursor-pointer col-span-12 px-4 pt-4 pb-1 mt-1 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 sm:first:rounded-t-lg sm:last:rounded-b-lg">
           <div className='mb-0.5  grid items-start grid-cols-12 max-w-screen '>
             <div className="col-span-1">
               {/* <Link  href={`/u/${post.userId}`}> */}
@@ -308,14 +313,14 @@ export const RelayClubCard = (props: any) => {
               </div>
               <PostDescription bContent={props.text}/>
               <div className="bg-primary-300 dark:bg-primary-700 rounded-lg mt-4">
-                <img alt="berry" src={`https://berry.relayx.com/${props.jig.image}`} className="rounded-t-lg"/>
+                <img alt="berry" src={`https://berry.relayx.com/${props.jig.image}`} className="rounded-t-lg object-cover object-center"/>
                 <div className="flex items-center p-2">
                   <div className="mr-2">
-                    <UserIcon size={36} src={`https://a.relayx.com/u/${props.jig.cls.user.paymail}`}/>
+                    <UserIcon size={36} src={`https://a.relayx.com/u/${props.jig.cls.user?.paymail}`}/>
                   </div>
                   <div className="grow">
                     <div className="flex flex-col">
-                      <h2 className="text-xl font-bold">1{props.jig.cls.user.paymail.split('@')[0]}</h2>
+                      <h2 className="text-xl font-bold">1{props.jig.cls.user?.paymail.split('@')[0]}</h2>
                       <p className="">{props.jig.name} #{props.jig.no}/{props.jig.total}</p>
                     </div>
                   </div>

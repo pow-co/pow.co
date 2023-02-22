@@ -80,6 +80,7 @@ import PostDescription from './PostDescription';
 import PostMedia from './PostMedia';
 import UserIcon from './UserIcon';
 import { useBitcoin } from '../context/BitcoinContext';
+import { useRouter } from 'next/router';
 
 export default function Twetch({ txid, setIsTwetch, difficulty }: { txid: string, setIsTwetch: Dispatch<SetStateAction<boolean>>, difficulty: number }) {
     const [loading, setLoading] = useState(false)
@@ -130,6 +131,7 @@ export default function Twetch({ txid, setIsTwetch, difficulty }: { txid: string
 }
 
 export const TwetchCard = (props:any) => {
+  const router = useRouter()
   const theme = useTheme()
   const { wallet } = useBitcoin()
 
@@ -165,8 +167,15 @@ export const TwetchCard = (props:any) => {
         },
     });
   };
+
+  const navigate = (e:any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    router.push(`/${props.txid}`)
+  }
+
   return (
-    <div className='col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 mt-1 hover:dark:sm:bg-primary-500/20 sm:first:rounded-t-lg sm:last:rounded-b-lg'>
+    <div onClick={navigate}  className='cursor-pointer col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 mt-1 hover:dark:sm:bg-primary-500/20 sm:first:rounded-t-lg sm:last:rounded-b-lg'>
       <div className='mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer'>
         <div className='col-span-1'>
             {/* <Link  href={`/u/${post.userId}`}> */}
