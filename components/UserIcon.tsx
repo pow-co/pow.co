@@ -16,7 +16,7 @@ const UserIcon = (props: UserIconProps) => {
                     className={`h-9 w-9 box-border inline-block overflow-hidden bg-none opacity-100 border-none m-0 p-0 relative`}>
                     <img 
                         src={props.src} 
-                        className='absolute rounded-full inset-0 box-border p-0 border-none m-auto block w-0 h-0 min-w-full max-w-full min-h-full max-h-full'
+                        className='absolute rounded-full inset-0 box-border p-0 border-none m-auto block w-0 h-0 min-w-full max-w-full min-h-full max-h-full object-cover object-center'
                     />
                 </span>
             </div>

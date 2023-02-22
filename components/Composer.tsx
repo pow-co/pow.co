@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext, useEffect } from 'react'
 import { useRouter } from "next/router"
 
 import axios from 'axios';
-
+import TwetchWeb3 from "@twetch/web3"
 
 import 'react-markdown-editor-lite/lib/index.css';
 
@@ -21,6 +21,7 @@ import axiosInstance, { useAPI } from '../hooks/useAPI';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import { MarkdownLogo } from './MarkdownComposer';
+import { useBitcoin } from '../context/BitcoinContext';
 
 
 
@@ -31,6 +32,7 @@ const Composer = () => {
   const { relayOne } = useRelay()
   const [initialBoost, setInitialBoost] = useState(false)
   const [content, setContent] = useState("")
+  const { wallet } = useBitcoin()
 
 
         //@ts-ignore
@@ -51,28 +53,7 @@ const Composer = () => {
       const opReturn = signOpReturn(hexArrayOps)
 
       console.log({hexArrayOps, opReturn})
-
-      const send = {
-        to: 'johngalt@relayx.io',
-        amount: 0.001,
-        currency: 'BSV',
-        opReturn
-        /*opReturn: [
-            '19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAutM',
-            value,
-            'text/markdown',
-            'UTF-8',
-            '|',
-            "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
-            "SET",
-            "app",
-            "pow.co",
-            "type",
-            "post"
-          ]*/
-      }
-
-      console.log("relayone.send", send)
+      
       toast('Publishing Your Post to the Network', {
         icon: '⛏️',
         style: {
@@ -81,27 +62,81 @@ const Composer = () => {
         color: '#fff',
         },
       });
-      try {
-        let resp: any = await stag.relayone!.send(send)
-        toast('Success!', {
-          icon: '✅',
-          style: {
-          borderRadius: '10px',
-          background: '#333',
-          color: '#fff',
-          },
-        });
-        console.log("relayx.response", resp)
-        router.replace(`/${resp.txid}`)
-      } catch (error) {
-        toast('Error!', {
-          icon: '🐛',
-          style: {
-          borderRadius: '10px',
-          background: '#333',
-          color: '#fff',
-          },
-      });
+      switch (wallet) {
+        case "relayx":
+          const send = {
+            to: 'johngalt@relayx.io',
+            amount: 0.001,
+            currency: 'BSV',
+            opReturn
+          }
+          console.log("relayone.send", send)
+          try {
+            let resp: any = await stag.relayone!.send(send)
+            toast('Success!', {
+              icon: '✅',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+            console.log("relayx.response", resp)
+            router.push(`/${resp.txid}`)
+          } catch (error) {
+            console.log(error)
+            toast('Error!', {
+              icon: '🐛',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+          }
+          break;
+        case "twetch":
+          try {
+            const outputs = [{
+              sats:0,
+              args: opReturn,
+              address: null
+            },{
+              to: 'johngalt@relayx.io',
+              sats: 0.001 * 1e8
+            }]
+            const resp = await TwetchWeb3.abi({
+              contract: "payment",
+              outputs: outputs,
+            })
+            console.log("twetch.response", resp)
+            toast('Success!', {
+              icon: '✅',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+            router.push(`/${resp.txid}`)
+
+          } catch (error) {
+            console.log(error)
+            toast('Error!', {
+              icon: '🐛',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+          }
+          break;
+        case "handcash":
+          //TODO
+          break;
+        default: 
+          console.log("no wallet selected")
       }
     }
 

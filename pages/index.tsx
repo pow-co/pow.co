@@ -9,13 +9,14 @@ import { useRelay } from "../context/RelayContext"
 import { FormattedMessage } from "react-intl"
 import BitcoinBrowser from "../components/BitcoinBrowser"
 import FindOrCreate from "../components/FindOrCreate"
+import { useBitcoin } from "../context/BitcoinContext"
 
 
 
 
 export default function Home() {
   const { startTimestamp, filter, setFilter } = useTuning()
-  const { authenticated } = useRelay()
+  const { authenticated } = useBitcoin()
   const { data, error, loading } = useAPI(`/boost/rankings?start_date=${startTimestamp}`, '')
 
   if (loading){
