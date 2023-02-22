@@ -79,6 +79,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import PostDescription from './PostDescription';
 import PostMedia from './PostMedia';
 import UserIcon from './UserIcon';
+import { useBitcoin } from '../context/BitcoinContext';
 
 export default function Twetch({ txid, setIsTwetch, difficulty }: { txid: string, setIsTwetch: Dispatch<SetStateAction<boolean>>, difficulty: number }) {
     const [loading, setLoading] = useState(false)
@@ -130,6 +131,8 @@ export default function Twetch({ txid, setIsTwetch, difficulty }: { txid: string
 
 export const TwetchCard = (props:any) => {
   const theme = useTheme()
+  const { wallet } = useBitcoin()
+
   const handleBoostLoading = () => {
     toast('Publishing Your Boost Job to the Network', {
         icon: '⛏️',
@@ -217,6 +220,7 @@ export const TwetchCard = (props:any) => {
           </p>
         </div>
         <BoostButton
+            wallet={wallet}
             content={props.txid}
             difficulty={props.difficulty}
             //@ts-ignore

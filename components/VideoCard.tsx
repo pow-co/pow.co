@@ -15,6 +15,7 @@ import YouTube from 'react-youtube';
 import { ReactNode } from 'react';
 import { BoostButton } from 'myboostpow-lib';
 import { useRouter } from 'next/router';
+import { useBitcoin } from '../context/BitcoinContext';
 
 
 
@@ -23,6 +24,7 @@ import { useRouter } from 'next/router';
 export default function VideoCard({ txid, difficulty }: {txid: string, difficulty: number}) {
     const theme = useTheme()
     const router = useRouter()
+    const { wallet } = useBitcoin()
 
     const handleBoostLoading = () => {
       toast('Publishing Your Boost Job to the Network', {
@@ -88,6 +90,7 @@ export default function VideoCard({ txid, difficulty }: {txid: string, difficult
             </p>
           </div>
           <BoostButton
+            wallet={wallet}
             content={txid}
             difficulty={difficulty}
             //@ts-ignore

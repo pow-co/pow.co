@@ -3,8 +3,10 @@ import {useDropzone} from 'react-dropzone'
 import BSocial from "bsocial"
 import { toast } from 'react-hot-toast';
 import wrapRelayx from 'stag-relayx';
+import TwetchWeb3 from '@twetch/web3';
 import { useRelay } from '../context/RelayContext';
 import { useRouter } from 'next/router';
+import { useBitcoin } from '../context/BitcoinContext';
 
 function buf2hex(buffer: ArrayBuffer) {
   return Array.from(new Uint8Array(buffer))
@@ -17,6 +19,7 @@ export default function MyDropzone() {
   const [files, setFiles] = useState([]);
   const [opReturn, setOpReturn] = useState()
   const { relayOne } = useRelay()
+  const { wallet } = useBitcoin()
 
   const onDrop = useCallback((acceptedFiles: any) => {
     acceptedFiles.forEach((file: any) => {
@@ -41,7 +44,7 @@ export default function MyDropzone() {
 
         console.log('file base64', base64)
 
-        const bsocial = new BSocial('powmemes.com');
+        const bsocial = new BSocial('pow.co');
 
         const post = bsocial.post();
         // and image data Url
@@ -89,30 +92,11 @@ export default function MyDropzone() {
     return () => files.forEach(file => URL.revokeObjectURL(file.preview));
   }, []);
 
+  const stag = wrapRelayx(relayOne)
+
   const postFile = async (e:any) => {
     e.preventDefault()
-    const stag = wrapRelayx(relayOne)
-    const send = {
-      to: 'johngalt@relayx.io',
-      amount: 0.001,
-      currency: 'BSV',
-      opReturn
-      /*opReturn: [
-          '19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAutM',
-          value,
-          'text/markdown',
-          'UTF-8',
-          '|',
-          "1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5",
-          "SET",
-          "app",
-          "pow.co",
-          "type",
-          "post"
-        ]*/
-    }
-
-    console.log("relayone.send", send)
+    
     toast('Publishing Your Post to the Network', {
       icon: '⛏️',
       style: {
@@ -121,27 +105,81 @@ export default function MyDropzone() {
       color: '#fff',
       },
     });
-    try {
-      let resp: any = await stag.relayone!.send(send)
-      toast('Success!', {
-        icon: '✅',
-        style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-        },
-      });
-      console.log("relayx.response", resp)
-      router.push(`/${resp.txid}`)
-    } catch (error) {
-      toast('Error!', {
-        icon: '🐛',
-        style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-        },
-    });
+    switch (wallet) {
+      case "relayx":
+        const send = {
+          to: 'johngalt@relayx.io',
+          amount: 0.001,
+          currency: 'BSV',
+          opReturn
+        }
+    
+        console.log("relayone.send", send)
+        try {
+          let resp: any = await stag.relayone!.send(send)
+          toast('Success!', {
+            icon: '✅',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
+          console.log("relayx.response", resp)
+          router.push(`/${resp.txid}`)
+        } catch (error) {
+          toast('Error!', {
+            icon: '🐛',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
+        }
+        break;
+      case "twetch":
+        try {
+          const outputs = [{
+            sats:0,
+            args: opReturn,
+            address: null
+          },{
+            to: 'johngalt@relayx.io',
+            sats: 0.001 * 1e8
+          }]
+          console.log("twetch.send", outputs)
+          const resp = await TwetchWeb3.abi({
+            contract: "payment",
+            outputs: outputs,
+          })
+          console.log('twetch.response',resp);
+          toast('Success!', {
+            icon: '✅',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
+          router.push(`/${resp.txid}`)
+        } catch (error) {
+          console.log(error)
+          toast('Error!', {
+            icon: '🐛',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
+        }
+        break;
+      case "handcash":
+        //TDOD
+        break;
+      default:
+        console.log("no wallet selected")
   }}
 
   return (

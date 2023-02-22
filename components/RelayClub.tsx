@@ -117,6 +117,7 @@ import UserIcon from './UserIcon';
 import { useTheme } from 'next-themes';
 import { useRelay } from '../context/RelayContext';
 import { useRouter } from 'next/router';
+import { useBitcoin } from '../context/BitcoinContext';
 
 export default function RelayClub({ txid, setIsClub, difficulty }: { txid: string, setIsClub: Dispatch<SetStateAction<boolean>>, difficulty: number }) {
     const [loading, setLoading] = useState(false)
@@ -170,6 +171,7 @@ export const RelayClubCard = (props: any) => {
     const theme = useTheme()
     const { relayOne } = useRelay()
     const router = useRouter()
+    const { wallet } = useBitcoin()
 
     const handleBoostLoading = () => {
         toast('Publishing Your Boost Job to the Network', {
@@ -205,6 +207,7 @@ export const RelayClubCard = (props: any) => {
       };
 
       const buyItem = async () => {
+        
         const ownerResponse = await relayOne!.alpha.run.getOwner();
         
         try {
@@ -232,6 +235,17 @@ export const RelayClubCard = (props: any) => {
 
       const handleBuy = async (e: any) => {
         e.preventDefault()
+        if (wallet !== "relayx"){
+          toast('Cannot buy run NFTs with Twetch Wallet. Please switch to RelayX', {
+            icon: '🛑',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
+          return
+        }
         toast('Publishing Your Buy Order to the Network', {
           icon: '⛏️',
           style: {
@@ -335,6 +349,7 @@ export const RelayClubCard = (props: any) => {
               </p>
             </div>
             <BoostButton
+                wallet={wallet}
                 content={props.txid}
                 difficulty={props.difficulty}
                 //@ts-ignore

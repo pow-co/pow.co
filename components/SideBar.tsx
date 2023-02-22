@@ -8,13 +8,14 @@ import { useRelay } from '../context/RelayContext';
 import LocaleSelect from './LocaleSelect';
 
 import { FormattedMessage } from 'react-intl';
+import { useBitcoin } from '../context/BitcoinContext';
 
 
 
 
 const SideBar = () => {
     const { theme, setTheme } = useTheme()
-    const { authenticated, authenticate, paymail, avatar } = useRelay()
+    const { authenticated, authenticate, paymail, avatar, userName } = useBitcoin()
     const [loggedIn, setLoggedIn] = useState(false)
     const [walletPopupOpen, setWalletPopupOpen] = useState(false);
 
@@ -38,16 +39,16 @@ const SideBar = () => {
             {authenticated ? (<>
             {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
                 <a  className='cursor-pointer'>
-                    <UserIcon src={avatar} size={36}/>
+                    <UserIcon src={avatar!} size={36}/>
                 </a>
             {/* </Link> */}
             <div className='ml-3 hidden xl:block'>
                 {/* <Link  href={`/u/${paymail.split("@")[0]}`} > */}
-                    <a className='block text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline'>{paymail!.split('@')[0]}</a>
+                    <a className='block text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline'>{userName}</a>
                 {/* </Link> */}
                 {/* <Link href={`/u/${paymail.split("@")[0]}`}> */}
                     <a className='block text-xs leading-4 text-gray-500 hover:underline'>
-                        1{paymail?.split("@")[0]}
+                       {paymail}
                     </a>
                 {/* </Link> */}
             </div>
