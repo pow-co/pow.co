@@ -26,72 +26,43 @@ export default function OnchainEvent({ txid }: {txid: string}) {
     // @ts-ignore
     const { data, isLoading } = useSWR(`https://onchain.sv/api/v1/events/${txid}`, fetcher) // TODO remove this data fetch and take data from higher in the app
 
-    if (isLoading){
-        return (
-            <div className=''>
-                <div role="status" className="max-w-sm animate-pulse">
-                    <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
-                    <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
-                    <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 mb-2.5"></div>
-                    <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
-                    <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
-                    <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
-                    <span className="sr-only">Loading...</span>
-                </div>
-            </div>
-        )
+    if (data) {
+      var [event] = data.events
     }
 
-    if (!data || data.events.length === 0) {
-      return <></>
-    }
-
-    var [event] = data.events
-
-    console.log('event', event)
+    // Check if the event is a RelayX Marketplace Link and fetch the NFT data
+    const relayItemOrigin = event?.content?.url?.split('/').pop()
+    const {data: nftData} =  useSWR(`https://staging-backend.relayx.com/api/market/${relayItemOrigin}`, fetcher)
 
     // Render RelayX MarketPlace Events
     if (event?.content?.url?.startsWith('https://relayx.com/market/')) {
-
-      // Make API Call to get nft data
-      const nftOrigin = `https://staging-backend.relayx.com/api/market/${event.content.url.split('/').pop()}`
-      console.log('nftOrigin is: ', nftOrigin)
-
-      // How do I get the nft data here? Example data below
-      const nft = {
-        "location": "378b01f6c61b6490693135b41dcec80270b5cdd719e5750dbf141827c778bc5e_o1",
-        "origin": "6b2952d2dc2e868a028d0e3f1d9ee3ad8fc6ab2d2c982244d5c6519132b13748_o3",
-        "name": "La Fonda de El Ceboruco Club Membership",
-        "nonce": 2,
-        "symbol": "La Fonda de El Ceboruco Club Membership",
-        "owner": "1rtPcyeB9wtYAysqXx1j7DpFNKFLQHXct",
-        "issued": 218,
-        "burned": 0,
-        "whitepaper": "",
-        "description": "\"How are you friends? Greetings from the beautiful land of Nayarit. I'm proud to present the flavors and foods from my town\" \n\nBy purchasing this NFT you will become a part of the La Fonda de El Ceboruco Club and receive airdrops of all future recipe NFTs. Holding the NFT to a recipe will allow you to see that recipe and the accompanying video tutorial at www.ceboru.co \n\nMy mom is very excited to share her recipes with you! 😋",
-        "nft": true,
-        "royalties": [
-            {
-                "address": "1BQLZzFoX71t7J119oqgGXmUfRekFWshjQ",
-                "royalty": 0.0218
-            }
-        ],
-        "icon": {
-            "berry": "6b2952d2dc2e868a028d0e3f1d9ee3ad8fc6ab2d2c982244d5c6519132b13748_o1"
-        },
-        "audio": "6b2952d2dc2e868a028d0e3f1d9ee3ad8fc6ab2d2c982244d5c6519132b13748_o2",
-        "isEncrypted": false,
-        "floor": 21800000,
-        "against": "BSV",
-        "price": 0,
-        "vol": 0,
-        "status": "open",
-        "message": "",
-        "owners": 4,
-        "creator": "ceboruco@relayx.io"
+      const nft = nftData?.data?.token
+      if (nft) {
+        return <NFTCard nft={nft}/>
+      }
     }
-      return <NFTCard nft={nft}/>
-    }
+
+    if (isLoading){
+      return (
+          <div className=''>
+              <div role="status" className="max-w-sm animate-pulse">
+                  <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+                  <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 max-w-[360px] mb-2.5"></div>
+                  <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 mb-2.5"></div>
+                  <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 max-w-[330px] mb-2.5"></div>
+                  <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 max-w-[300px] mb-2.5"></div>
+                  <div className="h-2 bg-gray-300 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+                  <span className="sr-only">Loading...</span>
+              </div>
+          </div>
+      )
+  }
+
+  if (!data || data.events.length === 0) {
+    return <></>
+  }
+
+
 
     if (event.app === 'powstream.com') {
 
