@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import ThreeColumnLayout from "../components/ThreeColumnLayout"
 import Loader from "../components/Loader"
 import Link from "next/link"
@@ -10,25 +11,28 @@ import { FormattedMessage } from "react-intl"
 import BitcoinBrowser from "../components/BitcoinBrowser"
 import FindOrCreate from "../components/FindOrCreate"
 import { useBitcoin } from "../context/BitcoinContext"
+import { relayFeedQuery } from "./profile/[paymail]"
+import InfiniteScroll from "react-infinite-scroll-component"
+import { RelayClubCard } from "../components/RelayClub"
 
 
 
 
-export default function Home() {
-  const { startTimestamp, filter, setFilter } = useTuning()
+export default function RelayXFeed() {
+  const [posts, setPosts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [cursor, setCursor] = useState("");
+
   const { authenticated } = useBitcoin()
-  const { data, error, loading } = useAPI(`/boost/rankings?start_date=${startTimestamp}`, '')
 
-  if (error) {
-    return (
-      <ThreeColumnLayout>
-        Error, something happened
-      </ThreeColumnLayout>
-    )
-  }
-
+  useEffect(()=>{
+    relayFeedQuery("all").then((data) => {
+      setPosts(data)
+      setHasMore(false)
+      setCursor("")
+    })
+  },[])
   
-  let { rankings } = data || []
   
   return (
     <>
@@ -38,12 +42,12 @@ export default function Home() {
       </div>}
       <div className="flex mt-5 mx-0 px-4">
         <Link href={`/`}>
-          <div className="text-sm leading-4 py-2 px-3 text-gray-900 dark:text-white bg-primary-100 dark:bg-primary-600/20 font-medium mr-2 cursor-pointer rounded-md whitespace-nowrap">
+          <div className="text-sm leading-4 py-2 px-3 text-gray-700 dark:text-gray-300 font-normal mr-2 cursor-pointer rounded-md whitespace-nowrap">
             All
           </div>
         </Link>
         <Link href={`/relayx`}>
-          <div className="text-sm leading-4 py-2 px-3 text-gray-700 dark:text-gray-300 font-normal mr-2 cursor-pointer rounded-md whitespace-nowrap">
+          <div className="text-sm leading-4 py-2 px-3 text-gray-900 dark:text-white bg-primary-100 dark:bg-primary-600/20 font-medium mr-2 cursor-pointer rounded-md whitespace-nowrap">
             Club RelayX
           </div>
         </Link>
@@ -55,9 +59,30 @@ export default function Home() {
       </div>
       <div className="col-span-12 lg:col-span-6 min-h-screen">
         <div className="mt-5 lg:mt-10 mb-[200px]">
-          {loading ? <Loader/> : rankings?.map((post: Ranking) => {
+          {/* {rankings?.map((post: Ranking) => {
             return <BoostContentCard key={post.content_txid} {...post}/>
-          } ) }
+          } )} */}
+          <div className="w-full">
+            <div className="relative">
+              <InfiniteScroll
+                dataLength={posts.length}
+                hasMore={hasMore}
+                next={()=>null}
+                loader={<div className='mt-5 sm:mt-10'>
+                    <Loader />
+                    </div>}
+                pullDownToRefresh
+                pullDownToRefreshThreshold={50}
+                refreshFunction={()=>null}
+              >
+                <div>
+                  {posts.map((post: any) => {
+                    return <RelayClubCard key={post.txid} {...post} difficulty={0}/>
+                  })}
+                </div>
+              </InfiniteScroll>
+            </div>
+          </div>
         </div>
       </div>
       {authenticated && (

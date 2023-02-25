@@ -180,7 +180,7 @@ export const TwetchCard = (props:any) => {
       <div className='mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer'>
         <div className='col-span-1'>
             <Link onClick={(e)=>e.stopPropagation()} href={`/profile/${props.userId}@twetch.me`}>
-                <UserIcon src={props.userByUserId.icon} size={46}/>
+                <UserIcon src={props.userByUserId?.icon} size={46}/>
             </Link>
         </div>
         <div className='col-span-11 ml-6'>
