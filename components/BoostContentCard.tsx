@@ -13,12 +13,9 @@ import { useTheme } from 'next-themes';
 import RelayClub from './RelayClub';
 import PostMedia from './PostMedia';
 import Linkify from 'linkify-react';
-<<<<<<< HEAD
 import { Tooltip } from 'react-tooltip'
 
-=======
 import { useBitcoin } from '../context/BitcoinContext';
->>>>>>> 384e34a0b3b6b300fb187958942521c482efe76c
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
