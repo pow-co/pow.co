@@ -3,6 +3,7 @@ import { request } from 'graphql-request'
 import moment from 'moment';
 import { toast } from 'react-hot-toast';
 import { BoostButton } from 'myboostpow-lib';
+import Link from 'next/link';
 import { useTheme } from 'next-themes';
 const graphqlAPI = "https://gw.twetch.app";
 
@@ -79,6 +80,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import PostDescription from './PostDescription';
 import PostMedia from './PostMedia';
 import UserIcon from './UserIcon';
+import { useBitcoin } from '../context/BitcoinContext';
+import { useRouter } from 'next/router';
 
 export default function Twetch({ txid, setIsTwetch, difficulty }: { txid: string, setIsTwetch: Dispatch<SetStateAction<boolean>>, difficulty: number }) {
     const [loading, setLoading] = useState(false)
@@ -129,7 +132,10 @@ export default function Twetch({ txid, setIsTwetch, difficulty }: { txid: string
 }
 
 export const TwetchCard = (props:any) => {
+  const router = useRouter()
   const theme = useTheme()
+  const { wallet } = useBitcoin()
+
   const handleBoostLoading = () => {
     toast('Publishing Your Boost Job to the Network', {
         icon: '⛏️',
@@ -162,23 +168,29 @@ export const TwetchCard = (props:any) => {
         },
     });
   };
+
+  const navigate = (e:any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    router.push(`/${props.txid}`)
+  }
+
   return (
-    <div className='col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 mt-1 hover:dark:sm:bg-primary-500/20 sm:first:rounded-t-lg sm:last:rounded-b-lg'>
+    <div onClick={navigate}  className='cursor-pointer col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 mt-1 hover:dark:sm:bg-primary-500/20 sm:first:rounded-t-lg sm:last:rounded-b-lg'>
       <div className='mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer'>
         <div className='col-span-1'>
-            {/* <Link  href={`/u/${post.userId}`}> */}
-            <a onClick={(e)=>e.stopPropagation()}>
-                <UserIcon src={props.userByUserId.icon} size={46}/>
-            </a>
-            {/* </Link> */}
+            <Link onClick={(e)=>e.stopPropagation()} href={`/profile/${props.userId}@twetch.me`}>
+                <UserIcon src={props.userByUserId?.icon} size={46}/>
+            </Link>
         </div>
         <div className='col-span-11 ml-6'>
             <div className='flex'>
-            {/* <Link  href={`/u/${post.userId}`}> */}
-                <div onClick={(e)=>e.stopPropagation()} className='text-base leading-4 font-bold text-gray-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis	hover:underline'>
+            <Link 
+              onClick={(e)=>e.stopPropagation()} 
+              className='text-base leading-4 font-bold text-gray-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis	hover:underline'  
+              href={`/profile/${props.userId}@twetch.me`}>
                 {props.userByUserId.name}<span className='ml-1 font-normal text-gray-500 dark:text-gray-300'>@{props.userId}</span>
-                </div>
-            {/* </Link> */}
+            </Link>
             <div className='grow'/>
             <a target="_blank" rel="noreferrer" href={`https://whatsonchain.com/tx/${props.transaction}`} className='text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500'>
                 {moment(props.createdAt).fromNow()}
@@ -217,6 +229,7 @@ export const TwetchCard = (props:any) => {
           </p>
         </div>
         <BoostButton
+            wallet={wallet}
             content={props.txid}
             difficulty={props.difficulty}
             //@ts-ignore
