@@ -21,7 +21,7 @@ const Chat = () => {
   return (
     <div className='bg-primary-300 dark:bg-primary-700/20 h-screen'>
         <Header/>
-        <div className='h-16'/>
+        <div className='h-12'/>
       <div className='grid grid-cols-12 h-full'>
         <div className={`col-span-12 bg-primary-100 dark:bg-primary-900/20`}>
           <ChannelList/>
