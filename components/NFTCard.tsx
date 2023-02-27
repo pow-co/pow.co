@@ -1,7 +1,16 @@
 import React from "react";
 import Image from "next/image";
 
-const NFTCard = ({ nft }) => {
+type NFT = {
+  origin: string;
+  name: string;
+  description: string;
+  total: string;
+  owners: string;
+  price: number;
+}
+
+const NFTCard = ({nft}: {nft: NFT}) => {
   return (
     <div className="pt-6 pb-6 max-w-xs rounded overflow-hidden shadow-lg ml-auto mr-auto hover:bg-slate-100">
       <div
@@ -13,29 +22,6 @@ const NFTCard = ({ nft }) => {
           position: "relative",
         }}
       >
-        {/* {false ? (
-          <Image
-            alt={"Purchase NFTS to view"}
-            src={"/images/sillhouette.png"}
-            width="100%"
-            height="100%"
-            layout="responsive"
-            margin-top="100px"
-            border="10px solid #000"
-            resizeMode="contain"
-          />
-        ) : (
-          <Image
-            alt={nft.image}
-            src={`https://berry2.relayx.com/${nft.berry}`}
-            width="100%"
-            height="100%"
-            layout="responsive"
-            margin-top="100px"
-            border="10px solid #000"
-            resizeMode="contain"
-          />
-        )} */}
       </div>
 
       <div className="px-6 py-6">
