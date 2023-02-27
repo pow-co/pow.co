@@ -12,6 +12,7 @@ import Locales from '../context/LocalContext'
 import { Toaster } from 'react-hot-toast'
 import { BitcoinProvider } from '../context/BitcoinContext'
 import { TwetchProvider } from '../context/TwetchContext'
+import 'react-tooltip/dist/react-tooltip.css'
 
 import { init } from "@socialgouv/matomo-next";
 import { useEffect } from 'react'
