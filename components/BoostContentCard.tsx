@@ -14,6 +14,7 @@ import RelayClub from './RelayClub';
 import PostMedia from './PostMedia';
 import Linkify from 'linkify-react';
 import { useBitcoin } from '../context/BitcoinContext';
+import { Tooltip } from 'react-tooltip';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -146,6 +147,24 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                                 {/* {moment(createdAt).fromNow()} */}
                                 txid
                             </a>
+                            {/*tooltip*/}
+                            <Tooltip
+                            anchorSelect="#txid" 
+                            place="right" 
+                            className="dark:bg-gray-100 text-white dark:text-black italic"
+                            clickable
+                                
+                            >
+                                <a 
+                                href="https://learnmeabitcoin.com/technical/txid"
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e:any)=>e.stopPropagation()}
+                                >
+                                    What is a txid?
+                                </a>
+                                {/* <span>{content_txid}</span> */}
+                            </Tooltip>
 
                         </div>
                     <PostContent/>
