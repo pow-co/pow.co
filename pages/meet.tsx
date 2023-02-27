@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 
 
 
-const MINIMUM_POWCO_BALANCE = 100
+const MINIMUM_POWCO_BALANCE = 0
 
 const events = [
     'cameraError',
@@ -71,7 +71,7 @@ export default function MeetingPage() {
 
     const router = useRouter()
 
-    const { authenticate, authenticated, paymail, tokenBalance, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
 
     const [jitsiInitialized, setJitsiInitialized] = useState<boolean>()
 
@@ -87,7 +87,7 @@ export default function MeetingPage() {
 
         console.log('USE EFFECT', {nJitsis})
 
-        if (paymail && tokenBalance && tokenBalance >= MINIMUM_POWCO_BALANCE) {
+        if (relayxPaymail && tokenBalance && tokenBalance >= MINIMUM_POWCO_BALANCE) {
 
             // @ts-ignore
             if (!window.JitsiMeetExternalAPI) {
@@ -109,7 +109,7 @@ export default function MeetingPage() {
 
             axios.post('https://tokenmeet.live/api/v1/jaas/auth', {
                 wallet: 'relay',
-                paymail,
+                paymail: relayxPaymail,
                 token: relayAuthToken
             })
             .then(({data}) => {
@@ -209,12 +209,12 @@ export default function MeetingPage() {
 
         //TODO: Pipe the event to websocket server
 
-        console.log('JIITSI EVENT', {type, event, paymail})
+        console.log('JIITSI EVENT', {type, event, relayxPaymail})
 
         socket.emit('jitsi-event', {
             type,
             event,
-            paymail,
+            paymail: relayxPaymail,
             jwt: jitsiJWT,
             timestamp: new Date().toISOString(),
             roomName
@@ -230,7 +230,7 @@ export default function MeetingPage() {
                     app: 'chat.pow.co',
                     channel: 'powco-development',
                     message: event.message,
-                    paymail
+                    paymail: relayxPaymail
                 })
 
                 console.log('bsocial.sendMessage.result', result)
@@ -246,7 +246,7 @@ export default function MeetingPage() {
 
     const login = (e: any) => {
         e.preventDefault()
-        authenticate()
+        relayxAuthenticate()
     }
   return (
     <>
@@ -255,7 +255,7 @@ export default function MeetingPage() {
             <div className='mx-auto max-w-xl col-span-12 lg:col-span-6 min-h-screen flex flex-col'>
                 <h1 className='my-10 text-2xl font-bold text-center'>Daily Discussion of Boostpow Costly Signals</h1>
                 <div className=''>
-                    {authenticated ? 
+                    {relayxAuthenticated ? 
                         (<>
                             {tokenBalance > MINIMUM_POWCO_BALANCE ? 
                                 (<>

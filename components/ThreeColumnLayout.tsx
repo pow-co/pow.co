@@ -2,13 +2,14 @@ import React from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRelay } from '../context/RelayContext'
+import { useBitcoin } from '../context/BitcoinContext'
 const Header = dynamic(() => import('./Header'), { ssr: false})
 const SideBar = dynamic(() => import ('./SideBar'), { ssr: false })
 const SidebarTuning = dynamic(() => import('./SidebarTuning'), { ssr: false })
 const SidebarTopics = dynamic(() => import('./SidebarTopics'), { ssr: false })
 
 const ThreeColumnLayout = (props: { children: React.ReactNode }) => {
-  const { authenticated } = useRelay()
+  const { authenticated } = useBitcoin()
 
   const ToastTroubleShoot = () => {
     return (

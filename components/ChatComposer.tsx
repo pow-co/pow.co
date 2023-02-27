@@ -9,6 +9,7 @@ import { last } from "lodash";
 //import { useBap } from "../../context/bap";
 //import { useHandcash } from "../../context/handcash";
 import { useRelay } from "../context/RelayContext";
+import { useBitcoin } from "../context/BitcoinContext";
 //import { useActiveChannel } from "../../hooks";
 //import ChannelTextArea from "./ChannelTextArea";
 //import InvisibleSubmitButton from "./InvisibleSubmitButton";
@@ -17,7 +18,8 @@ import { useRelay } from "../context/RelayContext";
 const ChatComposer = () => {
   //const dispatch = useDispatch();
   // const user = useSelector((state) => state.session.user);
-  const { relayOne, paymail } = useRelay();
+  const { relayOne } = useRelay();
+  const { paymail } = useBitcoin()
 
   //const { profile, authToken, hcDecrypt } = useHandcash();
   //const { identity } = useBap();
