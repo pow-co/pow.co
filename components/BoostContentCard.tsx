@@ -49,6 +49,7 @@ export interface Ranking {
 }
 
 const BoostContentCard = ({ content_txid, content_type, content_text, count, difficulty, createdAt }: Ranking) => {
+    console.log("txid: ", content_txid);
     const author = null 
     const [isTwetch, setIsTwetch] = useState(false)
     const [isClub, setIsClub] = useState(false)
@@ -145,14 +146,14 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                                 rel="noreferrer"
                                 href={`https://whatsonchain.com/tx/${content_txid}`}
                                 className="text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500"
-                                id="txid"
+                                id={`_${content_txid}`}
                             >
                                 {/* {moment(createdAt).fromNow()} */}
                                 txid
                             </a>
                             {/*tooltip*/}
                             <Tooltip
-                            anchorSelect="#txid" 
+                            anchorSelect={`#_${content_txid}`} 
                             place="right" 
                             className="dark:bg-gray-100 text-white dark:text-black italic"
                             clickable
