@@ -1,7 +1,7 @@
 
 import io from 'socket.io-client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const tokenMeetLiveSocket = io('wss://tokenmeet.live', {
   transports: ['websocket']
@@ -107,4 +107,40 @@ const sendPing = () => {
       socket: powcoSocket
   }
 
+}
+
+export const useBMAPSocket = (url:string) => {
+  const socketRef = useRef<WebSocket | null>(null);
+
+  useEffect(() => {
+    // create a new WebSocket connection
+    socketRef.current = new WebSocket(`https://b.map.sv/s/${url}`);
+
+    // add event listeners for the WebSocket connection
+    socketRef.current.addEventListener("open", () => {
+      console.log("WebSocket connection opened");
+    });
+
+    socketRef.current.addEventListener("message", (event: any) => {
+      const message = JSON.parse(event.data);
+      console.log("New message:", message);
+      // update state to display the new message
+    });
+
+    socketRef.current.addEventListener("close", () => {
+      console.log("WebSocket connection closed");
+    });
+
+    return () => {
+      // close the WebSocket connection when the component unmounts
+      socketRef.current?.close();
+    };
+  }, [url]);
+
+  const sendMessage = (message: any) => {
+    // send a message to the WebSocket server
+    socketRef.current?.send(JSON.stringify(message));
+  };
+
+  return { sendMessage }
 }

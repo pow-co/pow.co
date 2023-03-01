@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { use, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import useSWR from "swr"
 import Header from '../../components/Header'
@@ -60,6 +60,8 @@ const Chat = () => {
   const query = router.query
   const channelId = query.channelId?.toString()
   const [isMobile, setIsMobile] = useState(false)
+  const [newMessages, setNewMessages] = useState<any>([])
+  const socketRef = useRef<EventSource | null>(null);
 
   const composerRef = useRef(null)
 
@@ -69,8 +71,6 @@ const Chat = () => {
       composerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, []); */
-  
-  
 
     useEffect(() => {
         const handleResize = () => {
@@ -85,6 +85,35 @@ const Chat = () => {
   console.log(data)
 
   const messages = data?.c || []
+
+  useEffect(() => {
+    setNewMessages([])
+    // create a new WebSocket connection
+    socketRef.current = new EventSource(`https://b.map.sv/s/${messageQuery(false, channelId, "", "")}`);
+
+    // add event listeners for the WebSocket connection
+    socketRef.current.addEventListener("open", () => {
+      console.log("WebSocket connection opened");
+    });
+
+    socketRef.current.addEventListener("message", (event: any) => {
+      const message = JSON.parse(event.data);
+      if(message.type === "push"){
+        let newMessage = message.data[0]
+        console.log("New Message: ",newMessage)
+        setNewMessages((prevMessages: any) => [newMessage, ...prevMessages])
+      }
+    });
+
+    socketRef.current.addEventListener("close", () => {
+      console.log("WebSocket connection closed");
+    });
+
+    return () => {
+      // close the WebSocket connection when the component unmounts
+      socketRef.current?.close();
+    };
+  }, [channelId]);
   return (
     <div className='bg-primary-300 dark:bg-primary-700/20 overflow-hidden h-screen'>
       <div className={`${query.channelId && "hidden sm:block"}`}>
@@ -116,6 +145,9 @@ const Chat = () => {
             <h2 className='ml-2 text-2xl font-bold'>{channelId}</h2>
           </div>
           <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: isMobile ? "calc(100vh - 148px)" : "calc(100vh - 206px)"}} >
+            {newMessages?.map((message: any) => {
+              return <MessageItem key={message.tx.h} {...message}/>
+            })}
             {messages?.map((message: any) => {
               return <MessageItem key={message.tx.h} {...message}/>
             })}

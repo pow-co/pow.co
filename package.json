@@ -50,7 +50,7 @@
     "simple-data-storage": "^1.0.0",
     "slate": "^0.88.1",
     "slate-react": "^0.88.2",
-    "socket.io-client": "^4.5.4",
+    "socket.io-client": "^4.6.1",
     "stag-relayx": "^0.2.10",
     "swr": "^2.0.0",
     "typescript": "4.9.4",
