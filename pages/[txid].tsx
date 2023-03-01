@@ -34,11 +34,11 @@ const RemarkableOptions = {
           return hljs.highlight(lang, str).value;
         } catch (err) {}
       }
-  
+
       try {
         return hljs.highlightAuto(str).value;
       } catch (err) {}
-  
+
       return ''; // use external default escaping
     } */
 }
@@ -64,6 +64,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { txid } = context.query
   const twetchResult = await twetchDetailQuery(txid?.toString())
   const relayResult = await relayDetailQuery(txid?.toString())
+
   let boostResult
   let comments: any =[]
   try {
@@ -80,7 +81,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   } catch (error) {
     boostResult=null
   }
-  
+
   return {
     props: {
       twetch: twetchResult,
@@ -161,8 +162,8 @@ export default function DetailPage({ twetch, relay, boost, replies }: any) {
       </div>
     </ThreeColumnLayout>)
   }
-  
-  
+
+
   return (
     <>
     <ThreeColumnLayout>
@@ -198,7 +199,7 @@ export default function DetailPage({ twetch, relay, boost, replies }: any) {
               <div className={`col-span-${author? 11 : 12} ml-6`}>
                 <div className='flex'>
                   {author && (
-                  <div 
+                  <div
                       onClick={(e:any) => e.stopPropagation()}
                       className="text-base leading-4 font-bold text-gray-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis hover:underline"
                   >
@@ -260,16 +261,16 @@ export default function DetailPage({ twetch, relay, boost, replies }: any) {
                         onSuccess={handleBoostSuccess}
                     />
                 </div>
-              </div> 
+              </div>
             </div>
           </div>
         )}
-        {query.txid && 
+        {query.txid &&
           <div className="mt-1 bg-primary-100 dark:bg-primary-600/20 px-4 pt-2 pb-1 sm:last:rounded-b-lg">
             <CommentComposer replyTx={query.txid?.toString()}/>
           </div>}
         {twetch?.postsByReplyPostId.edges.map((t:any)=>{
-          
+
           return <TwetchCard key={t.node.transaction} {...t.node}/>
         })}
         {replies.map((reply:BMAPData)=>{
