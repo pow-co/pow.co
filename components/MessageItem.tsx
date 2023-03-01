@@ -6,10 +6,24 @@ import { BoostButton } from "myboostpow-lib";
 import { useBitcoin } from "../context/BitcoinContext";
 import moment from "moment";
 import { useTheme } from "next-themes";
+import { useMemo } from "react";
 
 export const MessageItem = (props:any) => {
     const { wallet } = useBitcoin()
     const theme = useTheme()
+
+    const avatar = useMemo(() => {
+        switch (true) {
+          case props.MAP.paymail.includes("relayx"):
+            return `https://a.relayx.com/u/${props.MAP.paymail}`;
+          case props.MAP.paymail.includes("twetch"):
+            return `https://auth.twetch.app/api/v2/users/${props.MAP.paymail.split("@")[0]}/icon`
+          case props.MAP.paymail.includes("handcash"):
+            return `https://cloud.handcash.io/v2/users/profilePicture/${props.MAP.paymail.split("@")[0]}`
+          default:
+            return "https://a.relayx.com/u/0";
+        }
+      }, [props.MAP.paymail]);
 
     const handleBoostLoading = () => {
       toast('Publishing Your Boost Job to the Network', {
@@ -47,7 +61,7 @@ export const MessageItem = (props:any) => {
       <div className='group grid grid-cols-12 bg-primary-300 dark:bg-primary-700/20 py-4 cursor-pointer hover:bg-primary-200 hover:dark:bg-primary-800/20'>
         <Link className='col-span-2 sm:col-span-1 flex justify-center' href={`/profile/${props.MAP.paymail}`}>
           <div className='cursor-pointer'>
-            <UserIcon src={`https://a.relayx.com/u/${props.MAP.paymail}`} size={36}/>
+            <UserIcon src={avatar} size={36}/>
           </div>
         </Link>
         <div className='col-span-10 sm:col-span-11 flex flex-col justify-center w-full'>
