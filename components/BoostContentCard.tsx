@@ -13,6 +13,8 @@ import { useTheme } from 'next-themes';
 import RelayClub from './RelayClub';
 import PostMedia from './PostMedia';
 import Linkify from 'linkify-react';
+import { Tooltip } from 'react-tooltip'
+
 import { useBitcoin } from '../context/BitcoinContext';
 const Markdown = require('react-remarkable')
 
@@ -47,6 +49,7 @@ export interface Ranking {
 }
 
 const BoostContentCard = ({ content_txid, content_type, content_text, count, difficulty, createdAt }: Ranking) => {
+    console.log("txid: ", content_txid);
     const author = null 
     const [isTwetch, setIsTwetch] = useState(false)
     const [isClub, setIsClub] = useState(false)
@@ -137,16 +140,35 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             </div>
                             )}
                             <div className='grow'/>
+                            
                             <a  onClick={(e:any)=>e.stopPropagation()}
                                 target="_blank"
                                 rel="noreferrer"
                                 href={`https://whatsonchain.com/tx/${content_txid}`}
                                 className="text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500"
+                                id={`_${content_txid}`}
                             >
                                 {/* {moment(createdAt).fromNow()} */}
                                 txid
                             </a>
-
+                            {/*tooltip*/}
+                            <Tooltip
+                            anchorSelect={`#_${content_txid}`} 
+                            place="right" 
+                            className="dark:bg-gray-100 text-white dark:text-black italic"
+                            clickable
+                                
+                            >
+                                <a 
+                                href="https://learnmeabitcoin.com/technical/txid"
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e:any)=>e.stopPropagation()}
+                                >
+                                    What is a txid?
+                                </a>
+                                {/* <span>{content_txid}</span> */}
+                            </Tooltip>
                         </div>
                     <PostContent/>
                     <div className='flex w-full px-16'>
