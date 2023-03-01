@@ -192,7 +192,7 @@ const Chat = () => {
             })}
           </div>
           <div ref={composerRef} className='sticky bottom-0 p-4'>
-            <ChatComposer/>
+            <ChatComposer channelId={channelId!}/>
           </div>
         </div>
         {/* <div className={`${query.channelId ? "hidden lg:block lg:col-span-3" : "hidden"}  bg-primary-100 dark:bg-primary-900/20`}>

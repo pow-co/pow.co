@@ -10,22 +10,26 @@ import { last } from "lodash";
 //import { useHandcash } from "../../context/handcash";
 import { useRelay } from "../context/RelayContext";
 import { useBitcoin } from "../context/BitcoinContext";
+import { useRouter } from "next/router";
+import axios from "axios";
 //import { useActiveChannel } from "../../hooks";
 //import ChannelTextArea from "./ChannelTextArea";
 //import InvisibleSubmitButton from "./InvisibleSubmitButton";
 
-
-const ChatComposer = () => {
+interface ChatComposerProps {
+  channelId: string;
+}
+const ChatComposer = ({ channelId }: ChatComposerProps) => {
   //const dispatch = useDispatch();
   // const user = useSelector((state) => state.session.user);
   const { relayOne } = useRelay();
   const { paymail } = useBitcoin()
+  
 
   //const { profile, authToken, hcDecrypt } = useHandcash();
   //const { identity } = useBap();
 
   //const activeChannel = useActiveChannel();
-  const channelId = "askbitcoin"//duplicate on chatcomposer//last(window.location.pathname.split("/"));
   let timeout = undefined;
 
   const handleSubmit = useCallback(
@@ -48,7 +52,7 @@ const ChatComposer = () => {
         event.target.reset();
       }
     },
-    [paymail]
+    [paymail, channelId]
     //[activeChannel, paymail, profile]
   );
 
@@ -63,7 +67,7 @@ const ChatComposer = () => {
           MAP_PREFIX, // MAP Prefix
           "SET",
           "app",
-          "pow.co",
+          "chat.pow.co",
           "type",
           "message",
           "paymail",
@@ -82,10 +86,13 @@ const ChatComposer = () => {
               .join(" ")
         );
         let outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
-        let resp = await relayOne!.send({ outputs });
+        let { rawTx, txid } = await relayOne!.send({ outputs });
 
-        console.log("Sent", resp);
-        let txid = resp.txid;
+        console.log("Sent", txid);
+        const bMapResult = await axios.post('https://b.map.sv/ingest', {
+            rawTx: rawTx
+            })
+        
     },
     [relayOne]//[identity, relayOne, authToken]
   );
@@ -137,7 +144,7 @@ const ChatComposer = () => {
           name="msg_content"
           autoComplete="off"
           className="flex flex-col p-3 rounded-lg sm:rounded-xl  bg-gray-200  dark:bg-gray-600 w-full focus:outline-none"
-          placeholder="Message in askbitcoin chat"
+          placeholder={`Message in ${channelId} chat`}
           onKeyUp={handleKeyUp}
           onKeyDown={handleKeyDown}
         />
