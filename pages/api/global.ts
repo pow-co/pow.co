@@ -79,7 +79,7 @@ export default async function global(req: NextApiRequest, res: NextApiResponse) 
   });
 
   try {
-    const result = await graphqlClient.request(query, { cursor });
+    const result : any = await graphqlClient.request(query, { cursor });
     res.status(200).json({
       edges: result.allPosts.edges,
       pageInfo: result.allPosts.pageInfo,
