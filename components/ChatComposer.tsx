@@ -12,6 +12,7 @@ import { useRelay } from "../context/RelayContext";
 import { useBitcoin } from "../context/BitcoinContext";
 import { useRouter } from "next/router";
 import axios from "axios";
+import TwetchWeb3 from "@twetch/web3";
 //import { useActiveChannel } from "../../hooks";
 //import ChannelTextArea from "./ChannelTextArea";
 //import InvisibleSubmitButton from "./InvisibleSubmitButton";
@@ -23,7 +24,7 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
   //const dispatch = useDispatch();
   // const user = useSelector((state) => state.session.user);
   const { relayOne } = useRelay();
-  const { paymail } = useBitcoin()
+  const { paymail, wallet } = useBitcoin()
   
 
   //const { profile, authToken, hcDecrypt } = useHandcash();
@@ -52,11 +53,11 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
         event.target.reset();
       }
     },
-    [paymail, channelId]
+    [paymail, wallet, channelId]
     //[activeChannel, paymail, profile]
   );
 
-  const sendMessage = useCallback(
+  const sendMessage = 
     async (pm: string, content: string, channel:string) => {
         let dataPayload = [
           B_PREFIX, // B Prefix
@@ -85,17 +86,39 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
               .map((str) => bops.to(bops.from(str, "utf8"), "hex"))
               .join(" ")
         );
-        let outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
-        let { rawTx, txid } = await relayOne!.send({ outputs });
+        let outputs
+        switch (wallet){
+          case "relayx":
+            outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
+            let { rawTx, txid } = await relayOne!.send({ outputs });
 
-        console.log("Sent", txid);
-        const bMapResult = await axios.post('https://b.map.sv/ingest', {
-            rawTx: rawTx
+            console.log("Sent", txid);
+            await axios.post('https://b.map.sv/ingest', {
+                rawTx: rawTx
             })
+            break;
+          case "twetch":
+            outputs = [{
+              sats:0,
+              script: script.toASM(),
+              address: null
+            }]
+            const resp = await TwetchWeb3.abi({
+              contract: "payment",
+              outputs: outputs
+            })
+            await axios.post('https://b.map.sv/ingest', {
+              rawTx: resp.rawtx
+            })
+            break;
+          case "handcash":
+            break;
+          default:
+            console.log("no wallet selected")
+        }
         
-    },
-    [relayOne]//[identity, relayOne, authToken]
-  );
+        
+    }
 
   //const typingUser = useSelector((state) => state.chat.typingUser);
 
