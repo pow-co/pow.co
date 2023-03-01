@@ -141,7 +141,10 @@ const Chat = () => {
                 d="M15.75 19.5L8.25 12l7.5-7.5"
               />
             </svg>
-            <UserIcon src={`https://a.relayx.com/u/${paymail}`} size={36}/>
+            {/* <UserIcon src={`https://a.relayx.com/u/${paymail}`} size={36}/> */}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5l-3.9 19.5m-2.1-19.5l-3.9 19.5" />
+            </svg>
             <h2 className='ml-2 text-2xl font-bold'>{channelId}</h2>
           </div>
           <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: isMobile ? "calc(100vh - 148px)" : "calc(100vh - 206px)"}} >

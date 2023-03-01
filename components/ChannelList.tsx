@@ -20,7 +20,10 @@ const ChannelList = () => {
         return (
             <div onClick={navigate} className={`cursor-pointer grid grid-cols-12 items-center py-1 ${props.selected ? "bg-blue-100" : "bg-primary-100"} ${props.selected ? "dark:bg-blue-600/20" : "dark:bg-primary-600/20"} hover:bg-primary-200 hover:dark:bg-primary-900/20`}>
                 <div className='col-span-2 flex justify-center'>
-                    <UserIcon src={`https://a.relayx.com/u/${props.creator}`} size={36}/>
+                    {/* <UserIcon src={`https://a.relayx.com/u/${props.creator}`} size={36}/> */}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5l-3.9 19.5m-2.1-19.5l-3.9 19.5" />
+                    </svg>
                 </div>
                 <div className='col-span-8'>
                     <h2 className='text-lg truncate font-semibold'>{props.channel}</h2>
