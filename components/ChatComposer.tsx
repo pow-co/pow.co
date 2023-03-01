@@ -130,7 +130,7 @@ const ChatComposer = () => {
   };
 
   return (
-    <div className="my-2 sm:my-5 ">
+    <div className="">
       <form onSubmit={handleSubmit} autoComplete="off">
         <input
           type="text"

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { useRouter } from 'next/router';
-import React from 'react'
+import React, { useEffect, useState} from 'react'
 import useSWR, { Fetcher} from "swr";
 import UserIcon from './UserIcon';
 
@@ -65,7 +65,7 @@ const ChannelList = () => {
 
       const channels = data?.c || []
   return (
-    <div className='flex flex-col h-screen overflow-y-hidden'>
+    <div className='flex flex-col  overflow-hidden'>
         <div className='sticky w-full z-10 flex p-4 bg-primary-300 dark:bg-primary-800/20'>
           <div className="text-sm leading-4 py-2 px-3 text-gray-900 dark:text-white bg-primary-100 dark:bg-primary-600/20 font-medium mr-2 cursor-pointer rounded-md whitespace-nowrap">
             Channels
@@ -74,7 +74,7 @@ const ChannelList = () => {
             Direct Messages
           </div>
         </div>
-        <div className='relative overflow-y-auto'>
+        <div id="scrollable" className='relative overflow-y-auto' style={{height:"calc(100vh - 128px)"}}>
             {channels.map((channel: any)=> {
                 return <ChannelItem key={channel._id} {...channel} selected={query.channelId === channel._id}/>
             })}
