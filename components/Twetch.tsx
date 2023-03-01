@@ -66,7 +66,7 @@ export const twetchDetailQuery = async (txid: string | undefined) => {
   `;
 
   //const result = await graphqlClient.request(query, { txid });
-  const result = await request(graphqlAPI, query, { txid });
+  const result : any = await request(graphqlAPI, query, { txid });
 
   if (!result?.allPosts?.edges || result?.allPosts?.edges.length === 0) {
     return null

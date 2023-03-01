@@ -10,22 +10,27 @@ import { last } from "lodash";
 //import { useHandcash } from "../../context/handcash";
 import { useRelay } from "../context/RelayContext";
 import { useBitcoin } from "../context/BitcoinContext";
+import { useRouter } from "next/router";
+import axios from "axios";
+import TwetchWeb3 from "@twetch/web3";
 //import { useActiveChannel } from "../../hooks";
 //import ChannelTextArea from "./ChannelTextArea";
 //import InvisibleSubmitButton from "./InvisibleSubmitButton";
 
-
-const ChatComposer = () => {
+interface ChatComposerProps {
+  channelId: string;
+}
+const ChatComposer = ({ channelId }: ChatComposerProps) => {
   //const dispatch = useDispatch();
   // const user = useSelector((state) => state.session.user);
   const { relayOne } = useRelay();
-  const { paymail } = useBitcoin()
+  const { paymail, wallet } = useBitcoin()
+  
 
   //const { profile, authToken, hcDecrypt } = useHandcash();
   //const { identity } = useBap();
 
   //const activeChannel = useActiveChannel();
-  const channelId = "askbitcoin"//duplicate on chatcomposer//last(window.location.pathname.split("/"));
   let timeout = undefined;
 
   const handleSubmit = useCallback(
@@ -48,11 +53,11 @@ const ChatComposer = () => {
         event.target.reset();
       }
     },
-    [paymail]
+    [paymail, wallet, channelId]
     //[activeChannel, paymail, profile]
   );
 
-  const sendMessage = useCallback(
+  const sendMessage = 
     async (pm: string, content: string, channel:string) => {
         let dataPayload = [
           B_PREFIX, // B Prefix
@@ -63,7 +68,7 @@ const ChatComposer = () => {
           MAP_PREFIX, // MAP Prefix
           "SET",
           "app",
-          "pow.co",
+          "chat.pow.co",
           "type",
           "message",
           "paymail",
@@ -81,14 +86,39 @@ const ChatComposer = () => {
               .map((str) => bops.to(bops.from(str, "utf8"), "hex"))
               .join(" ")
         );
-        let outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
-        let resp = await relayOne!.send({ outputs });
+        let outputs
+        switch (wallet){
+          case "relayx":
+            outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
+            let { rawTx, txid } = await relayOne!.send({ outputs });
 
-        console.log("Sent", resp);
-        let txid = resp.txid;
-    },
-    [relayOne]//[identity, relayOne, authToken]
-  );
+            console.log("Sent", txid);
+            await axios.post('https://b.map.sv/ingest', {
+                rawTx: rawTx
+            })
+            break;
+          case "twetch":
+            outputs = [{
+              sats:0,
+              script: script.toASM(),
+              address: null
+            }]
+            const resp = await TwetchWeb3.abi({
+              contract: "payment",
+              outputs: outputs
+            })
+            await axios.post('https://b.map.sv/ingest', {
+              rawTx: resp.rawtx
+            })
+            break;
+          case "handcash":
+            break;
+          default:
+            console.log("no wallet selected")
+        }
+        
+        
+    }
 
   //const typingUser = useSelector((state) => state.chat.typingUser);
 
@@ -130,14 +160,14 @@ const ChatComposer = () => {
   };
 
   return (
-    <div className="my-2 sm:my-5 ">
+    <div className="">
       <form onSubmit={handleSubmit} autoComplete="off">
         <input
           type="text"
           name="msg_content"
           autoComplete="off"
           className="flex flex-col p-3 rounded-lg sm:rounded-xl  bg-gray-200  dark:bg-gray-600 w-full focus:outline-none"
-          placeholder="Message in askbitcoin chat"
+          placeholder={`Message in ${channelId} chat`}
           onKeyUp={handleKeyUp}
           onKeyDown={handleKeyDown}
         />

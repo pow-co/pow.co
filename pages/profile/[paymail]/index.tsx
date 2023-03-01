@@ -66,7 +66,7 @@ export const relayFeedQuery = async (feed: string) => {
           __typename
         }
       }`
-      const result = await request(graphqlAPI, query, { feed })
+      const result: any = await request(graphqlAPI, query, { feed })
 
       return result.club
 }
