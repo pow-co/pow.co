@@ -107,7 +107,7 @@ export const relayDetailQuery = async (txid: string | undefined) => {
   const result = await request(graphqlAPI, query, { txid });
 
 
-  return result.post
+  return result?.post
 };
 
 
