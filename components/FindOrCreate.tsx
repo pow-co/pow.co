@@ -27,8 +27,6 @@ const FindOrCreate = () => {
         const matchBitcoin = BITCOIN_TXN_REGEX.test(url)
         const matchTwetch = TWETCH_TXN_REGEX.test(url)
         const matchRelay = RELAY_CLUB_TXN_REGEX.test(url)
-        console.log(matchTwetch, matchRelay, matchBitcoin)
-
 
         if (matchBitcoin){
             router.prefetch(`/${url}`)
@@ -40,26 +38,40 @@ const FindOrCreate = () => {
             router.prefetch(`/${txid}`)
             router.push(`/${txid}`)
         } else {
-            const [result, isNew] = await stag.onchain.findOrCreate({
-                where: {
-                    app: 'pow.co',
-                    type: 'url',
-                    content: {
-                        url: url
+            try {
+                const [result, isNew] = await stag.onchain.findOrCreate({
+                    where: {
+                        app: 'pow.co',
+                        type: 'url',
+                        content: {
+                            url: url
+                        }
+                    },
+                    defaults: {
+                        app: 'pow.co',
+                        type: 'url',
+                        content: {
+                            url: url
+                        }
                     }
+                })
+    
+                console.log(result, isNew)
+                router.prefetch(`/${result.txid}`)
+                router.push(`/${result.txid}`)
+                
+            } catch (error) {
+                console.log(error)
+                toast('Error!', {
+                icon: '🐛',
+                style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
                 },
-                defaults: {
-                    app: 'pow.co',
-                    type: 'url',
-                    content: {
-                        url: url
-                    }
-                }
-            })
-
-            console.log(result, isNew)
-            router.prefetch(`/${result.txid}`)
-            router.push(`/${result.txid}`)
+                });
+                
+            }
             
         }
       };
