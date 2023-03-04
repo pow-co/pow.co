@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import ThreeColumnLayout from "../components/ThreeColumnLayout"
 import Loader from "../components/Loader"
 import { useTuning } from "../context/TuningContext"
@@ -60,46 +61,47 @@ const queryComments = (replyTx: string) => {
   }
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { txid } = context.query
-  const twetchResult = await twetchDetailQuery(txid?.toString())
-  const relayResult = await relayDetailQuery(txid?.toString())
 
-  let boostResult
-  let comments: any =[]
-  try {
-    const queryB64 = txid && btoa(JSON.stringify(queryComments(txid?.toString())))
-    const commentsResponse = await axios.get(`https://b.map.sv/q/${queryB64}`)
-    comments = commentsResponse.data.c
-  } catch (error) {
-    console.log(error)
-  }
-
-  try {
-    const boostResponse = await axios.get(`https://pow.co/api/v1/content/${txid}`)
-    boostResult=boostResponse.data
-  } catch (error) {
-    boostResult=null
-  }
-
-  return {
-    props: {
-      twetch: twetchResult,
-      relay: relayResult,
-      boost: boostResult,
-      replies: comments
-    }
-  }
-}
-
-
-export default function DetailPage({ twetch, relay, boost, replies }: any) {
+export default function DetailPage() {
   const { startTimestamp } = useTuning()
+  const [loading, setLoading] = useState(false)
+  const [twetch, setTwetch] = useState<any>(null)
+  const [relay, setRelay] = useState<any>(null)
+  const [boost, setBoost] = useState<any>(null)
+  const [replies, setReplies] = useState<any>(null)
   const router = useRouter()
   const theme = useTheme()
   const query = router.query
   const author = null
   const { wallet } = useBitcoin()
+
+  useEffect(() => {
+    setLoading(true)
+    getData().then((res) => {
+      setTwetch(res.twetchResult)
+      setRelay(res.relayResult)
+      setBoost(res.boostResult)
+      setReplies(res.comments)
+      setLoading(false)
+    })
+  },[])
+
+  const getData = async () => {
+    const [twetchResult, relayResult, boostResponse, commentsResponse] = await Promise.all([
+      twetchDetailQuery(query.txid?.toString()),
+      relayDetailQuery(query.txid?.toString()),
+      axios.get(`https://pow.co/api/v1/content/${query.txid}`).catch((error) => null),
+      axios.get(`https://b.map.sv/q/${query.txid && btoa(JSON.stringify(queryComments(query.txid?.toString())))}`)
+        .catch((error) => ({ data: { c: [] } })),
+    ]);
+  
+    const boostResult = boostResponse ? boostResponse.data : null;
+    const comments = commentsResponse.data.c || [];
+  
+    return { twetchResult, relayResult, boostResult, comments } 
+
+  }
+
   let content;
   /* from youtube Link {
     "id": 1783,
@@ -154,6 +156,18 @@ export default function DetailPage({ twetch, relay, boost, replies }: any) {
         },
     });
   };
+
+  if (loading){
+    return (
+      <>
+      <ThreeColumnLayout>
+        <div className="mt-5 lg:mt-10">
+          <Loader/>
+        </div>
+      </ThreeColumnLayout>
+      </>
+    )
+  }
 
   if(!twetch && !relay && !boost) {
     return (<ThreeColumnLayout>
