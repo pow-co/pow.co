@@ -49,7 +49,6 @@ export interface Ranking {
 }
 
 const BoostContentCard = ({ content_txid, content_type, content_text, count, difficulty, createdAt }: Ranking) => {
-    console.log("txid: ", content_txid);
     const author = null 
     const [isTwetch, setIsTwetch] = useState(false)
     const [isClub, setIsClub] = useState(false)

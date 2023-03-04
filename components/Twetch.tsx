@@ -175,8 +175,6 @@ export const TwetchCard = (props:any) => {
     router.push(`/${props.txid}`)
   }
 
-  console.log("twetch",props)
-
   return (
     <div onClick={navigate}  className='cursor-pointer col-span-12 px-4 pt-4 pb-1  bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 mt-1 hover:dark:sm:bg-primary-500/20 sm:first:rounded-t-lg sm:last:rounded-b-lg'>
       <div className='mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer'>
