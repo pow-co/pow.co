@@ -172,7 +172,7 @@ export const TwetchCard = (props:any) => {
   const navigate = (e:any) => {
     e.preventDefault()
     e.stopPropagation()
-    router.push(`/${props.txid}`)
+    router.push(`/${props.transaction}`)
   }
 
   return (
