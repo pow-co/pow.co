@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useState } from "react";
 
 import nimble from "@runonbitcoin/nimble";
 //import { BAP } from "bitcoin-bap";
@@ -25,6 +25,8 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
   // const user = useSelector((state) => state.session.user);
   const { relayOne } = useRelay();
   const { paymail, wallet } = useBitcoin()
+  const [inputValue, setInputValue] = useState("")
+  const [sending, setSending] = useState(false)
   
 
   //const { profile, authToken, hcDecrypt } = useHandcash();
@@ -33,29 +35,25 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
   //const activeChannel = useActiveChannel();
   let timeout = undefined;
 
-  const handleSubmit = useCallback(
-    async (event: any) => {
-      //console.log(event)
+  const handleSubmit = async (event: any) => {
       event.preventDefault()
       if (!paymail){
         alert("Please, connect your wallet")
           return
       }
-
-      const content = event.target.msg_content.value;
+      const content = inputValue
 
       if (content !== "" && paymail) {
+        setInputValue("")
+        setSending(true)
         await sendMessage(
-          paymail,
+          paymail!,
           content,
           channelId //activeChannel?.channel || channelId || null
-        );
+        ).then(()=>setSending(false));
         event.target.reset();
       }
-    },
-    [paymail, wallet, channelId]
-    //[activeChannel, paymail, profile]
-  );
+  }
 
   const sendMessage = 
     async (pm: string, content: string, channel:string) => {
@@ -159,15 +157,22 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
     }
   };
 
+  const handleChange = (e:any) => {
+    e.preventDefault()
+    setInputValue(e.target.value)
+  }
+
   return (
     <div className="">
       <form onSubmit={handleSubmit} autoComplete="off">
         <input
           type="text"
           name="msg_content"
+          value={inputValue}
+          onChange={handleChange}
           autoComplete="off"
           className="flex flex-col p-3 rounded-lg sm:rounded-xl  bg-gray-200  dark:bg-gray-600 w-full focus:outline-none"
-          placeholder={`Message in ${channelId} chat`}
+          placeholder={`${sending ? "Sending..." : `Message in ${channelId} chat`}`}
           onKeyUp={handleKeyUp}
           onKeyDown={handleKeyDown}
         />
