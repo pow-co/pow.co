@@ -132,11 +132,14 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
           position: "relative",
         }}
       >
-        <img
-          alt="berry"
-          src={`https://berry.relayx.com/${nft?.item?.berry?.txid}`}
-          className="rounded-t-lg object-cover object-center"
-        />
+{/* Use Image instead of img */}
+        <Image
+            alt="berry"
+            src={nft?.item?.berry?.txid ? `https://berry.relayx.com/${nft?.item?.berry?.txid}` : `https://berry.relayx.com/${nft?.token?.icon?.berry}`}
+            className="rounded-t-lg object-cover object-center"
+            width={320}
+            height={320}
+            />
       </div>
 
       <div className="px-6 my-2">
