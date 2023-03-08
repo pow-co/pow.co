@@ -2,7 +2,7 @@
 import { request } from 'graphql-request'
 import moment from 'moment';
 import { toast } from 'react-hot-toast';
-import { BoostButton } from 'myboostpow-lib';
+import { BoostButton } from 'boostpow-button';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 const graphqlAPI = "https://gw.twetch.app";

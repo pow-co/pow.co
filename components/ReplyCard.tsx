@@ -4,7 +4,7 @@ import UserIcon from './UserIcon';
 import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import { toast } from 'react-hot-toast';
-import { BoostButton } from 'myboostpow-lib';
+import { BoostButton } from 'boostpow-button';
 import { useBitcoin } from '../context/BitcoinContext';
 
 export interface BMAPData {

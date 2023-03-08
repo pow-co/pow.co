@@ -4,7 +4,7 @@ import Loader from "../components/Loader"
 import { useTuning } from "../context/TuningContext"
 import { useAPI } from "../hooks/useAPI"
 import BoostContentCard from "../components/BoostContentCard";
-import { BoostButton } from "myboostpow-lib";
+import { BoostButton } from "boostpow-button";
 import { Ranking } from "../components/BoostContentCard";
 import { toast } from "react-hot-toast"
 import { useRouter } from "next/router";

@@ -13,7 +13,7 @@ import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import YouTube from 'react-youtube';
 import { ReactNode } from 'react';
-import { BoostButton } from 'myboostpow-lib';
+import { BoostButton } from 'boostpow-button';
 import { useRouter } from 'next/router';
 import { useBitcoin } from '../context/BitcoinContext';
 

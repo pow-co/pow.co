@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { BoostButton } from 'myboostpow-lib';
+import { BoostButton } from 'boostpow-button';
 import React, { useEffect, useState } from 'react';
 
 import { toast } from 'react-hot-toast';

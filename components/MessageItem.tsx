@@ -2,7 +2,7 @@ import { toast } from "react-hot-toast";
 import Link from "next/link";
 import UserIcon from "./UserIcon";
 import PostDescription from "./PostDescription";
-import { BoostButton } from "myboostpow-lib";
+import { BoostButton } from "boostpow-button";
 import { useBitcoin } from "../context/BitcoinContext";
 import moment from "moment";
 import { useTheme } from "next-themes";
