@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import axios from 'axios';
 import { useRelay } from "../context/RelayContext";
 import { useBitcoin } from "../context/BitcoinContext";
 import { toast } from "react-hot-toast";
