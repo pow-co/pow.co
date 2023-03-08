@@ -88,6 +88,10 @@ const Chat = () => {
 
   useEffect(() => {
     setNewMessages([])
+  },[data])
+
+  useEffect(() => {
+    setNewMessages([])
     // create a new WebSocket connection
     socketRef.current = new EventSource(`https://b.map.sv/s/${messageQuery(false, channelId, "", "")}`);
 
