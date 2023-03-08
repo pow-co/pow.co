@@ -12,7 +12,7 @@ import Gist from "react-gist";
 import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import YouTube from 'react-youtube';
-
+import NFTItemCard from './NFTItemCard';
 
 const customFetcher = async (url: string) => {
     const response = await fetch(`https://link-preview-proxy.pow.co/v2?url=${url}`);
@@ -30,9 +30,13 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       var [event] = data.events
     }
 
+    const marketId = event?.content?.url?.split('/')[4]
+    const itemId = event?.content?.url?.split('/')[5]
+
     // Check if the event is a RelayX Marketplace Link and fetch the NFT data
     const relayItemOrigin = event?.content?.url?.split('/').pop()
     const {data: nftData} =  useSWR(`https://staging-backend.relayx.com/api/market/${relayItemOrigin}`, fetcher)
+    const {data: nftItemData} =  useSWR(`https://staging-backend.relayx.com/api/market/${marketId}/items/${itemId}`, fetcher)
 
     if (isLoading){
       return (
@@ -135,6 +139,11 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       const url = event.content.url || event.content
 
       console.log(url)
+
+      // Check if it's a RelayX item link
+      if (url.match('https://relayx.com/assets/')) {
+        return <NFTItemCard nft={nftItemData?.data} />
+      }
 
       // 1. check if url is youtube
       const youtubeLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
