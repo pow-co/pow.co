@@ -4,7 +4,7 @@ import moment from 'moment';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import Link from 'next/link';
-import { BoostButton } from 'myboostpow-lib';
+import { BoostButton } from 'boostpow-button';
 const graphqlAPI = "https://graphql.relayx.com";
 
 export const relayDetailQuery = async (txid: string | undefined) => {

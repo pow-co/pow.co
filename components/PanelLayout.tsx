@@ -14,7 +14,7 @@ const PanelLayout = (props: { children: React.ReactNode }) => {
             <SideBar/>
           </div>
         </div>
-        <div className='col-span-12 lg:col-span-10 min-h-screen'>
+        <div className='col-span-12 lg:col-span-10' style={{height: 'calc(100vh - 64px)'}}>
           {props.children}
         </div>
       </div>
