@@ -63,72 +63,72 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
   const { wallet } = useBitcoin();
   const router = useRouter()
 
-  // const buyItem = async () => {
-  //   const ownerResponse = await relayOne!.alpha.run.getOwner();
+  const buyItem = async () => {
+    const ownerResponse = await relayOne!.alpha.run.getOwner();
 
-  //   try {
-  //     const response = await axios.post(
-  //       "https://staging-backend.relayx.com/api/dex/buy2",
-  //       {
-  //         buyer: ownerResponse,
-  //         cls: nft.token.location,
-  //         location: nft.item.location,
-  //       }
-  //     );
+    try {
+      const response = await axios.post(
+        "https://staging-backend.relayx.com/api/dex/buy2",
+        {
+          buyer: ownerResponse,
+          cls: nft.token.location,
+          location: nft.item.location,
+        }
+      );
 
-  //     const sendResponse = await relayOne!.send(response.data.data.rawtx);
-  //     console.log(sendResponse);
-  //     return sendResponse;
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw error;
-  //   }
-  // };
+      const sendResponse = await relayOne!.send(response.data.data.rawtx);
+      console.log(sendResponse);
+      return sendResponse;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
 
-  // const handleBuy = async (e: any) => {
-  //   e.preventDefault();
-  //   if (wallet !== "relayx") {
-  //     toast("Cannot buy run NFTs with Twetch Wallet. Please switch to RelayX", {
-  //       icon: "🛑",
-  //       style: {
-  //         borderRadius: "10px",
-  //         background: "#333",
-  //         color: "#fff",
-  //       },
-  //     });
-  //     return;
-  //   }
-  //   toast("Publishing Your Buy Order to the Network", {
-  //     icon: "⛏️",
-  //     style: {
-  //       borderRadius: "10px",
-  //       background: "#333",
-  //       color: "#fff",
-  //     },
-  //   });
-  //   try {
-  //     const resp = await buyItem();
-  //     toast("Success!", {
-  //       icon: "✅",
-  //       style: {
-  //         borderRadius: "10px",
-  //         background: "#333",
-  //         color: "#fff",
-  //       },
-  //     });
-  //     router.reload();
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast("Error!", {
-  //       icon: "🐛",
-  //       style: {
-  //         borderRadius: "10px",
-  //         background: "#333",
-  //         color: "#fff",
-  //       },
-  //     });
-  //   }
-  // };
+  const handleBuy = async (e: any) => {
+    e.preventDefault();
+    if (wallet !== "relayx") {
+      toast("Cannot buy run NFTs with Twetch Wallet. Please switch to RelayX", {
+        icon: "🛑",
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      return;
+    }
+    toast("Publishing Your Buy Order to the Network", {
+      icon: "⛏️",
+      style: {
+        borderRadius: "10px",
+        background: "#333",
+        color: "#fff",
+      },
+    });
+    try {
+      const resp = await buyItem();
+      toast("Success!", {
+        icon: "✅",
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+      router.reload();
+    } catch (error) {
+      console.log(error);
+      toast("Error!", {
+        icon: "🐛",
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+    }
+  };
 
   return (
     <div className="max-w-md rounded overflow-hidden shadow-lg mx-auto bg-white hover:shadow-xl">
@@ -144,12 +144,12 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
           width={320}
           height={320}
         />
-        <div className="absolute top-0 right-0 bg-blue-500 text-white p-2 font-bold">
+        <div className="absolute top-0 right-0 bg-purple-500 text-white p-2 font-bold">
           #{nft?.item?.props?.no}
         </div>
       </div>
       <div className="px-6 py-4">
-        <div className="font-bold text-xl mb-2 hover:text-blue-300">
+        <div className="font-bold text-xl mb-2 text-purple-500">
           <a
             href={`https://relayx.com/market/${nft?.token?.origin}`}
             target="_blank"
@@ -161,23 +161,31 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
         <p className="text-gray-700 text-base">{nft?.token?.description}</p>
       </div>
       <div className="px-6 pt-4 pb-2">
-        <span className="inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-blue-300">
+        <span className="inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-purple-300">
           Creator: {`${nft?.token?.creator}`}
         </span>
-        <span className="inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-blue-300">
+        <span className="inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-purple-300">
           Owner: {`${nft?.item?.paymail}`}
         </span>
-        <span className="inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-blue-300">
+
+        {nft?.item?.satoshis && nft?.item?.satoshis !== 0 && (
+        <span className="inline-block bg-gray-300 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2 hover:bg-purple-300">
           Price: {nft?.item?.satoshis * 1e-8}₿
         </span>
+        )}
 
-        {/* <button
-          className="inline-flex items-center justify-center h-10 px-4 py-2 font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        <span className="inline-block rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+
+        <button
+          className="inline-flex items-center justify-center h-8 px-4 py-2 font-medium text-white rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2"
           onClick={handleBuy}
-          disabled={nft?.item?.satoshis === 0}
+          style={{
+            background: nft?.item?.satoshis || nft?.item?.satoshis === 0 ? "#3b82f6" : "#ef4444",
+          }}
+          disabled={!nft?.item?.satoshis || nft?.item?.satoshis === 0}
         >
-          {nft?.item?.satoshis === 0 ? (
-            <span className="px-5 py-2 bg-red-600 rounded-2xl text-white">
+          {!nft?.item?.satoshis || nft?.item?.satoshis === 0 ? (
+            <span className="px-5 py-2 rounded-2xl text-white">
               Sold
             </span>
           ) : (
@@ -186,7 +194,8 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
               <span>Buy</span>
             </>
           )}
-        </button> */}
+        </button>
+        </span>
       </div>
     </div>
   );
