@@ -256,7 +256,7 @@ export default function MeetingPage() {
             {relayxAuthenticated ? 
             (<div className='grid grid-cols-12 w-full h-full'>
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
-                    <div id="tokenmeet-room-container"/>
+                    <div id="jitsi-daily-meeting"/>
                     <h2 className='p-5 text-xl font-bold '>Daily Discussion of Boostpow Costly Signals</h2>
                 </div>
                 <div className='col-span-12 xl:col-span-4 '>
