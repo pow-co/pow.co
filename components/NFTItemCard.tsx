@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRelay } from "../context/RelayContext";
 import { useBitcoin } from "../context/BitcoinContext";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 
 type NFTItemData = {
   token: {
@@ -60,72 +61,74 @@ type NFTItemData = {
 const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
   const { relayOne } = useRelay();
   const { wallet } = useBitcoin();
-  const buyItem = async () => {
-    const ownerResponse = await relayOne!.alpha.run.getOwner();
+  const router = useRouter()
 
-    try {
-      const response = await axios.post(
-        "https://staging-backend.relayx.com/api/dex/buy2",
-        {
-          buyer: ownerResponse,
-          cls: props.jig.cls.origin,
-          location: props.jig.location,
-        }
-      );
+  // const buyItem = async () => {
+  //   const ownerResponse = await relayOne!.alpha.run.getOwner();
 
-      const sendResponse = await relayOne!.send(response.data.data.rawtx);
-      console.log(sendResponse);
-      return sendResponse;
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  };
+  //   try {
+  //     const response = await axios.post(
+  //       "https://staging-backend.relayx.com/api/dex/buy2",
+  //       {
+  //         buyer: ownerResponse,
+  //         cls: nft.token.location,
+  //         location: nft.item.location,
+  //       }
+  //     );
 
-  const handleBuy = async (e: any) => {
-    e.preventDefault();
-    if (wallet !== "relayx") {
-      toast("Cannot buy run NFTs with Twetch Wallet. Please switch to RelayX", {
-        icon: "🛑",
-        style: {
-          borderRadius: "10px",
-          background: "#333",
-          color: "#fff",
-        },
-      });
-      return;
-    }
-    toast("Publishing Your Buy Order to the Network", {
-      icon: "⛏️",
-      style: {
-        borderRadius: "10px",
-        background: "#333",
-        color: "#fff",
-      },
-    });
-    try {
-      const resp = await buyItem();
-      toast("Success!", {
-        icon: "✅",
-        style: {
-          borderRadius: "10px",
-          background: "#333",
-          color: "#fff",
-        },
-      });
-      router.reload();
-    } catch (error) {
-      console.log(error);
-      toast("Error!", {
-        icon: "🐛",
-        style: {
-          borderRadius: "10px",
-          background: "#333",
-          color: "#fff",
-        },
-      });
-    }
-  };
+  //     const sendResponse = await relayOne!.send(response.data.data.rawtx);
+  //     console.log(sendResponse);
+  //     return sendResponse;
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw error;
+  //   }
+  // };
+
+  // const handleBuy = async (e: any) => {
+  //   e.preventDefault();
+  //   if (wallet !== "relayx") {
+  //     toast("Cannot buy run NFTs with Twetch Wallet. Please switch to RelayX", {
+  //       icon: "🛑",
+  //       style: {
+  //         borderRadius: "10px",
+  //         background: "#333",
+  //         color: "#fff",
+  //       },
+  //     });
+  //     return;
+  //   }
+  //   toast("Publishing Your Buy Order to the Network", {
+  //     icon: "⛏️",
+  //     style: {
+  //       borderRadius: "10px",
+  //       background: "#333",
+  //       color: "#fff",
+  //     },
+  //   });
+  //   try {
+  //     const resp = await buyItem();
+  //     toast("Success!", {
+  //       icon: "✅",
+  //       style: {
+  //         borderRadius: "10px",
+  //         background: "#333",
+  //         color: "#fff",
+  //       },
+  //     });
+  //     router.reload();
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast("Error!", {
+  //       icon: "🐛",
+  //       style: {
+  //         borderRadius: "10px",
+  //         background: "#333",
+  //         color: "#fff",
+  //       },
+  //     });
+  //   }
+  // };
 
   return (
     <div className="max-w-md rounded overflow-hidden shadow-lg mx-auto bg-white hover:shadow-xl">
@@ -168,7 +171,7 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
           Price: {nft?.item?.satoshis * 1e-8}₿
         </span>
 
-        <button
+        {/* <button
           className="inline-flex items-center justify-center h-10 px-4 py-2 font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           onClick={handleBuy}
           disabled={nft?.item?.satoshis === 0}
@@ -183,7 +186,7 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
               <span>Buy</span>
             </>
           )}
-        </button>
+        </button> */}
       </div>
     </div>
   );
