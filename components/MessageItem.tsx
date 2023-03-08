@@ -8,7 +8,7 @@ import moment from "moment";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
 
-export const MessageItem = (props:any) => {
+export const MessageItem = (props:any, isSide: boolean) => {
     const { wallet } = useBitcoin()
     const theme = useTheme()
 
@@ -59,15 +59,15 @@ export const MessageItem = (props:any) => {
     };
     return (
       <div className='group grid grid-cols-12 bg-primary-300 dark:bg-primary-700/20 py-4 cursor-pointer hover:bg-primary-200 hover:dark:bg-primary-800/20'>
-        <Link className='col-span-2 sm:col-span-1 flex justify-center' href={`/profile/${props.MAP.paymail}`}>
+        <Link className={"col-span-2 sm:col-span-1 flex justify-center"} href={`/profile/${props.MAP.paymail}`}>
           <div className='cursor-pointer'>
             <UserIcon src={avatar} size={36}/>
           </div>
         </Link>
-        <div className='col-span-10 sm:col-span-11 flex flex-col justify-center w-full'>
+        <div className="col-span-10 px-2 sm:col-span-11 flex flex-col justify-center w-full">
           <div className='flex justify-between pr-5'>
             <Link href={`/profile/${props.MAP.paymail}`}>
-              <p className='cursor-pointer text-lg text-blue-600 font-semibold hover:underline'>{props.MAP.paymail}</p>
+              <p className='ml-2cursor-pointer text-lg text-blue-600 font-semibold hover:underline'>{props.MAP.paymail}</p>
             </Link>
             <a href={`https://whatsonchain.com/tx/${props.tx.h}`} target="_blank" rel="noreferrer">
               <span className='text-xs text-gray-500 font-semibold'>{moment(props.timestamp * 1000).fromNow()}</span>

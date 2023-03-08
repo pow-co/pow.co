@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
-import PanelLayout from '../components/PanelLayout'
-import { useRelay } from '../context/RelayContext'
-import { sendMessage } from '../utils/bsocial/message'
-import { useTokenMeetLiveWebsocket } from '../hooks/useWebsocket'
+import PanelLayout from '../../components/PanelLayout'
+import { useRelay } from '../../context/RelayContext'
+import { sendMessage } from '../../utils/bsocial/message'
+import { useTokenMeetLiveWebsocket } from '../../hooks/useWebsocket'
 import { Socket } from 'socket.io-client/build/esm/socket';
+import { MessageItem } from '../../components/MessageItem'
 import Script from 'next/script'
+import useSWR from "swr"
 import { FormattedMessage } from 'react-intl'
 import { useRouter } from 'next/router'
+import { SideChat } from '../../components/SideChat'
 
 
 
@@ -69,7 +72,7 @@ const events = [
 
 export default function MeetingPage() {
 
-    const router = useRouter()
+    const { query } = useRouter()
 
     const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
 
@@ -81,7 +84,10 @@ export default function MeetingPage() {
 
     const [jitsiJWT, setJitsiJWT] = useState<string>()
 
-    const roomName = 'vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/powco-club-room'
+    const defaultRoom = "pow.co"
+    const room = query.roomId || defaultRoom 
+
+    const roomName = `vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/${room}`
 
     useEffect(() => {
 
@@ -123,7 +129,7 @@ export default function MeetingPage() {
                     roomName,
                     width: '100%',
                     height: 700,
-                    parentNode: document.querySelector('#jitsi-daily-meeting'),
+                    parentNode: document.querySelector('#tokenmeet-room-container'),
                     lang: 'en',
                     configOverwrite: {
                         prejoinPageEnabled: false,
@@ -252,62 +258,30 @@ export default function MeetingPage() {
     <>
         <Script src={'https://8x8.vc/vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/external_api.js'}></Script>
         <PanelLayout>
-            <div className='mx-auto max-w-xl col-span-12 lg:col-span-6 min-h-screen flex flex-col'>
-                <h1 className='my-10 text-2xl font-bold text-center'>Daily Discussion of Boostpow Costly Signals</h1>
-                <div className=''>
-                    {relayxAuthenticated ? 
-                        (<>
-                            {tokenBalance > MINIMUM_POWCO_BALANCE ? 
-                                (<>
-                                    <div>
-                                        <div id="jitsi-daily-meeting"></div>
-                                    </div>
-                                </>) 
-                                : 
-                                (<>
-                                    <div className="mt-8 flex flex-col justify-center text-center">
-                                        <p className="text-5xl p-5">😔 ngmi</p>
-                                        <p className="text-xl opacity-70 p-5 ">
-                                        {/* <FormattedMessage id="We reserve ability to search askbitcoin to our token holders." /> */}
-                                        You need at least {MINIMUM_POWCO_BALANCE} to participate to a daily meeting and you currently have {tokenBalance}
-                                        </p>
-                                        <div className="flex flex-col mx-auto justify-center">
-                                        <a
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            href="https://relayx.com/market/93f9f188f93f446f6b2d93b0ff7203f96473e39ad0f58eb02663896b53c4f020_o2"
-                                            // onClick={() => router.push("/market")}
-                                            className="mt-2 text-white bg-gradient-to-tr from-blue-500 to-blue-600 leading-6 py-1 px-4 font-bold border-none rounded cursor-pointer flex items-center text-center justify-center disabled:opacity-50 transition duration-500 transform hover:-translate-y-1"
-                                        >
-                                            <FormattedMessage id="Go buy one now!" />
-                                        </a>
-                                        <button
-                                            onClick={() => router.push("/")}
-                                            className="mt-5 text-white outline outline-2 outline-blue-500 leading-6 py-1 px-4 font-bold border-none rounded cursor-pointer flex items-center text-center justify-center disabled:opacity-50 transition duration-500 transform hover:-translate-y-1"
-                                        >
-                                            <FormattedMessage id="No, I hate knowledge." />
-                                        </button>
-                                        </div>
-                                    </div>
-                                </>)
-                            }
-                        </>) 
-                        : 
-                        (<>
-                            <div
-                                //onClick={()=>setWalletPopupOpen(true)}
-                                onClick={login}
-                                className='hidden xl:flex ml-4 p-5 transition duration-500 transform hover:-translate-y-1 h-8 text-base leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-blue-500 to-blue-600  justify-center items-center cursor-pointer relative'>
-                                <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
-                                <path d="M2.16197 13.2675H13.838C15.2698 13.2675 16 12.5445 16 11.1271V2.86576C16 1.45546 15.2698 0.732422 13.838 0.732422H2.16197C0.730201 0.732422 0 1.44831 0 2.86576V11.1271C0 12.5445 0.730201 13.2675 2.16197 13.2675ZM1.18121 2.9445C1.18121 2.25725 1.54631 1.91363 2.20492 1.91363H13.7951C14.4465 1.91363 14.8188 2.25725 14.8188 2.9445V3.9539H1.18121V2.9445ZM2.20492 12.0863C1.54631 12.0863 1.18121 11.7356 1.18121 11.0483V5.50737H14.8188V11.0483C14.8188 11.7356 14.4465 12.0863 13.7951 12.0863H2.20492Z" fill="white">
-                                </path>
-                                </svg>
-                                <span className='ml-4'><FormattedMessage id="Connect wallet"/></span>
-                            </div>
-                        </>)
-                    }
+            {relayxAuthenticated ? <div className='grid grid-cols-12 w-full h-full'>
+                <div className='col-span-12 xl:col-span-8 xl:pr-4'>
+                    <div id="tokenmeet-room-container"/>
+                    <h2 className='p-5 text-xl font-bold '>Meet {room}</h2>
                 </div>
-            </div>
+                <div className='col-span-12 xl:col-span-4 '>
+                    <div className=''>
+                        <h3 className='p-3 text-lg font-bold'>Live Chat in {room}</h3>
+                        <SideChat room={room.toString()} />
+                    </div>
+                </div>
+            </div> : (<div className='mt-10 flex flex-col justify-center items-center'>
+                    <p className='text-3xl font-bold'>You need to be logged in to access this page</p>
+                    <div
+                        //onClick={()=>setWalletPopupOpen(true)}
+                        onClick={login}
+                        className='mt-10 flex ml-4 p-5 transition duration-500 transform hover:-translate-y-1 h-8 text-base leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-blue-500 to-blue-600  justify-center items-center cursor-pointer relative'>
+                        <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
+                        <path d="M2.16197 13.2675H13.838C15.2698 13.2675 16 12.5445 16 11.1271V2.86576C16 1.45546 15.2698 0.732422 13.838 0.732422H2.16197C0.730201 0.732422 0 1.44831 0 2.86576V11.1271C0 12.5445 0.730201 13.2675 2.16197 13.2675ZM1.18121 2.9445C1.18121 2.25725 1.54631 1.91363 2.20492 1.91363H13.7951C14.4465 1.91363 14.8188 2.25725 14.8188 2.9445V3.9539H1.18121V2.9445ZM2.20492 12.0863C1.54631 12.0863 1.18121 11.7356 1.18121 11.0483V5.50737H14.8188V11.0483C14.8188 11.7356 14.4465 12.0863 13.7951 12.0863H2.20492Z" fill="white">
+                        </path>
+                        </svg>
+                        <span className='ml-4'><FormattedMessage id="Connect wallet"/></span>
+                    </div>
+                </div>)}
         </PanelLayout>
     </>
   )
@@ -331,4 +305,6 @@ interface audioAvailabilityChanged {
 interface audioMuteStatusChanged {
     muted: boolean // new muted status - boolean
 }
+
+
 
