@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRelay } from "../context/RelayContext";
 import { useBitcoin } from "../context/BitcoinContext";
 import { toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 
 type NFTItemData = {
   token: {
@@ -60,6 +61,7 @@ type NFTItemData = {
 const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
   const { relayOne } = useRelay();
   const { wallet } = useBitcoin();
+  const router = useRouter()
   const buyItem = async () => {
     const ownerResponse = await relayOne!.alpha.run.getOwner();
 
@@ -68,8 +70,8 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
         "https://staging-backend.relayx.com/api/dex/buy2",
         {
           buyer: ownerResponse,
-          cls: props.jig.cls.origin,
-          location: props.jig.location,
+          cls: nft.item.origin,
+          location: nft.item.location,
         }
       );
 
@@ -148,7 +150,7 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2 hover:text-blue-300">
           <a
-            href={`https://relayx.com/market/${nft?.origin}`}
+            href={`https://relayx.com/market/${nft.item.origin}`}
             target="_blank"
             rel="noopener noreferrer"
           >
