@@ -72,6 +72,8 @@ const events = [
 
 import { channels } from '../live/[channelId]'
 
+import { getLivestream, Livestream } from '../live/[channelId]'
+
 export default function MeetingPage() {
 
     const [isRecording, setIsRecording] = useState<boolean>(false)
@@ -90,10 +92,14 @@ export default function MeetingPage() {
 
     const [jitsiJWT, setJitsiJWT] = useState<string>()
 
+    const [livestream, setLivestream] = useState<Livestream | null>()
+
     const defaultRoom = "pow.co"
     const room = query.roomId ? query.roomId.toString() : defaultRoom
 
     const roomName = `vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/${room}`
+
+    getLivestream({ channel: room }).then(setLivestream)
 
     useEffect(() => {
 
@@ -276,17 +282,11 @@ export default function MeetingPage() {
         relayxAuthenticate()
     }
 
-    const startLivestream = async (room: string) => {
-
-        const channel = channels[room]
-
-        if (!channel || !channel.injest_url) {
-            alert(`connecting to ${channel.injest_url}`)
-        }
+    const startLivestream = async () => {
 
         jitsi.executeCommand('startRecording', {
             mode: 'stream',
-            rtmpStreamKey: channel.injest_url
+            rtmpStreamKey: `${livestream?.ingest.server}/${livestream?.ingest.key}`
         })
     }
 
@@ -304,8 +304,8 @@ export default function MeetingPage() {
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
                     <div id="tokenmeet-room-container"/>
                     <h2 className='p-5 text-xl font-bold '>Meet {room}</h2>
-                    {channels[room] && !isRecording && (
-                        <button onClick={() => startLivestream(room)}>
+                    {livestream && !isRecording && (
+                        <button onClick={() => startLivestream()}>
                             Start Livestream
                         </button>
                     )}
