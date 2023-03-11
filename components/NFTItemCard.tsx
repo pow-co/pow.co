@@ -151,7 +151,7 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2 text-purple-500">
           <a
-            href={`https://relayx.com/market/${nft?.token?.origin}`}
+            href={`https://relayx.com/assets/${nft?.token?.origin}/${nft?.item?.origin}`}
             target="_blank"
             rel="noopener noreferrer"
           >
