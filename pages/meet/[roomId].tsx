@@ -14,7 +14,7 @@ import { SideChat } from '../../components/SideChat'
 
 
 
-const MINIMUM_POWCO_BALANCE = 0
+const MINIMUM_POWCO_BALANCE = 1
 
 const events = [
     'cameraError',
@@ -70,7 +70,11 @@ const events = [
     'peerConnectionFailure'
 ]
 
+import { channels } from '../live/[channelId]'
+
 export default function MeetingPage() {
+
+    const [isRecording, setIsRecording] = useState<boolean>(false)
 
     const { query } = useRouter()
 
@@ -80,12 +84,14 @@ export default function MeetingPage() {
 
     const [nJitsis, setNJitsis] = useState<number>(1)
 
+    const [jitsi, setJitsi] = useState<any>()
+
     const { isConnected, socket } = useTokenMeetLiveWebsocket()
 
     const [jitsiJWT, setJitsiJWT] = useState<string>()
 
     const defaultRoom = "pow.co"
-    const room = query.roomId || defaultRoom 
+    const room = query.roomId ? query.roomId.toString() : defaultRoom
 
     const roomName = `vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/${room}`
 
@@ -140,10 +146,12 @@ export default function MeetingPage() {
 
     
                 // @ts-ignore
-                var jitsi = new window.JitsiMeetExternalAPI(domain, options);
+                const _jitsi = new window.JitsiMeetExternalAPI(domain, options);
+
+                setJitsi(_jitsi)
 
                 // @ts-ignore
-                window.jitsi = jitsi
+                window.jitsi = _jitsi
 
                 socket.on('jitsi.executeCommand', message => {
 
@@ -153,6 +161,11 @@ export default function MeetingPage() {
 
                     jitsi.executeCommand(command, params)
 
+                })
+
+                jitsi.addListener('recordStatusChanged', (event: any) => {
+
+                    console.log('--RECORDING STATUS CHANGED--', event)
                 })
 
 
@@ -211,6 +224,7 @@ export default function MeetingPage() {
     // @ts-ignore
     }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT, tokenBalance])
 
+
     async function handleJitsiEvent(type: string, event: any, socket: Socket) {
 
         //TODO: Pipe the event to websocket server
@@ -225,6 +239,13 @@ export default function MeetingPage() {
             timestamp: new Date().toISOString(),
             roomName
         })
+
+        if (type === 'recordingStatusChanged') {
+
+            const { on } = event
+
+            setIsRecording(on)
+        }
 
         if (type === "outgoingMessage") {
 
@@ -254,6 +275,27 @@ export default function MeetingPage() {
         e.preventDefault()
         relayxAuthenticate()
     }
+
+    const startLivestream = async (room: string) => {
+
+        const channel = channels[room]
+
+        if (!channel || !channel.injest_url) {
+            alert(`connecting to ${channel.injest_url}`)
+        }
+
+        jitsi.executeCommand('startRecording', {
+            mode: 'stream',
+            rtmpStreamKey: channel.injest_url
+        })
+    }
+
+    const stopLivestream = async () => {
+
+        jitsi.executeCommand('stopRecording', {
+            mode: 'stream'
+        })
+    }
   return (
     <>
         <Script src={'https://8x8.vc/vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/external_api.js'}></Script>
@@ -262,6 +304,18 @@ export default function MeetingPage() {
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
                     <div id="tokenmeet-room-container"/>
                     <h2 className='p-5 text-xl font-bold '>Meet {room}</h2>
+                    {channels[room] && !isRecording && (
+                        <button onClick={() => startLivestream(room)}>
+                            Start Livestream
+                        </button>
+                    )}
+
+                    {isRecording && (
+                        <button onClick={() => stopLivestream()}>
+                            Stop Livestream
+                        </button>
+                    )}
+
                 </div>
                 <div className='col-span-12 xl:col-span-4 '>
                     <div className=''>
