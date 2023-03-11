@@ -71,7 +71,7 @@ const NFTItemCard = ({ nft }: { nft: NFTItemData }) => {
         "https://staging-backend.relayx.com/api/dex/buy2",
         {
           buyer: ownerResponse,
-          cls: nft.token.location,
+          cls: nft.item.origin,
           location: nft.item.location,
         }
       );
