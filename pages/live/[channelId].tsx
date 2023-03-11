@@ -70,11 +70,35 @@ const events = [
     'peerConnectionFailure'
 ]
 
+export interface Livestream {
+    _id: string;
+    enabled: boolean;
+    ingest: {
+        server: string;
+        key: string;
+    },
+    playback: {
+        embed_url: string;
+        embed_audio_url: string;
+        hls_url: string;
+    },
+    platforms: [],
+    settings: {
+        pulling_mode: {}
+    },
+    user: string;
+    environment: string;
+    organization: string;
+    creation_time: string;
+}
+
 export default function MeetingPage() {
 
     const { query } = useRouter()
 
     const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
+
+    const [livestream, setLivestream] = useState<Livestream | null>(null)
 
     const defaultRoom = "powco-development"
     const room: string = query.channelId ? query.channelId.toString() : defaultRoom
@@ -84,13 +108,15 @@ export default function MeetingPage() {
         relayxAuthenticate()
     }
 
+    getLivestream({ channel: room }).then(setLivestream)
+
   return (
     <>
         <PanelLayout>
             {relayxAuthenticated ? <div className='grid grid-cols-12 w-full h-full'>
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
-                    {tokenBalance >= MINIMUM_POWCO_BALANCE && (
-                        <LiveStream room={room} hls_url={channels[room].hls_url}/>
+                    {tokenBalance >= MINIMUM_POWCO_BALANCE && livestream && (
+                        <LiveStream room={room} hls_url={livestream.playback.hls_url}/>
                     )}
                     
                     <h2 className='p-5 text-xl text-center font-bold '>Meet {room}</h2>
@@ -154,6 +180,14 @@ interface Channels {
         hls_url: string;
         injest_url: string;
     }
+}
+
+export async function getLivestream({ channel }: { channel: string }) {
+
+    const { data } = await axios.get(`https://tokenmeet.live/api/v1/livestreams/${channel}`)
+
+    return data
+
 }
 
 export const channels: Channels = {
