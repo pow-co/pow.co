@@ -16,67 +16,9 @@ import ReactPlayer from 'react-player'
 
 const MINIMUM_POWCO_BALANCE = 1
 
-const events = [
-    'cameraError',
-    'avatarChanged',
-    'audioAvailabilityChanged',
-    'audioMuteStatusChanged',
-    'breakoutRoomsUpdated',
-    'browserSupport',
-    'contentSharingParticipantsChanged',
-    'dataChannelOpened',
-    'endpointTextMessageReceived',
-    'faceLandmarkDetected',
-    'errorOccurred',
-    'knockingParticipant',
-    'largeVideoChanged',
-    'log',
-    'micError',
-    'screenSharingStatusChanged',
-    'dominantSpeakerChanged',
-    'raiseHandUpdated',
-    'tileViewChanged',
-    'chatUpdated',
-    'incomingMessage',
-    'mouseEnter',
-    'mouseLeave',
-    'mouseMove',
-    'toolbarButtonClicked',
-    'outgoingMessage',
-    'displayNameChange',
-    'deviceListChanged',
-    'emailChange',
-    'feedbackSubmitted',
-    'filmstripDisplayChanged',
-    'moderationStatusChanged',
-    'moderationParticipantApproved',
-    'moderationParticipantRejected',
-    'participantJoined',
-    'participantKickedOut',
-    'participantLeft',
-    'participantRoleChanged',
-    'participantsPaneToggled',
-    'passwordRequired',
-    'videoConferenceJoined',
-    'videoConferenceLeft',
-    'videoAvailabilityChanged',
-    'videoMuteStatusChanged',
-    'videoQualityChanged',
-    'readyToClose',
-    'recordingLinkAvailable',
-    'recordingStatusChanged',
-    'subjectChange',
-    'suspendDetected',
-    'peerConnectionFailure'
-]
-
-export interface Livestream {
+export interface Video {
     _id: string;
     enabled: boolean;
-    ingest: {
-        server: string;
-        key: string;
-    },
     playback: {
         embed_url: string;
         embed_audio_url: string;
@@ -92,40 +34,39 @@ export interface Livestream {
     creation_time: string;
 }
 
-export default function MeetingPage() {
+export default function VideoPage() {
 
     const { query } = useRouter()
 
     const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
 
-    const [livestream, setLivestream] = useState<Livestream | null>(null)
-
-    const defaultRoom = "powco-development"
-    const room: string = query.channelId ? query.channelId.toString() : defaultRoom
+    const [video, setVideo] = useState<Video | null>(null)
 
     const login = (e: any) => {
         e.preventDefault()
         relayxAuthenticate()
     }
 
-    getLivestream({ channel: room }).then(setLivestream)
+    const room = String(query._id)
+
+    getVideo({ _id: String(query._id) }).then(setVideo)
 
   return (
     <>
         <PanelLayout>
             {relayxAuthenticated ? <div className='grid grid-cols-12 w-full h-full'>
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
-                    {tokenBalance >= MINIMUM_POWCO_BALANCE && livestream && (
-                        <LiveStream room={room} hls_url={livestream.playback.hls_url}/>
+                    {tokenBalance >= MINIMUM_POWCO_BALANCE && video && (
+                        <LiveStream room={room} hls_url={video.playback.hls_url}/>
                     )}
                     
-                    <h2 className='p-5 text-xl text-center font-bold '>Meet {room}</h2>
+                    <h2 className='p-5 text-xl text-center font-bold '>Video {query._id}</h2>
                     <h6 className='text-center'>{MINIMUM_POWCO_BALANCE} pow.co tokens required to view Live Stream (balance: {tokenBalance})</h6>
                 </div>
                 <div className='col-span-12 xl:col-span-4 '>
                     <div className='center'>
                         <h3 className='p-3 text-lg font-bold flex items-center'>Live Chat in {room}</h3>
-                        <SideChat room={room.toString()} />
+                        <SideChat room={room} />
                     </div>
                 </div>
             </div> : (<div className='mt-10 flex flex-col justify-center items-center'>
@@ -146,7 +87,7 @@ export default function MeetingPage() {
   )
 }
 
-export function LiveStream({ room, hls_url}: {room: string, hls_url: string}) {
+function LiveStream({ room, hls_url}: {room: string, hls_url: string}) {
 
     return (
         <div id="tokenmeet-room-container" className='flex items-center mt-10'>
@@ -182,39 +123,12 @@ interface Channels {
     }
 }
 
-export async function getLivestream({ channel }: { channel: string }) {
+export async function getVideo({ _id }: { _id: string }) {
 
-    const { data } = await axios.get(`https://tokenmeet.live/api/v1/livestreams/${channel}`)
+    const { data } = await axios.get(`https://tokenmeet.live/api/v1/videos/${_id}`)
 
-    return data
+    return data.video
 
 }
 
-export const channels: Channels = {
-    'powco-development': {
-        id: '640c9021ac7dd5844a79d6b9',
-        hls_url: 'https://live.liveapi.com/63d46a33f1a83789fcb550b3/lv_0a34a0d0c01911edb4658f5d662562f3/index.m3u8',
-        injest_url: 'rtmp://ingest.liveapi.com/static/lv_0a34a0d0c01911edb4658f5d662562f3?password=7f0135b6'
-    },
-    'spacedisco': {
-        id: '640c916aac7dd5844a79d6c3',
-        hls_url: "https://live.liveapi.com/63d46a33f1a83789fcb550b3/lv_ce1c9b10c01911edb4658f5d662562f3/index.m3u8"        ,
-        injest_url: 'rtmp://ingest.liveapi.com/static/lv_ce1c9b10c01911edb4658f5d662562f3?password=db88a066'
-    },
-    'geist': {
-        id: '640c91ec56c086843ec11813',
-        hls_url: 'https://live.liveapi.com/63d46a33f1a83789fcb550b3/lv_1ba95bc0c01a11ed83fe6d97d5111853/index.m3u8',
-        injest_url: 'rtmp://ingest.liveapi.com/static/lv_1ba95bc0c01a11ed83fe6d97d5111853?password=18213c69'
-    },
-    'bethebroadcast': {
-        id: '640c921156c086843ec11818',
-        hls_url: 'https://live.liveapi.com/63d46a33f1a83789fcb550b3/lv_31f22970c01a11ed83fe6d97d5111853/index.m3u8',
-        injest_url: 'rtmp://ingest.liveapi.com/static/lv_31f22970c01a11ed83fe6d97d5111853?password=aea27c71'
-    },
-    'peafowl-excellence': {
-        id: '640c9246ac7dd5844a79d6ce',
-        hls_url: "https://live.liveapi.com/63d46a33f1a83789fcb550b3/lv_511b26d0c01a11edb4658f5d662562f3/index.m3u8"        ,
-        injest_url: 'rtmp://ingest.liveapi.com/static/lv_511b26d0c01a11edb4658f5d662562f3?password=3552a176'
-    }
-}
 
