@@ -53,7 +53,7 @@ export default function Videos() {
           {videos.map((video: any) => {
 
               // if not video, return <></>
-            return <LiveapiVideoCard video={video}/>
+            return <LiveapiVideoCard key={video._id} video={video}/>
           })} 
           
         </div>

@@ -116,7 +116,7 @@ export default function VideoCard({ video }: {video: LiveapiVideo}) {
   
     return (
       <>
-        <div id="tokenmeet-room-container" style={{'flexDirection': 'column', diplay: 'flex'}} className='flex items-center mt-10'>
+        <div id="tokenmeet-room-container" style={{'flexDirection': 'column', display: 'flex'}} className='flex items-center mt-10'>
           <ReactPlayer width={'100%'} height={'100%'} controls={true}  url={video.playback.hls_url} />
           <Link href={`/videos/${video._id}`}>{video._id}</Link>
           <p>{moment(video.creation_time).format('MMMM Do YYYY, h:mm:ss a')}</p>
