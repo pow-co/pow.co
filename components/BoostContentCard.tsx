@@ -16,6 +16,7 @@ import Linkify from 'linkify-react';
 import { Tooltip } from 'react-tooltip'
 
 import { useBitcoin } from '../context/BitcoinContext';
+import axios from 'axios';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -56,6 +57,19 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const theme = useTheme()
     const { wallet } = useBitcoin()
 
+    const [content, setContent] = useState<any>(null)
+
+    useEffect(() => {
+        const url = `https://pow.co/api/v1/content/${content_txid}`
+        axios.get(url).then(({ data }) => {
+            setContent(data.content)
+        })
+        .catch(error => {
+            console.error('axios.error', { url, error })
+        })
+    }, [])
+
+
     const handleBoostLoading = () => {
         toast('Publishing Your Boost Job to the Network', {
             icon: '⛏️',
@@ -88,6 +102,14 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
             },
         });
       };
+
+      if (content) {
+
+        content_text = content.content_text || content_text
+
+        content_type = content.content_type || content_type
+      }
+
 
     const PostContent = () => {
         return (
