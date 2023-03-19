@@ -60,7 +60,7 @@ export default function OnchainEvent({ txid }: {txid: string}) {
     }
 
     // Render RelayX MarketPlace Events
-    if (event?.content?.url?.startsWith('https://relayx.com/market/')) {
+    if (event?.content?.url?.startsWith('https://relayx.com/market/' && nftData)) {
       const nft = nftData?.data?.token
       if (nft) {
         return <NFTCard nft={nft}/>
@@ -142,7 +142,7 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       console.log(url)
 
       // Check if it's a RelayX item link
-      if (url.match('https://relayx.com/assets/')) {
+      if (url.match('https://relayx.com/assets/' && nftItemData)) {
         return <NFTItemCard nft={nftItemData?.data} />
       }
 
