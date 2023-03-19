@@ -17,7 +17,7 @@ import { useBitcoin } from "../context/BitcoinContext"
 export default function Home() {
   const { startTimestamp, filter, setFilter } = useTuning()
   const { authenticated } = useBitcoin()
-  const { data, error, loading } = useAPI(`/boost/rankings/last-day`, '')
+  const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '')
 
   if (error) {
     return (

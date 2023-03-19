@@ -2,7 +2,8 @@ import useSWR, { Fetcher} from "swr";
 import axios, { AxiosRequestConfig } from "axios"
 
 //const baseURL = "https://pow.co";
-const baseURL = "http://localhost:8000";
+const baseURL = "https://next.pow.co";
+//const baseURL = "http://localhost:8000";
 
 export const BASE = `${baseURL}/api/v1`;
 
