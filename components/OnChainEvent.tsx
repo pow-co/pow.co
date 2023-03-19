@@ -139,10 +139,9 @@ export default function OnchainEvent({ txid }: {txid: string}) {
 
       const url = event.content.url || event.content
 
-      console.log(url)
 
       // Check if it's a RelayX item link
-      if (url.match('https://relayx.com/assets/' && nftItemData)) {
+      if (url.includes('https://relayx.com/assets/' && nftItemData?.data)) {
         return <NFTItemCard nft={nftItemData?.data} />
       }
 
