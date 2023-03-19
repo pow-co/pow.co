@@ -59,8 +59,6 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       return <></>
     }
 
-    console.log(event.content, 'hello?')
-
     // Render RelayX MarketPlace Events
     if (event?.content?.url?.startsWith('https://relayx.com/market/')) {
       const nft = nftData?.data?.token
