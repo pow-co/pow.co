@@ -139,12 +139,15 @@ export default function VideoCard({ txid, difficulty }: {txid: string, difficult
       const url = event.content.url || event.content
 
 
-      // 1. check if url is youtube 
+      // 1. Check if URL is YouTube 
       const youtubeLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
 
       const youtubeMatch = youtubeLinkRegex.exec(url)
+      
       if(youtubeMatch){
-        // 2. get the youtube video id
+      
+      // 2. Get the YouTube Video ID
+      
         const videoId = youtubeMatch[1]
         return <VideoCardContainer>
 
@@ -152,7 +155,44 @@ export default function VideoCard({ txid, difficulty }: {txid: string, difficult
         </VideoCardContainer>
       } 
   
-  
+      // 3. Check if URL is a Rumble video (Check this with ChatGPT)
+
+      const rumbleLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:rumble\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+
+      // 4. Get the rumble video id
+
+      const rumbleMatch = rumbleLinkRegex.exec(url)
+      
+      // 5. Display as Embedded video
+
+      
+      // EMBEDDABLE PLAYER:
+
+      // <script>!function(r,u,m,b,l,e){r._Rumble=b,r[b]||(r[b]=function(){(r[b]._=r[b]._||[]).push(arguments);if(r[b]._.length==1){l=u.createElement(m),e=u.getElementsByTagName(m)[0],l.async=1,l.src="https://rumble.com/embedJS/u4"+(arguments[1].video?'.'+arguments[1].video:'')+"/?url="+encodeURIComponent(location.href)+"&args="+encodeURIComponent(JSON.stringify([].slice.apply(arguments))),e.parentNode.insertBefore(l,e)}})}(window, document, "script", "Rumble");</script>
+      // <div id="rumble_v287vh4"></div>
+      // <script>
+      // Rumble("play", {"video":"v287vh4","div":"rumble_v287vh4"});</script>
+
+
+      // IFRAME
+
+      // <iframe class="rumble" width="640" height="360" src="https://rumble.com/embed/v287vh4/?pub=4" frameborder="0" allowfullscreen></iframe>
+
+
+      // IFRAME URL
+
+      // https://rumble.com/embed/v287vh4/?pub=4
+
+
+      if(rumbleMatch){
+
+        const videoId = rumbleMatch[1]
+        return <VideoCardContainer>
+          <YouTube videoId={videoId} opts={youtubePlayerOpts}/>
+        </VideoCardContainer>
+
+      }
+
     }
   
     return (
