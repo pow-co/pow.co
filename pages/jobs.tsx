@@ -136,7 +136,7 @@ const BoostJobCard = (job: Job) => {
             {moment(job.createdAt).fromNow()}
             </a>
         </div>
-        <p>Content: <Link href={`/${job.content}`} className="text-xs">{job.content}</Link></p>
+        <p>Content: <Link href={`/${job.content}`} className="text-xs text-primary-500 break-words">{job.content}</Link></p>
         <p>{newValue} sats / {job.difficulty} difficulty = {newProfitability} profitability</p>
         <div className='flex items-center'>
             <input type="range" step={500} min={0}  max={1e8} value={bounty} onChange={handleChangeBounty} className="w-full mr-4 h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"/>
@@ -188,7 +188,7 @@ const JobsPage = () => {
                 </div>
             </Link>
         </div> */}
-        <div className="col-span-12 lg:col-span-6 min-h-screen">
+        <div className="col-span-12 lg:col-span-6 min-h-screen overflow-x-hidden">
             <div className="mt-5 lg:mt-10 mb-[200px]">
                 {loading ? <Loader/> : jobs?.map((job: Job) => {
                     
