@@ -16,6 +16,9 @@ import Linkify from 'linkify-react';
 import { Tooltip } from 'react-tooltip'
 
 import { useBitcoin } from '../context/BitcoinContext';
+import axios from 'axios';
+import {BASE, useAPI} from '../hooks/useAPI';
+import { useTuning } from '../context/TuningContext';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -55,6 +58,21 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const router = useRouter()
     const theme = useTheme()
     const { wallet } = useBitcoin()
+    const { startTimestamp, filter, setFilter } = useTuning()
+
+    const [loading, setLoading] = useState<boolean>(true)
+
+    const [content, setContent] = useState<any>(null)
+
+    useEffect(() => {
+        axios.get(`${BASE}/content/${content_txid}`).then(({data}) => {
+            setContent(data.content)
+            setLoading(false)
+        })
+        .catch((err) => {
+            console.error('api.content.fetch.error', err)
+        })
+    }, [])
 
     const handleBoostLoading = () => {
         toast('Publishing Your Boost Job to the Network', {
@@ -89,21 +107,36 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         });
       };
 
+      //if (content) {
+
+        content_text = content?.content_text || content_text
+
+        content_type = content?.content_type || content_type
+      //}
+
+      if (loading || !content) {
+        return (
+            <div className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
+            <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
+            </div>
+        </div>
+        )
+      }
     const PostContent = () => {
         return (
             <>
-            {content_type?.match('image') && (
-                content_text ? <img src={`data:image/jpeg;base64,${content_text}`} className="w-full h-full rounded-lg"/> : <PostMedia files={[content_txid]}/>
+            {content.content_type?.match('image') && (
+                content.content_text ? <img src={`data:image/jpeg;base64,${content.content_text}`} className="w-full h-full rounded-lg"/> : <PostMedia files={[content.txid]}/>
             )}
-            {content_type?.match('text/plain') && (
+            {content.content_type?.match('text/plain') && (
                 <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover'}}>{content_text}</Linkify></div>
             )}
-            {content_type?.match('markdown') && (
+            {content.content_type?.match('markdown') && (
                 <article className='prose dark:prose-invert prose-a:text-blue-600 break-words'>
-                    <Markdown options={RemarkableOptions} source={content_text!.replace(BFILE_REGEX, `https://dogefiles.twetch.app/$1`)}/>
+                    <Markdown options={RemarkableOptions} source={content.content_text!.replace(BFILE_REGEX, `https://dogefiles.twetch.app/$1`)}/>
                 </article>
             )}
-            <OnchainEvent txid={content_txid}/>
+            <OnchainEvent txid={content.txid}/>
             </>
         )
         
@@ -115,10 +148,22 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     }
 
 
+
+    if (!content) {
+        return (
+            <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
+                <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
+                </div>
+            </div>
+        )
+    }
+
+    console.log('CONTENT', content)
+
   return (
     <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
-        <Twetch setIsTwetch={setIsTwetch} txid={content_txid} difficulty={difficulty || 0}/>
-        <RelayClub setIsClub={setIsClub} txid={content_txid} difficulty={difficulty || 0}/>
+        <Twetch setIsTwetch={setIsTwetch} txid={content.txid} difficulty={difficulty || 0}/>
+        <RelayClub setIsClub={setIsClub} txid={content.txid} difficulty={difficulty || 0}/>
         {!(isTwetch || isClub) && <div className='col-span-12'>
             <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
                 {author && (
@@ -143,16 +188,16 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             <a  onClick={(e:any)=>e.stopPropagation()}
                                 target="_blank"
                                 rel="noreferrer"
-                                href={`https://whatsonchain.com/tx/${content_txid}`}
+                                href={`https://whatsonchain.com/tx/${content.txid}`}
                                 className="text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500"
-                                id={`_${content_txid}`}
+                                id={`_${content.txid}`}
                             >
                                 {/* {moment(createdAt).fromNow()} */}
                                 txid
                             </a>
                             {/*tooltip*/}
                             <Tooltip
-                            anchorSelect={`#_${content_txid}`} 
+                            anchorSelect={`#_${content.txid}`} 
                             place="right" 
                             className="dark:bg-gray-100 text-white dark:text-black italic"
                             clickable
