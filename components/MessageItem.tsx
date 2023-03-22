@@ -9,7 +9,6 @@ import { useTheme } from "next-themes";
 import { useMemo } from "react";
 
 export const MessageItem = (props:any, isSide: boolean) => {
-    console.log(props)
     if(!props.MAP){
       return <></>
     }
