@@ -13,20 +13,23 @@ import { useBitcoin } from "../context/BitcoinContext";
 import { useRouter } from "next/router";
 import axios from "axios";
 import TwetchWeb3 from "@twetch/web3";
+import moment from "moment";
 //import { useActiveChannel } from "../../hooks";
 //import ChannelTextArea from "./ChannelTextArea";
 //import InvisibleSubmitButton from "./InvisibleSubmitButton";
 
 interface ChatComposerProps {
   channelId: string;
+  onNewMessageSent: (message: any) => void
 }
-const ChatComposer = ({ channelId }: ChatComposerProps) => {
+const ChatComposer = ({ channelId, onNewMessageSent }: ChatComposerProps) => {
   //const dispatch = useDispatch();
   // const user = useSelector((state) => state.session.user);
   const { relayOne } = useRelay();
   const { paymail, wallet } = useBitcoin()
   const [inputValue, setInputValue] = useState("")
   const [sending, setSending] = useState(false)
+  const [rows, setRows] = useState(1)
   
 
   //const { profile, authToken, hcDecrypt } = useHandcash();
@@ -35,8 +38,7 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
   //const activeChannel = useActiveChannel();
   let timeout = undefined;
 
-  const handleSubmit = async (event: any) => {
-      event.preventDefault()
+  const handleSubmit = async () => {
       if (!paymail){
         alert("Please, connect your wallet")
           return
@@ -51,7 +53,6 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
           content,
           channelId //activeChannel?.channel || channelId || null
         ).then(()=>setSending(false));
-        event.target.reset();
       }
   }
 
@@ -85,6 +86,22 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
               .join(" ")
         );
         let outputs
+        let futureBMAP = {
+          B:{
+            content:content,
+            "content-type":"text/plain",
+            encoding: "utf-8"
+          },
+          MAP: {
+            channel: channel,
+            paymail: paymail
+          },
+          timestamp:moment().unix(),
+          tx:{
+            h: "pending"
+          }
+        }
+        onNewMessageSent(futureBMAP)
         switch (wallet){
           case "relayx":
             outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
@@ -93,7 +110,8 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
             console.log("Sent", txid);
             await axios.post('https://b.map.sv/ingest', {
                 rawTx: rawTx
-            })
+            });
+            
             break;
           case "twetch":
             outputs = [{
@@ -127,11 +145,17 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
     let cmdKey = 91;
     let vKey = 86;
     let cKey = 67;
+    const enterKey = 13;
 
     if (event.keyCode == ctrlKey || event.keyCode == cmdKey) ctrlDown = true;
 
     if (ctrlDown && event.keyCode == cKey) console.log("Document catch Ctrl+C");
     if (ctrlDown && event.keyCode == vKey) console.log("Document catch Ctrl+V");
+
+    if (event.keyCode == enterKey && !event.shiftKey){
+      event.preventDefault()
+      handleSubmit()
+    }
   };
 
   const handleKeyUp = (event: any) => {
@@ -141,6 +165,8 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
     let cmdKey = 91;
     let vKey = 86;
     let cKey = 67;
+
+    setRows(event.target.value.split("\n").length)
 
     if (event.keyCode == ctrlKey || event.keyCode == cmdKey) ctrlDown = false;
 
@@ -163,20 +189,25 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
   }
 
   return (
-    <div className="">
-      <form onSubmit={handleSubmit} autoComplete="off">
-        <input
-          type="text"
-          name="msg_content"
-          value={inputValue}
-          onChange={handleChange}
-          autoComplete="off"
-          className="flex flex-col p-3 rounded-lg sm:rounded-xl  bg-gray-200  dark:bg-gray-600 w-full focus:outline-none"
-          placeholder={`${sending ? "Sending..." : `Message in ${channelId} chat`}`}
-          onKeyUp={handleKeyUp}
-          onKeyDown={handleKeyDown}
-        />
-        <button type="submit" className="hidden"/>
+    <div className="w-full items-center border-t-0 dark:border-white/20 bg-white dark:bg-gray-800 !bg-transparent py-2">
+      <form onSubmit={handleSubmit} autoComplete="off" className="stretch mx-2 flex flex-row gap-3 last:mb-2 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-3xl">
+        <div className="relative flex h-full flex-1 md:flex-col">
+          <div className="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
+            <textarea
+              name="msg_content"
+              value={inputValue}
+              rows={rows}
+              onChange={handleChange}
+              autoComplete="off"
+              className="m-0 w-full appearance-none resize-none border-0 bg-transparent p-0  focus:ring-0 focus:outline-none focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0"
+              style={{height:rows > 1 ? "48px": "24px", maxHeight:"48px"}}
+              placeholder={`${sending ? "Sending..." : `Message in ${channelId} chat`}`}
+              onKeyUp={handleKeyUp}
+              onKeyDown={handleKeyDown}
+            />
+            <button type="submit" className="hidden"/>
+            </div>
+          </div>
       </form>
       {/* <div>
         {typingUser && `${typingUser.paymail} is typing...`}

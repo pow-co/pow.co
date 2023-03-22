@@ -7,24 +7,28 @@ import { useBitcoin } from "../context/BitcoinContext";
 import moment from "moment";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
+import Linkify from "linkify-react";
 
 export const MessageItem = (props:any, isSide: boolean) => {
-    const { wallet } = useBitcoin()
-    const theme = useTheme()
-
-    const avatar = useMemo(() => {
-        switch (true) {
-          case props.MAP.paymail.includes("relayx"):
-            return `https://a.relayx.com/u/${props.MAP.paymail}`;
-          case props.MAP.paymail.includes("twetch"):
-            return `https://auth.twetch.app/api/v2/users/${props.MAP.paymail.split("@")[0]}/icon`
-          case props.MAP.paymail.includes("handcash"):
+  const { wallet } = useBitcoin()
+  const theme = useTheme()
+  
+  const avatar = useMemo(() => {
+    switch (true) {
+      case props.MAP?.paymail.includes("relayx"):
+        return `https://a.relayx.com/u/${props.MAP.paymail}`;
+        case props.MAP?.paymail.includes("twetch"):
+          return `https://auth.twetch.app/api/v2/users/${props.MAP.paymail.split("@")[0]}/icon`
+          case props.MAP?.paymail.includes("handcash"):
             return `https://cloud.handcash.io/v2/users/profilePicture/${props.MAP.paymail.split("@")[0]}`
-          default:
-            return "https://a.relayx.com/u/0";
-        }
-      }, [props.MAP.paymail]);
-
+            default:
+              return "https://a.relayx.com/u/0";
+            }
+          }, [props.MAP?.paymail]);
+          
+  if(!props.MAP || !props.B){
+    return <></>
+  }
     const handleBoostLoading = () => {
       toast('Publishing Your Boost Job to the Network', {
           icon: '⛏️',
@@ -73,7 +77,7 @@ export const MessageItem = (props:any, isSide: boolean) => {
               <span className='text-xs text-gray-500 font-semibold'>{moment(props.timestamp * 1000).fromNow()}</span>
             </a>
           </div>
-          <PostDescription bContent={props.B.content}/>
+          <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover text-primary-500 hover:underline'}}>{props.B.content}</Linkify></div>
         </div>
         <div className='hidden col-span-12 group-hover:grid grid-col-12 justify-end'>
           <div className='col-span-11'/>

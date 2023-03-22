@@ -11,6 +11,7 @@ export const SideChat = ({room}: SideChatProps) => {
     const socketRef = useRef<EventSource | null>(null);
     const composerRef = useRef(null)
     const [newMessages, setNewMessages] = useState<any>([])
+    const [pending, setPending] = useState<any>()
     const { data, error, isLoading } = useSWR(`https://b.map.sv/q/${messageQuery(false, room, "", "")}`, fetcher)
     const messages = data?.c || []
 
@@ -33,6 +34,7 @@ export const SideChat = ({room}: SideChatProps) => {
       if(message.type === "push"){
         let newMessage = message.data[0]
         console.log("New Message: ",newMessage)
+        setPending({})
         setNewMessages((prevMessages: any) => [newMessage, ...prevMessages])
       }
     });
@@ -49,6 +51,7 @@ export const SideChat = ({room}: SideChatProps) => {
     return (
         <>
             <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: "calc(100vh - 218px)"}} >
+            {pending && <div className='opacity-60'><MessageItem {...pending}/></div>}
                 {newMessages?.map((message: any) => {
                 return <MessageItem key={message.tx.h} {...message}/>
                 })}
@@ -57,7 +60,7 @@ export const SideChat = ({room}: SideChatProps) => {
                 })}
             </div>
             <div ref={composerRef} className='p-4'>
-                <ChatComposer channelId={room!}/>
+                <ChatComposer channelId={room!} onNewMessageSent={(newMessage:any) => setPending(newMessage)}/>
             </div>
         </>
     )

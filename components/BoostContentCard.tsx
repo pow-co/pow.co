@@ -129,7 +129,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                 content.content_text ? <img src={`data:image/jpeg;base64,${content.content_text}`} className="w-full h-full rounded-lg"/> : <PostMedia files={[content.txid]}/>
             )}
             {content.content_type?.match('text/plain') && (
-                <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover'}}>{content_text}</Linkify></div>
+                <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover text-blue-500 hover:underline'}}>{content_text}</Linkify></div>
             )}
             {content.content_type?.match('markdown') && (
                 <article className='prose dark:prose-invert prose-a:text-blue-600 break-words'>
