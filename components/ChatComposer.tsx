@@ -13,14 +13,16 @@ import { useBitcoin } from "../context/BitcoinContext";
 import { useRouter } from "next/router";
 import axios from "axios";
 import TwetchWeb3 from "@twetch/web3";
+import moment from "moment";
 //import { useActiveChannel } from "../../hooks";
 //import ChannelTextArea from "./ChannelTextArea";
 //import InvisibleSubmitButton from "./InvisibleSubmitButton";
 
 interface ChatComposerProps {
   channelId: string;
+  onNewMessageSent: (message: any) => void
 }
-const ChatComposer = ({ channelId }: ChatComposerProps) => {
+const ChatComposer = ({ channelId, onNewMessageSent }: ChatComposerProps) => {
   //const dispatch = useDispatch();
   // const user = useSelector((state) => state.session.user);
   const { relayOne } = useRelay();
@@ -84,6 +86,22 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
               .join(" ")
         );
         let outputs
+        let futureBMAP = {
+          B:{
+            content:content,
+            "content-type":"text/plain",
+            encoding: "utf-8"
+          },
+          MAP: {
+            channel: channel,
+            paymail: paymail
+          },
+          timestamp:moment().unix(),
+          tx:{
+            h: "pending"
+          }
+        }
+        onNewMessageSent(futureBMAP)
         switch (wallet){
           case "relayx":
             outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
@@ -92,7 +110,8 @@ const ChatComposer = ({ channelId }: ChatComposerProps) => {
             console.log("Sent", txid);
             await axios.post('https://b.map.sv/ingest', {
                 rawTx: rawTx
-            })
+            });
+            
             break;
           case "twetch":
             outputs = [{

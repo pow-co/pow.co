@@ -61,6 +61,7 @@ const Chat = () => {
   const channelId = query.channelId?.toString()
   const [isMobile, setIsMobile] = useState(false)
   const [newMessages, setNewMessages] = useState<any>([])
+  const [pending, setPending] = useState<any>()
   const socketRef = useRef<EventSource | null>(null);
 
   const composerRef = useRef(null)
@@ -105,6 +106,7 @@ const Chat = () => {
       if(message.type === "push"){
         let newMessage = message.data[0]
         console.log("New Message: ",newMessage)
+        setPending({})
         setNewMessages((prevMessages: any) => [newMessage, ...prevMessages])
       }
     });
@@ -152,6 +154,7 @@ const Chat = () => {
             <h2 className='ml-2 text-2xl font-bold'>{channelId}</h2>
           </div>
           <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: isMobile ? "calc(100vh - 148px)" : "calc(100vh - 218px)"}} >
+            {pending && <div className='opacity-60'><MessageItem {...pending}/></div>}
             {newMessages?.map((message: any) => {
               return <MessageItem key={message.tx.h} {...message}/>
             })}
@@ -160,7 +163,7 @@ const Chat = () => {
             })}
           </div>
           <div ref={composerRef} className='sticky px-4'>
-            <ChatComposer channelId={channelId!}/>
+            <ChatComposer channelId={channelId!} onNewMessageSent={(newMessage:any) => setPending(newMessage)}/>
           </div>
         </div>
         {/* <div className={`${query.channelId ? "hidden lg:block lg:col-span-3" : "hidden"}  bg-primary-100 dark:bg-primary-900/20`}>

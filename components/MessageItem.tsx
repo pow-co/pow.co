@@ -9,6 +9,10 @@ import { useTheme } from "next-themes";
 import { useMemo } from "react";
 
 export const MessageItem = (props:any, isSide: boolean) => {
+    console.log(props)
+    if(!props.MAP){
+      return <></>
+    }
     const { wallet } = useBitcoin()
     const theme = useTheme()
 
@@ -23,7 +27,7 @@ export const MessageItem = (props:any, isSide: boolean) => {
           default:
             return "https://a.relayx.com/u/0";
         }
-      }, [props.MAP.paymail]);
+      }, [props.MAP?.paymail]);
 
     const handleBoostLoading = () => {
       toast('Publishing Your Boost Job to the Network', {
