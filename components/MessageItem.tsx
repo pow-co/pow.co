@@ -7,6 +7,7 @@ import { useBitcoin } from "../context/BitcoinContext";
 import moment from "moment";
 import { useTheme } from "next-themes";
 import { useMemo } from "react";
+import Linkify from "linkify-react";
 
 export const MessageItem = (props:any, isSide: boolean) => {
     if(!props.MAP){
@@ -76,7 +77,7 @@ export const MessageItem = (props:any, isSide: boolean) => {
               <span className='text-xs text-gray-500 font-semibold'>{moment(props.timestamp * 1000).fromNow()}</span>
             </a>
           </div>
-          <PostDescription bContent={props.B.content}/>
+          <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover text-primary-500 hover:underline'}}>{props.B.content}</Linkify></div>
         </div>
         <div className='hidden col-span-12 group-hover:grid grid-col-12 justify-end'>
           <div className='col-span-11'/>
