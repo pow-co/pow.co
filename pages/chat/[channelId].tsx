@@ -151,7 +151,7 @@ const Chat = () => {
             </svg>
             <h2 className='ml-2 text-2xl font-bold'>{channelId}</h2>
           </div>
-          <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: isMobile ? "calc(100vh - 148px)" : "calc(100vh - 206px)"}} >
+          <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: isMobile ? "calc(100vh - 148px)" : "calc(100vh - 218px)"}} >
             {newMessages?.map((message: any) => {
               return <MessageItem key={message.tx.h} {...message}/>
             })}
@@ -159,7 +159,7 @@ const Chat = () => {
               return <MessageItem key={message.tx.h} {...message}/>
             })}
           </div>
-          <div ref={composerRef} className='sticky bottom-0 p-4'>
+          <div ref={composerRef} className='sticky px-4'>
             <ChatComposer channelId={channelId!}/>
           </div>
         </div>
