@@ -29,6 +29,8 @@ export default function Home() {
 
   
   let { rankings } = data || []
+
+  //console.log("RANKINGS", rankings)
   
   return (
     <>

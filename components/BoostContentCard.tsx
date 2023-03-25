@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { BoostButton } from 'boostpow-button';
 import React, { useEffect, useState } from 'react';
-
+import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 
 import UserIcon from './UserIcon';
@@ -19,6 +19,7 @@ import { useBitcoin } from '../context/BitcoinContext';
 import axios from 'axios';
 import {BASE, useAPI} from '../hooks/useAPI';
 import { useTuning } from '../context/TuningContext';
+import { queryComments } from '../pages/[txid]';
 const Markdown = require('react-remarkable')
 
 const RemarkableOptions = {
@@ -51,6 +52,21 @@ export interface Ranking {
     createdAt?: Date;
 }
 
+export const queryBMAP = (txid: string) => {
+    return {
+      "v": 3,
+      "q": {
+        "find": {
+          "tx.h": txid
+        },
+        "project": {
+          "out": 0,
+          "in": 0
+        }
+      }
+    }
+  }
+
 const BoostContentCard = ({ content_txid, content_type, content_text, count, difficulty, createdAt }: Ranking) => {
     const author = null 
     const [isTwetch, setIsTwetch] = useState(false)
@@ -59,20 +75,59 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const theme = useTheme()
     const { wallet } = useBitcoin()
     const { startTimestamp, filter, setFilter } = useTuning()
+    const [commentCount, setCommentCount] = useState(0)
+    const [inReplyTo, setInReplyTo] = useState("")
 
     const [loading, setLoading] = useState<boolean>(true)
 
     const [content, setContent] = useState<any>(null)
 
     useEffect(() => {
-        axios.get(`${BASE}/content/${content_txid}`).then(({data}) => {
+        getData().then((res) => {
+            setContent(res.content)
+            if (res.bmapContent?.MAP.type === "reply" && res.bmapContent?.MAP.context === "tx"){
+                setInReplyTo(res.bmapContent.MAP.tx)
+            }
+            setCommentCount(res.bmapComments.length)
+            setLoading(false)
+        })
+        /* axios.get(`${BASE}/content/${content_txid}`).then(({data}) => {
             setContent(data.content)
             setLoading(false)
         })
         .catch((err) => {
             console.error('api.content.fetch.error', err)
-        })
+        }) */
     }, [])
+
+    const getData = async () => {
+        //const [content, bmapContent, bmapComments, tagsResult] = await Promise.all([
+        const [contentResult, bmapContentResult, bmapCommentsResult] = await Promise.all([
+            axios.get(`${BASE}/content/${content_txid}`)
+                .catch((err) => {
+                    console.error('api.content.fetch.error', err)
+                    return { data: { content: {}}}
+                }),
+            axios.get(`https://b.map.sv/q/${content_txid && btoa(JSON.stringify(queryBMAP(content_txid)))}`).catch((err) => {
+                console.error('bmap.post.fetch.error', err)
+                return { data: { c: [] } }    
+            }),
+            axios.get(`https://b.map.sv/q/${content_txid && btoa(JSON.stringify(queryComments(content_txid)))}`).catch((err) => {
+                console.error('bmap.post.fetch.error', err)
+                return { data: { c: [] } }    
+            }),
+            //axios.get(`${BASE}/`)
+        ])
+
+        const content = contentResult.data.content;
+        const bmapContent = bmapContentResult.data.c[0] || null;
+        const bmapComments = bmapCommentsResult.data.c || [];
+        //const tags = tagsResult;
+
+        return { content, bmapContent, bmapComments}
+
+
+    }
 
     const handleBoostLoading = () => {
         toast('Publishing Your Boost Job to the Network', {
@@ -158,14 +213,15 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         )
     }
 
-    console.log('CONTENT', content)
+    //console.log('CONTENT.MAP', content.map)
 
   return (
     <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
+        {inReplyTo.length > 0 && <p className='col-span-12 pt-3 px-4 text-sm italic text-gray-600 text-ellipsis overflow-hidden dark:text-gray-400'>in reply to <span className='text-primary-500 text-xs hover:underline'><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
         <Twetch setIsTwetch={setIsTwetch} txid={content.txid} difficulty={difficulty || 0}/>
         <RelayClub setIsClub={setIsClub} txid={content.txid} difficulty={difficulty || 0}/>
         {!(isTwetch || isClub) && <div className='col-span-12'>
-            <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
+            <div className="mb-0.5 px-4 py-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
                 {author && (
                     <div className='col-span-1'>
                         <a>
@@ -230,7 +286,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                                 ></path>
                             </svg>
                             <p className="text-gray-500 dark:text-gray-300 group-hover:text-green-500">
-                                {/* {0} */}
+                                {commentCount}
                             </p>
                         </div>
                         <BoostButton

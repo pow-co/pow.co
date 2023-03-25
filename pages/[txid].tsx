@@ -44,7 +44,7 @@ const RemarkableOptions = {
     } */
 }
 
-const queryComments = (replyTx: string) => {
+export const queryComments = (replyTx: string) => {
   return {
     "v": 3,
     "q": {
