@@ -309,8 +309,8 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             console.log(tag)
                             if(tag.utf8.length > 0){
                                 return (
-                                    <Link onClick={(e:any)=>e.stopPropagation()} href={`/topics/${tag.utf8}`}>
-                                        <div key={index} className="flex items-center mt-2 mr-2 p-2 rounded-full bg-primary-500 text-white text-sm font-bold">{tag.utf8} <span className='ml-2'>⛏️ {Math.round(tag.difficulty)}</span></div>
+                                    <Link key={index} onClick={(e:any)=>e.stopPropagation()} href={`/topics/${tag.utf8}`}>
+                                        <div  className="flex items-center mt-2 mr-2 p-2 rounded-full bg-primary-500 text-white text-sm font-bold">{tag.utf8} <span className='ml-2'>⛏️ {Math.round(tag.difficulty)}</span></div>
                                     </Link>
                                 )
                             }
