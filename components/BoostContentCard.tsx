@@ -81,10 +81,12 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const [loading, setLoading] = useState<boolean>(true)
 
     const [content, setContent] = useState<any>(null)
+    const [tags, setTags] = useState<any>([])
 
     useEffect(() => {
         getData().then((res) => {
             setContent(res.content)
+            setTags(res.tags)
             if (res.bmapContent?.MAP.type === "reply" && res.bmapContent?.MAP.context === "tx"){
                 setInReplyTo(res.bmapContent.MAP.tx)
             }
@@ -120,11 +122,12 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         ])
 
         const content = contentResult.data.content;
+        const tags = contentResult.data.tags;
         const bmapContent = bmapContentResult.data.c[0] || null;
         const bmapComments = bmapCommentsResult.data.c || [];
         //const tags = tagsResult;
 
-        return { content, bmapContent, bmapComments}
+        return { content, tags, bmapContent, bmapComments}
 
 
     }
@@ -217,7 +220,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
 
   return (
     <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
-        {inReplyTo.length > 0 && <p className='col-span-12 pt-3 px-4 text-sm italic text-gray-600 text-ellipsis overflow-hidden dark:text-gray-400'>in reply to <span className='text-primary-500 text-xs hover:underline'><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
+        {inReplyTo.length > 0 && router.pathname === "/" && <p className='col-span-12 pt-3 px-4 text-sm italic text-gray-600 text-ellipsis overflow-hidden dark:text-gray-400'>in reply to <span className='text-primary-500 text-xs hover:underline'><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
         <Twetch setIsTwetch={setIsTwetch} txid={content.txid} difficulty={difficulty || 0}/>
         <RelayClub setIsClub={setIsClub} txid={content.txid} difficulty={difficulty || 0}/>
         {!(isTwetch || isClub) && <div className='col-span-12'>
@@ -300,6 +303,18 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             onError={handleBoostError}
                             onSuccess={handleBoostSuccess}
                         />
+                    </div>
+                    <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>
+                        {tags?.map((tag:any, index: number)=>{
+                            console.log(tag)
+                            if(tag.utf8.length > 0){
+                                return (
+                                    <Link key={index} onClick={(e:any)=>e.stopPropagation()} href={`/topics/${tag.utf8}`}>
+                                        <div  className="flex items-center mt-2 mr-2 p-2 rounded-full bg-primary-500 text-white text-sm font-bold">{tag.utf8} <span className='ml-2'>⛏️ {Math.round(tag.difficulty)}</span></div>
+                                    </Link>
+                                )
+                            }
+                        })}
                     </div>
                 </div> 
             </div>

@@ -6,6 +6,7 @@ import { useTheme } from 'next-themes';
 import { toast } from 'react-hot-toast';
 import { BoostButton } from 'boostpow-button';
 import { useBitcoin } from '../context/BitcoinContext';
+import { useRouter } from 'next/router';
 
 export interface BMAPData {
     AIP: any;
@@ -19,9 +20,9 @@ export interface BMAPData {
 }
 
 const ReplyCard = (props: BMAPData) => {
+   const router = useRouter() 
    const { AIP, B, MAP, tx, timestamp } = props
    const theme = useTheme()
-   console.log(props)
    const { wallet } = useBitcoin()
 
    const handleBoostLoading = () => {
@@ -56,8 +57,14 @@ const ReplyCard = (props: BMAPData) => {
         },
     });
   };
+
+  const navigate = (e:any) => {
+    e.stopPropagation()
+    router.push(`/${tx.h}`)
+
+  }
   return (
-    <div className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-1 first:md:rounded-t-lg last:md:rounded-b-lg'>
+    <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-1 first:md:rounded-t-lg last:md:rounded-b-lg'>
         <div className='col-span-12'>
             <div className="mb-0.5 px-4 pt-4 pb-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
                 {MAP.paymail && (
