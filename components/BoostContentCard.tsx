@@ -217,7 +217,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
 
   return (
     <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
-        {inReplyTo.length > 0 && <p className='col-span-12 pt-3 px-4 text-sm italic text-gray-600 text-ellipsis overflow-hidden dark:text-gray-400'>in reply to <span className='text-primary-500 text-xs hover:underline'><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
+        {inReplyTo.length > 0 && router.pathname === "/" && <p className='col-span-12 pt-3 px-4 text-sm italic text-gray-600 text-ellipsis overflow-hidden dark:text-gray-400'>in reply to <span className='text-primary-500 text-xs hover:underline'><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
         <Twetch setIsTwetch={setIsTwetch} txid={content.txid} difficulty={difficulty || 0}/>
         <RelayClub setIsClub={setIsClub} txid={content.txid} difficulty={difficulty || 0}/>
         {!(isTwetch || isClub) && <div className='col-span-12'>
