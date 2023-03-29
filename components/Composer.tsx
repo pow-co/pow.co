@@ -32,7 +32,7 @@ const Composer = () => {
   const { relayOne } = useRelay()
   const [initialBoost, setInitialBoost] = useState(false)
   const [content, setContent] = useState("")
-  const { wallet } = useBitcoin()
+  const { paymail ,wallet } = useBitcoin()
 
 
         //@ts-ignore
@@ -48,6 +48,8 @@ const Composer = () => {
 
       post.addText(content)
 
+      post.addMapData('paymail', paymail)
+      
       const hexArrayOps = post.getOps('hex');
 
       const opReturn = signOpReturn(hexArrayOps)

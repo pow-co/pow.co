@@ -19,7 +19,7 @@ export default function MyDropzone() {
   const [files, setFiles] = useState([]);
   const [opReturn, setOpReturn] = useState()
   const { relayOne } = useRelay()
-  const { wallet } = useBitcoin()
+  const { paymail, wallet } = useBitcoin()
 
   const onDrop = useCallback((acceptedFiles: any) => {
     acceptedFiles.forEach((file: any) => {
@@ -49,6 +49,8 @@ export default function MyDropzone() {
         const post = bsocial.post();
         // and image data Url
         post.addImage(`data:image/png;base64,${base64}`);
+
+        post.addMapData('paymail', paymail)
 
         const ops = post.getOps('hex');
 

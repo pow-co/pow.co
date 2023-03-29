@@ -31,7 +31,7 @@ export const MarkdownLogo = () => {
 export default function WriteNewArticle() {
 
   const router = useRouter()
-  const { wallet } = useBitcoin()
+  const { paymail, wallet } = useBitcoin()
 
         //@ts-ignore
     const stag = wrapRelayx(window.relayone)
@@ -65,6 +65,8 @@ export default function WriteNewArticle() {
       const post = bsocial.post();
 
       post.addMarkdown(value)
+
+      post.addMapData('paymail', paymail)
 
       const hexArrayOps = post.getOps('hex');
 
