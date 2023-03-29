@@ -83,7 +83,7 @@ import UserIcon from './UserIcon';
 import { useBitcoin } from '../context/BitcoinContext';
 import { useRouter } from 'next/router';
 
-export default function Twetch({ txid, setIsTwetch, difficulty }: { txid: string, setIsTwetch: Dispatch<SetStateAction<boolean>>, difficulty: number }) {
+export default function Twetch({ txid, setIsTwetch, difficulty, tags }: { txid: string, setIsTwetch: Dispatch<SetStateAction<boolean>>, difficulty: number, tags?:[] }) {
     const [loading, setLoading] = useState(false)
 
     const [post, setPost] = useState<any>()
@@ -124,7 +124,7 @@ export default function Twetch({ txid, setIsTwetch, difficulty }: { txid: string
     if(post){
         setIsTwetch(true)
         return (
-              <TwetchCard {...post} difficulty={difficulty}/>
+              <TwetchCard {...post} difficulty={difficulty} tags={tags}/>
     ) 
     } else {
         return <></>
@@ -239,6 +239,18 @@ export const TwetchCard = (props:any) => {
             onError={handleBoostError}
             onSuccess={handleBoostSuccess}
         />
+      </div>
+      <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>
+        {props.tags?.map((tag:any, index: number)=>{
+            console.log(tag)
+            if(tag.utf8.length > 0){
+                return (
+                    <Link key={index} onClick={(e:any)=>e.stopPropagation()} href={`/topics/${tag.utf8}`}>
+                        <div  className="flex items-center mt-2 mr-2 p-2 rounded-full bg-primary-500 text-white text-sm font-bold">{tag.utf8} <span className='ml-2'>⛏️ {Math.round(tag.difficulty)}</span></div>
+                    </Link>
+                )
+            }
+        })}
       </div>
   </div>
   )
