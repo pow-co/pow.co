@@ -120,7 +120,7 @@ import { useRelay } from '../context/RelayContext';
 import { useRouter } from 'next/router';
 import { useBitcoin } from '../context/BitcoinContext';
 
-export default function RelayClub({ txid, setIsClub, difficulty }: { txid: string, setIsClub: Dispatch<SetStateAction<boolean>>, difficulty: number }) {
+export default function RelayClub({ txid, setIsClub, difficulty, tags }: { txid: string, setIsClub: Dispatch<SetStateAction<boolean>>, difficulty: number, tags?: [] }) {
     const [loading, setLoading] = useState(false)
     
 
@@ -132,7 +132,7 @@ export default function RelayClub({ txid, setIsClub, difficulty }: { txid: strin
           
           if (txid) {
 
-            const result = await relayDetailQuery(txid)
+            let result = await relayDetailQuery(txid)
             setPost(result)
             setLoading(false)
           }
@@ -161,7 +161,7 @@ export default function RelayClub({ txid, setIsClub, difficulty }: { txid: strin
     if(post){
         setIsClub(true)
         return (
-            <RelayClubCard {...post} difficulty={difficulty} />
+            <RelayClubCard {...post} difficulty={difficulty} tags={tags} />
     ) 
     } else {
         return <></>
@@ -286,7 +286,7 @@ export const RelayClubCard = (props: any) => {
       router.push(`/${props.txid}`)
     }
     return (
-        <div onClick={navigate} className="cursor-pointer col-span-12 px-4 pt-4 pb-1 mt-1 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 sm:first:rounded-t-lg sm:last:rounded-b-lg">
+        <div onClick={navigate} className="cursor-pointer col-span-12 px-4 pt-4 mt-1 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 sm:first:rounded-t-lg sm:last:rounded-b-lg">
           <div className='mb-0.5  grid items-start grid-cols-12 max-w-screen '>
             <div className="col-span-1">
               <Link onClick={(e:any)=> e.stopPropagation()}  href={`/profile/${props.user?.paymail}`}>
@@ -368,6 +368,18 @@ export const RelayClubCard = (props: any) => {
                 onError={handleBoostError}
                 onSuccess={handleBoostSuccess}
             />
+          </div>
+          <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>
+            {props.tags?.map((tag:any, index: number)=>{
+                console.log(tag)
+                if(tag.utf8.length > 0){
+                    return (
+                        <Link key={index} onClick={(e:any)=>e.stopPropagation()} href={`/topics/${tag.utf8}`}>
+                            <div  className="flex items-center mt-2 mr-2 p-2 rounded-full bg-primary-500 text-white text-sm font-bold">{tag.utf8} <span className='ml-2'>⛏️ {Math.round(tag.difficulty)}</span></div>
+                        </Link>
+                    )
+                }
+            })}
           </div>
         </div>
     )

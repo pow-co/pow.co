@@ -32,7 +32,7 @@ const Composer = () => {
   const { relayOne } = useRelay()
   const [initialBoost, setInitialBoost] = useState(false)
   const [content, setContent] = useState("")
-  const { wallet } = useBitcoin()
+  const { paymail ,wallet } = useBitcoin()
 
 
         //@ts-ignore
@@ -47,6 +47,8 @@ const Composer = () => {
       const post = bsocial.post();
 
       post.addText(content)
+
+      post.addMapData('paymail', paymail)
 
       const hexArrayOps = post.getOps('hex');
 
@@ -82,6 +84,9 @@ const Composer = () => {
               },
             });
             console.log("relayx.response", resp)
+            await axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawTx
+            });
             router.push(`/${resp.txid}`)
           } catch (error) {
             console.log(error)
@@ -117,6 +122,9 @@ const Composer = () => {
               background: '#333',
               color: '#fff',
               },
+            });
+            await axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawtx
             });
             router.push(`/${resp.txid}`)
 

@@ -101,7 +101,7 @@ export default function DetailPage() {
 
     const inReplyTx = bmap?.MAP?.tx
   
-    return { twetchResult, comments, inReplyTx } 
+    return { twetchResult, bmap, comments, inReplyTx } 
 
   }
 

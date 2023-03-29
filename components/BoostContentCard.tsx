@@ -68,7 +68,6 @@ export const queryBMAP = (txid: string) => {
   }
 
 const BoostContentCard = ({ content_txid, content_type, content_text, count, difficulty, createdAt }: Ranking) => {
-    const author = null 
     const [isTwetch, setIsTwetch] = useState(false)
     const [isClub, setIsClub] = useState(false)
     const router = useRouter()
@@ -77,11 +76,14 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const { startTimestamp, filter, setFilter } = useTuning()
     const [commentCount, setCommentCount] = useState(0)
     const [inReplyTo, setInReplyTo] = useState("")
+    const [paymail, setPaymail] = useState<string>("")
+    const [avatar, setAvatar] = useState<string>("")
 
     const [loading, setLoading] = useState<boolean>(true)
 
     const [content, setContent] = useState<any>(null)
     const [tags, setTags] = useState<any>([])
+    const [timestamp, setTimestamp] = useState(0)
 
     useEffect(() => {
         getData().then((res) => {
@@ -89,6 +91,25 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
             setTags(res.tags)
             if (res.bmapContent?.MAP.type === "reply" && res.bmapContent?.MAP.context === "tx"){
                 setInReplyTo(res.bmapContent.MAP.tx)
+            }
+            if (res.content.createdAt){
+                setTimestamp(moment(res.content.createdAt).unix())
+            } else {
+                setTimestamp(res.bmapContent?.timestamp)
+            }
+            setPaymail(res.bmapContent?.MAP.paymail)
+            switch (true) {
+                case res.bmapContent?.MAP?.paymail?.includes("relayx"):
+                  setAvatar(`https://a.relayx.com/u/${res.bmapContent.MAP.paymail}`);
+                  break;
+                case res.bmapContent?.MAP?.paymail?.includes("twetch"):
+                    setAvatar(`https://auth.twetch.app/api/v2/users/${res.bmapContent.MAP.paymail.split("@")[0]}/icon`)
+                    break
+                case res.bmapContent?.MAP?.paymail?.includes("handcash"):
+                    setAvatar(`https://cloud.handcash.io/v2/users/profilePicture/${res.bmapContent.MAP.paymail.split("@")[0]}`)
+                    break
+                default:
+                    setAvatar("");
             }
             setCommentCount(res.bmapComments.length)
             setLoading(false)
@@ -118,14 +139,13 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                 console.error('bmap.post.fetch.error', err)
                 return { data: { c: [] } }    
             }),
-            //axios.get(`${BASE}/`)
         ])
 
         const content = contentResult.data.content;
         const tags = contentResult.data.tags;
+
         const bmapContent = bmapContentResult.data.c[0] || null;
         const bmapComments = bmapCommentsResult.data.c || [];
-        //const tags = tagsResult;
 
         return { content, tags, bmapContent, bmapComments}
 
@@ -221,26 +241,26 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
   return (
     <div onClick={navigate} className='grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 mt-0.5 first:md:rounded-t-lg last:md:rounded-b-lg'>
         {inReplyTo.length > 0 && router.pathname === "/" && <p className='col-span-12 pt-3 px-4 text-sm italic text-gray-600 text-ellipsis overflow-hidden dark:text-gray-400'>in reply to <span className='text-primary-500 text-xs hover:underline'><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
-        <Twetch setIsTwetch={setIsTwetch} txid={content.txid} difficulty={difficulty || 0}/>
-        <RelayClub setIsClub={setIsClub} txid={content.txid} difficulty={difficulty || 0}/>
+        <Twetch setIsTwetch={setIsTwetch} txid={content.txid} difficulty={difficulty || 0} tags={tags}/>
+        <RelayClub setIsClub={setIsClub} txid={content.txid} difficulty={difficulty || 0} tags={tags}/>
         {!(isTwetch || isClub) && <div className='col-span-12'>
-            <div className="mb-0.5 px-4 py-1 grid items-start grid-cols-12 max-w-screen cursor-pointer">
-                {author && (
+            <div className="mb-0.5 pt-4 px-4 grid items-start grid-cols-12 max-w-screen cursor-pointer">
+                {paymail && (
                     <div className='col-span-1'>
-                        <a>
-                            <UserIcon src={"https://a.relayx.com/u/anon@relayx.com"} size={46}/>
-                        </a>
+                        <Link onClick={(e:any) => e.stopPropagation()} href={`/profile/${paymail}`}>
+                            <UserIcon src={avatar} size={46}/>
+                        </Link>
                     </div>
                 )}
-                <div className={`col-span-${author? 11 : 12} ml-6`}>
+                <div className={`col-span-${paymail? 11 : 12} ml-6`}>
                        <div className='flex'>
-                            {author && (
-                            <div 
+                            {paymail && (
+                            <Link href={`/profile/${paymail}`} 
                                 onClick={(e:any) => e.stopPropagation()}
                                 className="text-base leading-4 font-bold text-gray-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis hover:underline"
                             >
-                                1anon
-                            </div>
+                                {paymail}
+                            </Link>
                             )}
                             <div className='grow'/>
                             
@@ -251,8 +271,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                                 className="text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500"
                                 id={`_${content.txid}`}
                             >
-                                {/* {moment(createdAt).fromNow()} */}
-                                txid
+                                {moment(timestamp * 1000).fromNow()}
                             </a>
                             {/*tooltip*/}
                             <Tooltip
@@ -304,20 +323,19 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             onSuccess={handleBoostSuccess}
                         />
                     </div>
-                    <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>
-                        {tags?.map((tag:any, index: number)=>{
-                            console.log(tag)
-                            if(tag.utf8.length > 0){
-                                return (
-                                    <Link key={index} onClick={(e:any)=>e.stopPropagation()} href={`/topics/${tag.utf8}`}>
-                                        <div  className="flex items-center mt-2 mr-2 p-2 rounded-full bg-primary-500 text-white text-sm font-bold">{tag.utf8} <span className='ml-2'>⛏️ {Math.round(tag.difficulty)}</span></div>
-                                    </Link>
-                                )
-                            }
-                        })}
-                    </div>
                 </div> 
             </div>
+        <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>
+            {tags?.map((tag:any, index: number)=>{
+                if(tag.utf8.length > 0){
+                    return (
+                        <Link key={index} onClick={(e:any)=>e.stopPropagation()} href={`/topics/${tag.utf8}`}>
+                            <div  className="flex items-center mt-2 mr-2 p-2 rounded-full bg-primary-500 text-white text-sm font-bold">{tag.utf8} <span className='ml-2'>⛏️ {Math.round(tag.difficulty)}</span></div>
+                        </Link>
+                    )
+                }
+            })}
+        </div>
         </div>}
     </div>
   )

@@ -33,7 +33,7 @@ interface CommentComposerProps {
 const CommentComposer = ({replyTx}: CommentComposerProps) => {
   const router = useRouter()
   const { relayOne } = useRelay()
-  const { wallet } = useBitcoin()
+  const { paymail, wallet } = useBitcoin()
   const [initialBoost, setInitialBoost] = useState(false)
   const [content, setContent] = useState("")
 
@@ -52,6 +52,8 @@ const CommentComposer = ({replyTx}: CommentComposerProps) => {
       post.setType('reply')
 
       post.addText(content)
+
+      post.addMapData('paymail', paymail)
 
       const hexArrayOps = post.getOps('hex');
 
