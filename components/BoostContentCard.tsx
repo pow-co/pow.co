@@ -88,6 +88,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         getData().then((res) => {
             setContent(res.content)
             setTags(res.tags)
+            console.log(res.bmapContent)
             if (res.bmapContent?.MAP.type === "reply" && res.bmapContent?.MAP.context === "tx"){
                 setInReplyTo(res.bmapContent.MAP.tx)
             }
@@ -133,14 +134,14 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                 console.error('bmap.post.fetch.error', err)
                 return { data: { c: [] } }    
             }),
-            //axios.get(`${BASE}/`)
         ])
 
         const content = contentResult.data.content;
         const tags = contentResult.data.tags;
+
+        console.log(bmapContentResult)
         const bmapContent = bmapContentResult.data.c[0] || null;
         const bmapComments = bmapCommentsResult.data.c || [];
-        //const tags = tagsResult;
 
         return { content, tags, bmapContent, bmapComments}
 

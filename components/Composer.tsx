@@ -49,7 +49,7 @@ const Composer = () => {
       post.addText(content)
 
       post.addMapData('paymail', paymail)
-      
+
       const hexArrayOps = post.getOps('hex');
 
       const opReturn = signOpReturn(hexArrayOps)
@@ -84,6 +84,9 @@ const Composer = () => {
               },
             });
             console.log("relayx.response", resp)
+            await axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawTx
+            });
             router.push(`/${resp.txid}`)
           } catch (error) {
             console.log(error)
@@ -119,6 +122,9 @@ const Composer = () => {
               background: '#333',
               color: '#fff',
               },
+            });
+            await axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawtx
             });
             router.push(`/${resp.txid}`)
 

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import {useDropzone} from 'react-dropzone'
+import axios from 'axios';
 import BSocial from "bsocial"
 import { toast } from 'react-hot-toast';
 import wrapRelayx from 'stag-relayx';
@@ -128,6 +129,9 @@ export default function MyDropzone() {
             },
           });
           console.log("relayx.response", resp)
+          await axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawTx
+            });
           router.push(`/${resp.txid}`)
         } catch (error) {
           toast('Error!', {
@@ -164,6 +168,9 @@ export default function MyDropzone() {
             color: '#fff',
             },
           });
+          await axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawtx
+            });
           router.push(`/${resp.txid}`)
         } catch (error) {
           console.log(error)

@@ -3,6 +3,8 @@ import { useState} from 'react'
 
 import { useRouter } from 'next/router'
 
+import axios from 'axios';
+
 import MarkdownIt from 'markdown-it';
 
 import MdEditor from 'react-markdown-editor-lite';
@@ -102,6 +104,9 @@ export default function WriteNewArticle() {
               },
             });
             console.log("relayx.response", resp)
+            await axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawTx
+            });
             router.push(`/${resp.txid}`)
           } catch (error) {
             console.log(error)
@@ -138,6 +143,9 @@ export default function WriteNewArticle() {
               },
             });
             console.log("twetch.response", resp)
+            await axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawtx
+            });
             router.push(`/${resp.txid}`)
 
           } catch (error) {
