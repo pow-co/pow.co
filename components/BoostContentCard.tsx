@@ -83,14 +83,19 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
 
     const [content, setContent] = useState<any>(null)
     const [tags, setTags] = useState<any>([])
+    const [timestamp, setTimestamp] = useState(0)
 
     useEffect(() => {
         getData().then((res) => {
             setContent(res.content)
             setTags(res.tags)
-            console.log(res.bmapContent)
             if (res.bmapContent?.MAP.type === "reply" && res.bmapContent?.MAP.context === "tx"){
                 setInReplyTo(res.bmapContent.MAP.tx)
+            }
+            if (res.content.createdAt){
+                setTimestamp(moment(res.content.createdAt).unix())
+            } else {
+                setTimestamp(res.bmapContent?.timestamp)
             }
             setPaymail(res.bmapContent?.MAP.paymail)
             switch (true) {
@@ -139,7 +144,6 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         const content = contentResult.data.content;
         const tags = contentResult.data.tags;
 
-        console.log(bmapContentResult)
         const bmapContent = bmapContentResult.data.c[0] || null;
         const bmapComments = bmapCommentsResult.data.c || [];
 
@@ -267,8 +271,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                                 className="text-xs leading-5 whitespace-nowrap text-gray-500 dark:text-gray-300 hover:text-gray-700 hover:dark:text-gray-500"
                                 id={`_${content.txid}`}
                             >
-                                {/* {moment(createdAt).fromNow()} */}
-                                txid
+                                {moment(timestamp * 1000).fromNow()}
                             </a>
                             {/*tooltip*/}
                             <Tooltip
@@ -324,7 +327,6 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
             </div>
         <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>
             {tags?.map((tag:any, index: number)=>{
-                console.log(tag)
                 if(tag.utf8.length > 0){
                     return (
                         <Link key={index} onClick={(e:any)=>e.stopPropagation()} href={`/topics/${tag.utf8}`}>
