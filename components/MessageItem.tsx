@@ -15,11 +15,11 @@ export const MessageItem = (props:any, isSide: boolean) => {
   
   const avatar = useMemo(() => {
     switch (true) {
-      case props.MAP?.paymail.includes("relayx"):
+      case props.MAP?.paymail?.includes("relayx"):
         return `https://a.relayx.com/u/${props.MAP.paymail}`;
-        case props.MAP?.paymail.includes("twetch"):
+        case props.MAP?.paymail?.includes("twetch"):
           return `https://auth.twetch.app/api/v2/users/${props.MAP.paymail.split("@")[0]}/icon`
-          case props.MAP?.paymail.includes("handcash"):
+          case props.MAP?.paymail?.includes("handcash"):
             return `https://cloud.handcash.io/v2/users/profilePicture/${props.MAP.paymail.split("@")[0]}`
             default:
               return "https://a.relayx.com/u/0";
