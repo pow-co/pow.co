@@ -33,6 +33,7 @@ const Composer = () => {
   const [initialBoost, setInitialBoost] = useState(false)
   const [content, setContent] = useState("")
   const { paymail ,wallet } = useBitcoin()
+  const [signWithPaymail, setSignWithPaymail] = useState(true)
 
 
         //@ts-ignore
@@ -48,7 +49,9 @@ const Composer = () => {
 
       post.addText(content)
 
-      post.addMapData('paymail', paymail)
+      if (signWithPaymail){
+        post.addMapData('paymail', paymail)
+      }
 
       const hexArrayOps = post.getOps('hex');
 
@@ -199,9 +202,15 @@ const Composer = () => {
           
         </div> */}
         <div className="flex items-center justify-between px-3 py-2 dark:border-gray-600">
-            <button type="submit" className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-600 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
-                Create post
-            </button>
+            <div className='flex items-center'>
+              <button type="submit" className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-600 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
+                  Create post
+              </button>
+              <div className="flex items-center ml-4">
+                <input checked={signWithPaymail} id="sign-checkbox" type="checkbox" onClick={(e:any) => setSignWithPaymail(!signWithPaymail)} className="w-4 h-4 accent-primary-500 bg-gray-100 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"/>
+                <label htmlFor="sign-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Sign with paymail?</label>
+              </div>
+            </div>
             <div className="flex pl-0 space-x-1 sm:pl-2">
                 <button onClick={()=>router.push('/compose/url')} type="button" className="inline-flex justify-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                     <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">

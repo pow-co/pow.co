@@ -21,6 +21,7 @@ export default function MyDropzone() {
   const [opReturn, setOpReturn] = useState()
   const { relayOne } = useRelay()
   const { paymail, wallet } = useBitcoin()
+  const [signWithPaymail, setSignWithPaymail] = useState(true)
 
   const onDrop = useCallback((acceptedFiles: any) => {
     acceptedFiles.forEach((file: any) => {
@@ -51,7 +52,9 @@ export default function MyDropzone() {
         // and image data Url
         post.addImage(`data:image/png;base64,${base64}`);
 
-        post.addMapData('paymail', paymail)
+        if (signWithPaymail){
+          post.addMapData('paymail', paymail)
+        }
 
         const ops = post.getOps('hex');
 
@@ -211,6 +214,10 @@ export default function MyDropzone() {
         )}
       </section>
       <div className='mt-5 flex justify-center'>
+        <div className="flex items-center mr-4">
+          <input checked={signWithPaymail} id="sign-checkbox" type="checkbox" onClick={(e:any) => setSignWithPaymail(!signWithPaymail)} className="w-4 h-4 accent-primary-500 bg-gray-100 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"/>
+          <label htmlFor="sign-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Sign with paymail?</label>
+        </div>
         <button type="submit" className="justify-end items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-600 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
             Post Image
         </button>
