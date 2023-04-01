@@ -22,7 +22,7 @@ type ContextValue = {
     setZenMode: (zenMode: boolean) => void;
     startTimestamp: number;
     identity: boolean;
-    setID: (identity: boolean) => false;
+    setID: (identity: boolean) => void;
 
 }
 

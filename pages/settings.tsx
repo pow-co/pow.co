@@ -39,6 +39,11 @@ export default function Settings() {
     }
   };
 
+  const handleChangeID = (e: any) => {
+    e.preventDefault();
+    setID(!identity);
+}
+
   return (
     <PanelLayout>
       <div className="mx-auto max-w-xl col-span-12 lg:col-span-6 min-h-screen flex flex-col ">
@@ -128,7 +133,7 @@ export default function Settings() {
                     type="checkbox"
                     className="sr-only"
                     checked={identity}
-                    handleChange={setID}
+                    onChange={handleChangeID}
                   />
                   <div className="w-10 toggle h-4 bg-gray-400 rounded-full shadow-inner"></div>
                   <div className="dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition"></div>

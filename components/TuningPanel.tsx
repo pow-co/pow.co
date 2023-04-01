@@ -11,7 +11,7 @@ interface TuningPanelProps {
 const TuningPanel = ({ closeAction }: TuningPanelProps) => {
     const { filter, setFilter} = useTuning()
 
-    const handleChange = (e:any) => {
+    const handleChangeID = (e:any) => {
       setFilter(e.target.value);
       if (closeAction){
 
@@ -24,7 +24,7 @@ const TuningPanel = ({ closeAction }: TuningPanelProps) => {
     <div className='flex flex-col'>
       <div className='flex items-center w-full'>
           <label htmlFor="filter" className="text-sm font-medium text-gray-700 dark:text-gray-200"><FormattedMessage id="filter"/>:</label>
-          <select value={filter} onChange={handleChange} id="filter" className="ml-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block grow p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+          <select value={filter} onChange={handleChangeID} id="filter" className="ml-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block grow p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
             <option value="last-hour"><FormattedMessage id="Last Hour"/></option>
             <option value="last-day"><FormattedMessage id="Last Day"/></option>
             <option value="last-week"><FormattedMessage id="Last Week"/></option>

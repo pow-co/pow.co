@@ -34,7 +34,7 @@ const Composer = () => {
   const [content, setContent] = useState("")
   const { paymail ,wallet } = useBitcoin()
   const [signWithPaymail, setSignWithPaymail] = useState(true)
-  const { identity, setIdentity } = useTuning()
+  const { identity, setID } = useTuning()
 
 
         //@ts-ignore
@@ -182,10 +182,7 @@ const Composer = () => {
       setContent(e.target.value)
     }
 
-    const handleChange = (e:any) => {
-      e.preventDefault();
-      setID(!identity);
-  }
+   
   return (
      
 <form onSubmit={submitPost}>
