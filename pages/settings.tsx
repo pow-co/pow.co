@@ -77,32 +77,9 @@ export default function Settings() {
               />
             </svg>
           </div> */}
-          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
-            <div className="flex flex-col">
-              <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
-                <FormattedMessage id="Dark Mode" />
-              </p>
-              <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
-                <FormattedMessage id="Toggle between dark and light mode" />
-              </p>
-            </div>
-            <div className="grow" />
-            <div className="relative">
-              <label className="flex items-center cursor-pointer">
-                <div className="relative">
-                  <input
-                    id="toggleTheme"
-                    type="checkbox"
-                    className="sr-only"
-                    checked={isDark}
-                    onChange={toggleTheme}
-                  />
-                  <div className="w-10 toggle h-4 bg-gray-400 rounded-full shadow-inner"></div>
-                  <div className="dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition"></div>
-                </div>
-              </label>
-            </div>
-          </div>
+
+ 
+ {/* Light Mode and Dark Mode Toggle */}
 
           <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
             <div className="flex flex-col">
@@ -130,6 +107,37 @@ export default function Settings() {
               </label>
             </div>
           </div>
+
+{/* Identity Protocol Turn off or on by Default in Settings */}
+
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+            <div className="flex flex-col">
+              <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                <FormattedMessage id="Identity Signing" />
+              </p>
+              <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                <FormattedMessage id="Toggle between default identity OFF or ON" />
+              </p>
+            </div>
+            <div className="grow" />
+            <div className="relative">
+              <label className="flex items-center cursor-pointer">
+                <div className="relative">
+                  <input
+                    id="toggleID"
+                    type="checkbox"
+                    className="sr-only"
+                    checked={identity}
+                    handleChange={setID}
+                  />
+                  <div className="w-10 toggle h-4 bg-gray-400 rounded-full shadow-inner"></div>
+                  <div className="dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition"></div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+{/* Language Settings */}
 
           <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
             <div className="flex flex-col">

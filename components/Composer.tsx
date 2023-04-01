@@ -182,6 +182,10 @@ const Composer = () => {
       setContent(e.target.value)
     }
 
+    const handleChange = (e:any) => {
+      e.preventDefault();
+      setID(!identity);
+  }
   return (
      
 <form onSubmit={submitPost}>
