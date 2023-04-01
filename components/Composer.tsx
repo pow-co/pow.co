@@ -34,6 +34,7 @@ const Composer = () => {
   const [content, setContent] = useState("")
   const { paymail ,wallet } = useBitcoin()
   const [signWithPaymail, setSignWithPaymail] = useState(true)
+  const { identity, setIdentity } = useTuning()
 
 
         //@ts-ignore

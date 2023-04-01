@@ -21,23 +21,25 @@ type ContextValue = {
     zenMode: boolean;
     setZenMode: (zenMode: boolean) => void;
     startTimestamp: number;
+    identity: boolean;
+    setID: (identity: boolean) => false;
 
 }
 
 const TuningContext = createContext<ContextValue | undefined>(undefined);
 
 const filters = {
-  "last-hour": ago("hour"),
-  "last-day": ago("day"),
-  "last-week": ago("week"),
+  "last-hour":  ago("hour"),
+  "last-day":   ago("day"),
+  "last-week":  ago("week"),
   "last-month": ago("month"),
-  "last-year": ago("year"), 
-  "all-time": 0,
+  "last-year":  ago("year"), 
+  "all-time":   0,
 };
 const sort = {
   latest: -1,
-  oldest: 1,
-  boost: 0,
+  oldest:  1,
+  boost:   0,
 };
 
 
@@ -46,6 +48,7 @@ const TuneProvider = (props: { children: React.ReactNode }) => {
   const router = useRouter();
   const [filter, setFilter] = useLocalStorage(filterStorageKey, "last-day");
   const [zenMode, setZenMode] = useLocalStorage(zenModeStorageKey, false);
+  const [identity, setID] = useLocalStorage(idStorageKey, false);
   const [locale, setLocale] = useLocalStorage(langStorageKey, "en");
   const [sort, setSort] = useLocalStorage(sortStorageKey, "latest");
   const [startTimestamp, setStartTimestamp] = useState(0);
@@ -63,6 +66,8 @@ const TuneProvider = (props: { children: React.ReactNode }) => {
       filter,
       setFilter,
       locale,
+      identity,
+      setID,
       setLocale,
       sort,
       setSort,
@@ -74,6 +79,8 @@ const TuneProvider = (props: { children: React.ReactNode }) => {
       filter,
       setFilter,
       locale,
+      identity,
+      setID,
       setLocale,
       sort,
       setSort,
