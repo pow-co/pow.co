@@ -242,7 +242,6 @@ export const TwetchCard = (props:any) => {
       </div>
       <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>
         {props.tags?.map((tag:any, index: number)=>{
-            console.log(tag)
             if(tag.utf8.length > 0){
                 return (
                     <Link key={index} onClick={(e:any)=>e.stopPropagation()} href={`/topics/${tag.utf8}`}>

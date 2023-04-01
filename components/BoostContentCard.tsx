@@ -89,24 +89,24 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         getData().then((res) => {
             setContent(res.content)
             setTags(res.tags)
-            if (res.bmapContent?.MAP.type === "reply" && res.bmapContent?.MAP.context === "tx"){
-                setInReplyTo(res.bmapContent.MAP.tx)
+            if (res.bmapContent?.MAP[0].type === "reply" && res.bmapContent?.MAP[0].context === "tx"){
+                setInReplyTo(res.bmapContent.MAP[0].tx)
             }
             if (res.content.createdAt){
                 setTimestamp(moment(res.content.createdAt).unix())
             } else {
                 setTimestamp(res.bmapContent?.timestamp)
             }
-            setPaymail(res.bmapContent?.MAP.paymail)
+            setPaymail(res.bmapContent?.MAP[0].paymail)
             switch (true) {
-                case res.bmapContent?.MAP?.paymail?.includes("relayx"):
-                  setAvatar(`https://a.relayx.com/u/${res.bmapContent.MAP.paymail}`);
+                case res.bmapContent?.MAP[0]?.paymail?.includes("relayx"):
+                  setAvatar(`https://a.relayx.com/u/${res.bmapContent.MAP[0].paymail}`);
                   break;
-                case res.bmapContent?.MAP?.paymail?.includes("twetch"):
-                    setAvatar(`https://auth.twetch.app/api/v2/users/${res.bmapContent.MAP.paymail.split("@")[0]}/icon`)
+                case res.bmapContent?.MAP[0]?.paymail?.includes("twetch"):
+                    setAvatar(`https://auth.twetch.app/api/v2/users/${res.bmapContent.MAP[0].paymail.split("@")[0]}/icon`)
                     break
                 case res.bmapContent?.MAP?.paymail?.includes("handcash"):
-                    setAvatar(`https://cloud.handcash.io/v2/users/profilePicture/${res.bmapContent.MAP.paymail.split("@")[0]}`)
+                    setAvatar(`https://cloud.handcash.io/v2/users/profilePicture/${res.bmapContent.MAP[0].paymail.split("@")[0]}`)
                     break
                 default:
                     setAvatar("");
@@ -141,12 +141,12 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
             }),
         ])
 
+        
         const content = contentResult.data.content;
         const tags = contentResult.data.tags;
-
         const bmapContent = bmapContentResult.data.c[0] || null;
         const bmapComments = bmapCommentsResult.data.c || [];
-
+        
         return { content, tags, bmapContent, bmapComments}
 
 

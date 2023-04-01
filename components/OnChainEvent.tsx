@@ -152,7 +152,6 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       if(youtubeMatch){
         // 2. get the youtube video id
         const videoId = youtubeMatch[1]
-        console.log(videoId)
         return <YouTube videoId={videoId} opts={youtubePlayerOpts}/>
       } else {
         return <>

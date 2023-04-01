@@ -58,9 +58,7 @@ const TwetchProvider = (props: { children: React.ReactNode }) => {
             "content-type": "application/json",
           },
         })
-        console.log(respLogUser)
         const logUserData = await respLogUser.json()
-        console.log(logUserData)
         setMe(logUserData.me)
       },[tokenTwetchAuth])
 

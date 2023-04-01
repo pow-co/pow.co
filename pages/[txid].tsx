@@ -78,7 +78,6 @@ export default function DetailPage() {
   useEffect(() => {
     setLoading(true)
     query.txid && getData().then((res) => {
-      console.log(res)
       setTwetch(res.twetchResult)
       setReplies(res.comments)
       setInReplyTx(res.inReplyTx)
@@ -98,9 +97,7 @@ export default function DetailPage() {
   
     const bmap = bmapResponse.data.c[0] || {}
     const comments = commentsResponse.data.c || [];
-
-    const inReplyTx = bmap?.MAP?.tx
-  
+    const inReplyTx =  bmap.MAP && bmap?.MAP[0].tx 
     return { twetchResult, bmap, comments, inReplyTx } 
 
   }
