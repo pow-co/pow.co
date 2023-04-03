@@ -93,14 +93,26 @@ const Composer = () => {
             router.push(`/${resp.txid}`)
           } catch (error) {
             console.log(error)
-            toast('Error!', {
-              icon: '🐛',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
+            if(stag.relayone!.errors.isLowFunds(error) {
+              toast('Error! Too Low Funds', {
+                icon: '🐛',
+                style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+                },
             });
+            }
+            else {
+              toast('Error!', {
+                icon: '🐛',
+                style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+                },
+              });
+            }
           }
           break;
         case "twetch":
