@@ -17,21 +17,25 @@ const ChannelList = () => {
             e.stopPropagation();
             router.push(`/chat/${props.channel}`)
         }
-        return (
-            <div onClick={navigate} className={`cursor-pointer grid grid-cols-12 items-center py-1 ${props.selected ? "bg-blue-100" : "bg-primary-100"} ${props.selected ? "dark:bg-blue-600/20" : "dark:bg-primary-600/20"} hover:bg-primary-200 hover:dark:bg-primary-900/20`}>
-                <div className='col-span-2 flex justify-center'>
-                    {/* <UserIcon src={`https://a.relayx.com/u/${props.creator}`} size={36}/> */}
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5l-3.9 19.5m-2.1-19.5l-3.9 19.5" />
-                    </svg>
-                </div>
-                <div className='col-span-8'>
-                    <h2 className='text-lg truncate font-semibold'>{props.channel}</h2>
-                    <p className='truncate'>{props.last_message}</p>
-                </div>
-                <p className='col-span-2 text-xs text-center'>{moment(props.last_message_time * 1000).fromNow()}</p>
-            </div>
+        if(!props.channel){
+          return <></>
+        } else {
+          return (
+              <div onClick={navigate} className={`cursor-pointer grid grid-cols-12 items-center py-1 ${props.selected ? "bg-blue-100" : "bg-primary-100"} ${props.selected ? "dark:bg-blue-600/20" : "dark:bg-primary-600/20"} hover:bg-primary-200 hover:dark:bg-primary-900/20`}>
+                  <div className='col-span-2 flex justify-center'>
+                      {/* <UserIcon src={`https://a.relayx.com/u/${props.creator}`} size={36}/> */}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5l-3.9 19.5m-2.1-19.5l-3.9 19.5" />
+                      </svg>
+                  </div>
+                  <div className='col-span-8'>
+                      <h2 className='text-lg truncate font-semibold'>{props.channel}</h2>
+                      <p className='truncate'>{props.last_message}</p>
+                  </div>
+                  <p className='col-span-2 text-xs text-center'>{moment(props.last_message_time * 1000).fromNow()}</p>
+              </div>
         )
+        }
     }
     const query = router.query
 
@@ -41,12 +45,25 @@ const ChannelList = () => {
           aggregate: [
             {
               $match: {
-                "MAP.type": "message",
-                "MAP.channel": { $not: { $regex: "^\\s*$|^$|_enc$" } },
+                MAP: {
+                  $elemMatch: {
+                    type: "message",
+                    channel:  { $not: { $regex: "^\\s*$|^$|_enc$" } }
+                  }
+                }
               },
             },
             {
               $sort: { "blk.t": 1 },
+            },
+            {
+              $unwind: "$MAP"
+            },
+            {
+              $match: {
+                "MAP.type": "message",
+                "MAP.channel": { $not: { $regex: "^\\s*$|^$|_enc$" } }
+              }
             },
             {
               $group: {
@@ -65,7 +82,6 @@ const ChannelList = () => {
       };
       const queryChannelsB64 = btoa(JSON.stringify(queryChannels));
       const { data, error, isLoading } = useSWR(`https://b.map.sv/q/${queryChannelsB64}`, fetcher)
-
       const channels = data?.c || []
   return (
     <div className='flex flex-col  overflow-hidden'>

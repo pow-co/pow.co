@@ -87,15 +87,15 @@ const ChatComposer = ({ channelId, onNewMessageSent }: ChatComposerProps) => {
         );
         let outputs
         let futureBMAP = {
-          B:{
+          B:[{
             content:content,
             "content-type":"text/plain",
             encoding: "utf-8"
-          },
-          MAP: {
+          }],
+          MAP: [{
             channel: channel,
             paymail: paymail
-          },
+          }],
           timestamp:moment().unix(),
           tx:{
             h: "pending"
