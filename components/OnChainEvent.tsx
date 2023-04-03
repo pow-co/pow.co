@@ -13,6 +13,7 @@ import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import YouTube from 'react-youtube';
 import NFTItemCard from './NFTItemCard';
+import { TwitterTweetEmbed } from 'react-twitter-embed';
 
 const customFetcher = async (url: string) => {
     const response = await fetch(`https://link-preview-proxy.pow.co/v2?url=${url}`);
@@ -65,6 +66,13 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       if (nft) {
         return <NFTCard nft={nft}/>
       }
+    }
+
+    if(event?.content?.url.startsWith('https://twitter.com/')) {
+      const tweetId = event.content.url.split('/').pop()
+        return  <TwitterTweetEmbed
+          tweetId={tweetId}
+        />
     }
 
     if (event.app === 'powstream.com') {
