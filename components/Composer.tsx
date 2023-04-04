@@ -93,7 +93,7 @@ const Composer = () => {
             router.push(`/${resp.txid}`)
           } catch (error) {
             console.log(error)
-            if(stag.relayone!.errors.isLowFunds(error) {
+            if(stag.relayone!.errors.isLowFunds(error)) {
               toast('Error! Too Low Funds', {
                 icon: '🐛',
                 style: {

@@ -68,7 +68,7 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       }
     }
 
-    if(event?.content?.url.startsWith('https://twitter.com/')) {
+    if(event?.content?.url?.startsWith('https://twitter.com/')) {
       const tweetId = event.content.url.split('/').pop()
         return  <TwitterTweetEmbed
           tweetId={tweetId}
