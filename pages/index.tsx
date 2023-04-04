@@ -10,7 +10,7 @@ import { FormattedMessage } from "react-intl"
 import BitcoinBrowser from "../components/BitcoinBrowser"
 import FindOrCreate from "../components/FindOrCreate"
 import { useBitcoin } from "../context/BitcoinContext"
-
+import CardErrorBoundary from "../components/CardErrorBoundary"
 
 
 
@@ -58,7 +58,11 @@ export default function Home() {
       <div className="col-span-12 lg:col-span-6 min-h-screen">
         <div className="mt-5 lg:mt-10 mb-[200px]">
           {loading ? <Loader/> : rankings?.map((post: Ranking) => {
-            return <BoostContentCard key={post.content_txid} {...post}/>
+            return (
+             <CardErrorBoundary key={post.content_txid}>
+               <BoostContentCard  {...post}/>
+               </CardErrorBoundary>
+             )
           } ) }
         </div>
       </div>
