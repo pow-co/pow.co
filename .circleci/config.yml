@@ -30,11 +30,10 @@ workflows:
     jobs:
       - build_docker
       - deploy_develop:
-        filters:
-          branches:
-            only: 
-              - develop
           requires:
             - build_docker
-
+          filters:
+            branches:
+              only:
+                - develop
 
