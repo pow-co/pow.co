@@ -22,7 +22,7 @@ jobs:
       - add_ssh_keys
       - run:
           name: SSH And Deploy Develop
-          command: ssh root@pow.co "/home/root/deploy_next_powco.sh"
+          command: ssh root@next.pow.co "/home/root/deploy_next_powco.sh"
 
 workflows:
   version: 2
