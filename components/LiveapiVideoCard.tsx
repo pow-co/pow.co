@@ -8,7 +8,6 @@ import { LinkPreview } from '@dhaiwat10/react-link-preview';
 import { fetcher } from '../hooks/useAPI'
 import PowcoDevIssue from './PowcoDevIssue';
 import { toast } from 'react-hot-toast';
-import Gist from "react-gist";
 import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import YouTube from 'react-youtube';
@@ -46,7 +45,7 @@ export default function VideoCard({ video }: {video: LiveapiVideo}) {
           },
         });
     };
-  
+
     const handleBoostSuccess = () => {
       toast('Success!', {
           icon: '✅',
@@ -57,7 +56,7 @@ export default function VideoCard({ video }: {video: LiveapiVideo}) {
           },
         });
     };
-  
+
     const handleBoostError = () => {
       toast('Error!', {
           icon: '🐛',
@@ -113,7 +112,7 @@ export default function VideoCard({ video }: {video: LiveapiVideo}) {
         </div>
       </div>)
     }
-  
+
     return (
       <>
         <div id="tokenmeet-room-container" style={{'flexDirection': 'column', display: 'flex'}} className='flex items-center mt-10'>
@@ -123,5 +122,5 @@ export default function VideoCard({ video }: {video: LiveapiVideo}) {
         </div>
     </>
     )
-  
+
   }
