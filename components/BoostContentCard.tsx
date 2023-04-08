@@ -202,11 +202,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         )
       }
     const PostContent = () => {
-
-        console.log('content', content)
-
         if (content?.content_text?.startsWith('https://gist.github.com/')) {
-            console.log('its a gist', content.content_text.split('https://gist.github.com/')[1])
             return <>
               <small className=''><a href={content?.content_text} target="_blank" className='blankLink' rel="noreferrer">{content?.content_text}</a></small>
                 <div className='text-ellipsis '>
