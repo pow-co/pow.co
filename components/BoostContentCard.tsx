@@ -21,6 +21,11 @@ import {BASE, useAPI} from '../hooks/useAPI';
 import { useTuning } from '../context/TuningContext';
 import { queryComments } from '../pages/[txid]';
 const Markdown = require('react-remarkable')
+import useSWR from 'swr'
+import { isRelayX } from '../utils/relayX'
+import NFTItemCard from './NFTItemCard';
+import NFTCard from './NFTCard';
+import { fetcher } from '../hooks/useAPI'
 
 const RemarkableOptions = {
     breaks: true,
@@ -32,11 +37,11 @@ const RemarkableOptions = {
           return hljs.highlight(lang, str).value;
         } catch (err) {}
       }
-  
+
       try {
         return hljs.highlightAuto(str).value;
       } catch (err) {}
-  
+
       return ''; // use external default escaping
     } */
 }
@@ -133,20 +138,20 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                 }),
             axios.get(`https://b.map.sv/q/${content_txid && btoa(JSON.stringify(queryBMAP(content_txid)))}`).catch((err) => {
                 console.error('bmap.post.fetch.error', err)
-                return { data: { c: [] } }    
+                return { data: { c: [] } }
             }),
             axios.get(`https://b.map.sv/q/${content_txid && btoa(JSON.stringify(queryComments(content_txid)))}`).catch((err) => {
                 console.error('bmap.post.fetch.error', err)
-                return { data: { c: [] } }    
+                return { data: { c: [] } }
             }),
         ])
 
-        
+
         const content = contentResult.data.content;
         const tags = contentResult.data.tags;
         const bmapContent = bmapContentResult.data.c[0] || null;
         const bmapComments = bmapCommentsResult.data.c || [];
-        
+
         return { content, tags, bmapContent, bmapComments}
 
 
@@ -162,7 +167,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
             },
           });
       };
-    
+
       const handleBoostSuccess = () => {
         toast('Success!', {
             icon: '✅',
@@ -173,7 +178,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
             },
           });
       };
-    
+
       const handleBoostError = () => {
         toast('Error!', {
             icon: '🐛',
@@ -201,6 +206,36 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         )
       }
     const PostContent = () => {
+        // Check if the event is a RelayX Marketplace Link and fetch the NFT data
+        const relayXData = isRelayX(content?.content_text);
+        // Conditionally fetch
+        const { data: nftData } = useSWR(
+            relayXData && !relayXData.itemLocation
+            ? `https://staging-backend.relayx.com/api/market/${relayXData.marketLocation}`
+            : null,
+            fetcher
+        );
+
+        const { data: nftItemData } = useSWR(
+            relayXData && relayXData.itemLocation
+            ? `https://staging-backend.relayx.com/api/market/${relayXData.marketLocation}/items/${relayXData.itemLocation}`
+            : null,
+            fetcher
+        );
+
+        // Render RelayX MarketPlace Events
+        if (relayXData && !relayXData.itemLocation) {
+            const nft = nftData?.data?.token;
+            if (nft) {
+            return <NFTCard nft={nft} />;
+            }
+        }
+
+        // Render RelayX Item Events
+        if (relayXData && relayXData.itemLocation) {
+            return <NFTItemCard nft={nftItemData?.data} />;
+        }
+
         return (
             <>
             {content.content_type?.match('image') && (
@@ -217,7 +252,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
             <OnchainEvent txid={content.txid}/>
             </>
         )
-        
+
     }
 
     const navigate = (e: any) => {
@@ -255,7 +290,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                 <div className={`col-span-${paymail? 11 : 12} ml-6`}>
                        <div className='flex'>
                             {paymail && (
-                            <Link href={`/profile/${paymail}`} 
+                            <Link href={`/profile/${paymail}`}
                                 onClick={(e:any) => e.stopPropagation()}
                                 className="text-base leading-4 font-bold text-gray-900 dark:text-white cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis hover:underline"
                             >
@@ -263,7 +298,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             </Link>
                             )}
                             <div className='grow'/>
-                            
+
                             <a  onClick={(e:any)=>e.stopPropagation()}
                                 target="_blank"
                                 rel="noreferrer"
@@ -275,13 +310,13 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             </a>
                             {/*tooltip*/}
                             <Tooltip
-                            anchorSelect={`#_${content.txid}`} 
-                            place="right" 
+                            anchorSelect={`#_${content.txid}`}
+                            place="right"
                             className="dark:bg-gray-100 text-white dark:text-black italic"
                             clickable
-                                
+
                             >
-                                <a 
+                                <a
                                 href="https://learnmeabitcoin.com/technical/txid"
                                 target="_blank"
                                 rel="noreferrer"
@@ -323,7 +358,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             onSuccess={handleBoostSuccess}
                         />
                     </div>
-                </div> 
+                </div>
             </div>
         <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>
             {tags?.map((tag:any, index: number)=>{
