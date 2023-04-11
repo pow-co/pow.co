@@ -8,12 +8,12 @@ import axios from 'axios';
 import { fetcher } from '../hooks/useAPI'
 import PowcoDevIssue from './PowcoDevIssue';
 import NFTCard from './NFTCard';
-import Gist from "react-gist";
 import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import YouTube from 'react-youtube';
 import NFTItemCard from './NFTItemCard';
 import { TwitterTweetEmbed } from 'react-twitter-embed';
+import Gist from 'super-react-gist'
 
 const customFetcher = async (url: string) => {
     const response = await fetch(`https://link-preview-proxy.pow.co/v2?url=${url}`);
@@ -136,9 +136,9 @@ export default function OnchainEvent({ txid }: {txid: string}) {
         const id = event.content.url.split('/').pop()
 
         return <>
-              <small className=''><a href='{event.content.html_url}' className='blankLink'>{event.content.url}</a></small>
+              <small className=''><a href={event.content.html_url} className='blankLink'>{event.content.url}</a></small>
                 <div className='text-ellipsis '>
-                    <Gist  id={id} />
+                    <Gist  url={event.content.html_url} />
                 </div>
 
         </>

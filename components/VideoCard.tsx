@@ -8,7 +8,6 @@ import { LinkPreview } from '@dhaiwat10/react-link-preview';
 import { fetcher } from '../hooks/useAPI'
 import PowcoDevIssue from './PowcoDevIssue';
 import { toast } from 'react-hot-toast';
-import Gist from "react-gist";
 import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import YouTube from 'react-youtube';
@@ -36,7 +35,7 @@ export default function VideoCard({ txid, difficulty }: {txid: string, difficult
           },
         });
     };
-  
+
     const handleBoostSuccess = () => {
       toast('Success!', {
           icon: '✅',
@@ -47,7 +46,7 @@ export default function VideoCard({ txid, difficulty }: {txid: string, difficult
           },
         });
     };
-  
+
     const handleBoostError = () => {
       toast('Error!', {
           icon: '🐛',
@@ -115,31 +114,31 @@ export default function VideoCard({ txid, difficulty }: {txid: string, difficult
           </div>
         )
     }
-  
+
     if (!data || data.events.length === 0) {
       return <></>
     }
-  
+
     var [event] = data.events
 
-  
+
     if (event.app === 'powstream.com') {
-  
+
       if (event.type === 'youtube_video_metadata' && event.author === '1D1hSyDc7UF4KbGFTSSXLirCBepjcN19GN') {
-  
+
         return <VideoCardContainer>
           <YoutubeMetadataOnchain txid={txid} event={event}/>
           </VideoCardContainer>
-  
+
       }
     }
-  
+
     if (event.type === 'url') {
-      
+
       const url = event.content.url || event.content
 
 
-      // 1. check if url is youtube 
+      // 1. check if url is youtube
       const youtubeLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
 
       const youtubeMatch = youtubeLinkRegex.exec(url)
@@ -150,14 +149,14 @@ export default function VideoCard({ txid, difficulty }: {txid: string, difficult
 
           <YouTube videoId={videoId} opts={youtubePlayerOpts}/>
         </VideoCardContainer>
-      } 
-  
-  
+      }
+
+
     }
-  
+
     return (
       <>
       </>
     )
-  
+
   }
