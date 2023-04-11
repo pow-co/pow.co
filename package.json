@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@dhaiwat10/react-link-preview": "^1.14.2",
@@ -25,7 +26,7 @@
     "bops": "^1.0.1",
     "bsocial": "^0.0.1",
     "bsv": "^1.5.6",
-    "eslint": "8.31.0",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "13.1.1",
     "graphql": "^16.6.0",
     "graphql-request": "^5.1.0",
@@ -62,8 +63,22 @@
   "devDependencies": {
     "@types/markdown-it": "^12.2.3",
     "@types/uuid": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.58.0",
+    "@typescript-eslint/parser": "^5.58.0",
     "autoprefixer": "^10.4.14",
+    "eslint": "^8.38.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-tailwindcss": "^3.11.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.1",
     "postcss": "^8.4.21",
+    "prettier": "^2.8.7",
     "tailwindcss": "^3.2.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --fix"
   }
 }
