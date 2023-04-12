@@ -4,7 +4,9 @@
     "airbnb",
     "airbnb-typescript",
     "plugin:tailwindcss/recommended",
-    "plugin:react/jsx-runtime"
+    "plugin:react/jsx-runtime",
+    "eslint:recommended",
+    "next"
   ],
   "parserOptions": {
     "project": "./tsconfig.json"
