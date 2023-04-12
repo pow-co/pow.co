@@ -20,6 +20,7 @@ import axios from 'axios';
 import {BASE, useAPI} from '../hooks/useAPI';
 import { useTuning } from '../context/TuningContext';
 import { queryComments } from '../pages/[txid]';
+import Gist from 'super-react-gist'
 const Markdown = require('react-remarkable')
 import useSWR from 'swr'
 import { isRelayX } from '../utils/relayX'
@@ -234,24 +235,6 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         // Render RelayX Item Events
         if (relayXData && relayXData.itemLocation) {
             return <NFTItemCard nft={nftItemData?.data} />;
-        }
-
-        return (
-            <>
-            {content.content_type?.match('image') && (
-                content.content_text ? <img src={`data:image/jpeg;base64,${content.content_text}`} className="w-full h-full rounded-lg"/> : <PostMedia files={[content.txid]}/>
-            )}
-            {content.content_type?.match('text/plain') && (
-                <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover text-blue-500 hover:underline'}}>{content_text}</Linkify></div>
-            )}
-            {content.content_type?.match('markdown') && (
-                <article className='prose dark:prose-invert prose-a:text-blue-600 break-words'>
-                    <Markdown options={RemarkableOptions} source={content.content_text!.replace(BFILE_REGEX, `https://dogefiles.twetch.app/$1`)}/>
-                </article>
-            )}
-            <OnchainEvent txid={content.txid}/>
-            </>
-        )
 
     }
 

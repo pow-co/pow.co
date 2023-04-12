@@ -1,22 +1,19 @@
 import useSWR from "swr";
 
-import {
-  YoutubeMetadataOnchain,
-  youtubePlayerOpts,
-} from "./YoutubeMetadataOnchain";
-
-import { LinkPreview } from "@dhaiwat10/react-link-preview";
-import axios from "axios";
-import { fetcher } from "../hooks/useAPI";
-import PowcoDevIssue from "./PowcoDevIssue";
-import NFTCard from "./NFTCard";
-import Gist from "react-gist";
-import PostDescription from "./PostDescription";
-import { useTheme } from "next-themes";
-import YouTube from "react-youtube";
-import NFTItemCard from "./NFTItemCard";
-import { TwitterTweetEmbed } from "react-twitter-embed";
 import { isRelayX } from "../utils/relayX";
+import { YoutubeMetadataOnchain, youtubePlayerOpts } from "./YoutubeMetadataOnchain"
+
+import { LinkPreview } from '@dhaiwat10/react-link-preview';
+import axios from 'axios';
+import { fetcher } from '../hooks/useAPI'
+import PowcoDevIssue from './PowcoDevIssue';
+import NFTCard from './NFTCard';
+import PostDescription from './PostDescription';
+import { useTheme } from 'next-themes';
+import YouTube from 'react-youtube';
+import NFTItemCard from './NFTItemCard';
+import { TwitterTweetEmbed } from 'react-twitter-embed';
+import Gist from 'super-react-gist'
 
 const customFetcher = async (url: string) => {
   const response = await fetch(
