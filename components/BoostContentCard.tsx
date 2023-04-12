@@ -207,6 +207,14 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
         )
       }
     const PostContent = () => {
+        if (content?.content_text?.startsWith('https://gist.github.com/')) {
+        return <>
+            <small className=''><a href={content?.content_text} target="_blank" className='blankLink' rel="noreferrer">{content?.content_text}</a></small>
+            <div className='text-ellipsis '>
+                <Gist url={content?.content_text} />
+            </div>
+            </>
+        }
         // Check if the event is a RelayX Marketplace Link and fetch the NFT data
         const relayXData = isRelayX(content?.content_text);
         // Conditionally fetch
