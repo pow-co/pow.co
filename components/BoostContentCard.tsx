@@ -286,6 +286,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             {/*tooltip*/}
                             <Tooltip
                             anchorSelect={`#_${content.txid}`}
+                            style={{width: 'fit-content', borderRadius: '10px'}}
                             place="right"
                             className="dark:bg-gray-100 text-white dark:text-black italic"
                             clickable
@@ -321,7 +322,8 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                                 {commentCount}
                             </p>
                         </div>
-                        <BoostButton
+                        <div className="boost-button-info-text" data-tooltip-offset={20}>
+                        <BoostButton 
                             wallet={wallet}
                             content={content_txid}
                             difficulty={difficulty || 0}
@@ -332,6 +334,18 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             onError={handleBoostError}
                             onSuccess={handleBoostSuccess}
                         />
+                        </div>
+                        <Tooltip
+                            anchorSelect=".boost-button-info-text"
+                            place="right"
+                            className="dark:bg-gray-100 text-white dark:text-black italic"
+                            // content="Boost this post to the top \nof the rankings!"
+                            style={{width: 'fit-content', borderRadius: '10px'}}
+                            >   
+                            <p>
+                                Boost this post to the top <br/>of the rankings!
+                            </p>
+                        </Tooltip>
                     </div>
                 </div>
             </div>
