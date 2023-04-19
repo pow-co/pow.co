@@ -1,8 +1,8 @@
 import React from 'react';
 
 interface FAQItemProps {
-  title: string;
-  tldr: string;
+  title: React.ReactElement ;
+  tldr: React.ReactElement ;
   content: string;
 }
 function FAQItem({ title, tldr, content }: FAQItemProps) {
