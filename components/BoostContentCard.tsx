@@ -1,11 +1,12 @@
 import moment from 'moment';
 import { BoostButton } from 'boostpow-button';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
 
 import UserIcon from './UserIcon';
 import OnchainEvent from './OnChainEvent';
+import RumbleVideo from './RumbleVideo';
 
 import Twetch from './Twetch';
 import { useRouter } from 'next/router';
@@ -21,6 +22,8 @@ import {BASE, useAPI} from '../hooks/useAPI';
 import { useTuning } from '../context/TuningContext';
 import { queryComments } from '../pages/[txid]';
 const Markdown = require('react-remarkable')
+
+//import global from 'global'
 
 const RemarkableOptions = {
     breaks: true,
@@ -84,6 +87,8 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
     const [content, setContent] = useState<any>(null)
     const [tags, setTags] = useState<any>([])
     const [timestamp, setTimestamp] = useState(0)
+
+    const global = useRef({})
 
     useEffect(() => {
         getData().then((res) => {
@@ -293,6 +298,7 @@ const BoostContentCard = ({ content_txid, content_type, content_text, count, dif
                             </Tooltip>
                         </div>
                     <PostContent/>
+
                     <div className='flex w-full px-16'>
                         <div className='grow'/>
                         <div className={`min-w-[111px] justify-center flex group items-center w-fit relative`}>

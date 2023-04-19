@@ -3,6 +3,7 @@ import useSWR from 'swr'
 
 import { YoutubeMetadataOnchain, youtubePlayerOpts } from "./YoutubeMetadataOnchain"
 
+import RumbleVideo from './RumbleVideo';
 import { LinkPreview } from '@dhaiwat10/react-link-preview';
 import axios from 'axios';
 import { fetcher } from '../hooks/useAPI'
@@ -73,6 +74,13 @@ export default function OnchainEvent({ txid }: {txid: string}) {
         return  <TwitterTweetEmbed
           tweetId={tweetId}
         />
+    }
+
+    if(event?.content?.url?.startsWith('https://rumble.com/')) {
+    console.log('onchain rumble', event.content.url)
+      const videoId = event.content.url.split('rumble.com/')[1].split('-')[0]
+      console.log('videoId', videoId)
+        return  <RumbleVideo videoId={videoId} url={event.content.url}/>
     }
 
     if (event.app === 'powstream.com') {

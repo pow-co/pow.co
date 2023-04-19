@@ -12,6 +12,7 @@ import FindOrCreate from "../components/FindOrCreate"
 import { useBitcoin } from "../context/BitcoinContext"
 import CardErrorBoundary from "../components/CardErrorBoundary"
 
+import { useEffect } from 'react'
 
 
 export default function Home() {
@@ -26,11 +27,7 @@ export default function Home() {
       </ThreeColumnLayout>
     )
   }
-
-  
   let { rankings } = data || []
-
-  //console.log("RANKINGS", rankings)
   
   return (
     <>
@@ -38,6 +35,7 @@ export default function Home() {
       {authenticated && <div className="mt-5 sm:mt-10">
         <FindOrCreate/>
       </div>}
+      <div id="rumble_v2gno1y"></div>
       <div className="flex mt-5 mx-0 px-4">
         <Link href={`/`}>
           <div className="text-sm leading-4 py-2 px-3 text-gray-900 dark:text-white bg-primary-100 dark:bg-primary-600/20 font-medium mr-2 cursor-pointer rounded-md whitespace-nowrap">
