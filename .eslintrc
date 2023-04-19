@@ -11,5 +11,9 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "plugins": ["unused-imports", "tailwindcss"]
+  "plugins": ["unused-imports", "tailwindcss"],
+  "rules": {
+    "react/jsx-props-no-spreading": "off",
+    "implicit-arrow-linebreak": "off"
+  }
 }
