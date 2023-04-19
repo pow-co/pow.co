@@ -1,20 +1,16 @@
-import { GraphQLClient, gql } from "graphql-request";
-import { NextApiRequest, NextApiResponse } from "next";
+import { GraphQLClient, gql } from 'graphql-request';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-const graphqlAPI = "https://gw.twetch.app";
+const graphqlAPI = 'https://gw.twetch.app';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function global(req: NextApiRequest, res: NextApiResponse) {
   const authToken = req.headers.authorization;
   let query;
-  const { userId, cursor } = req.query;
+  const { cursor } = req.query;
   if (!cursor) {
     query = gql`
-      query userProfileLatestFeed($userId: BigInt!) {
-        allPosts(
-          condition: { userId: $userId, status: "0" }
-          first: 16
-          orderBy: CREATED_AT_DESC
-        ) {
+      query GetGlobalFeed {
+        allPosts(first: 16, orderBy: CREATED_AT_DESC) {
           edges {
             node {
               bContent
@@ -44,16 +40,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     `;
   } else {
     query = gql`
-      query userProfileLatestFeedPagination(
-        $userId: BigInt!
-        $cursor: Cursor!
-      ) {
-        allPosts(
-          condition: { userId: $userId, status: "0" }
-          after: $cursor
-          first: 16
-          orderBy: CREATED_AT_DESC
-        ) {
+      query GetGlobalFeedPagination($cursor: Cursor!) {
+        allPosts(first: 16, after: $cursor, orderBy: CREATED_AT_DESC) {
           edges {
             node {
               bContent
@@ -84,14 +72,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const graphqlClient = new GraphQLClient(graphqlAPI, {
-    //@ts-ignore
+    // @ts-ignore
     headers: {
       Authorization: authToken,
     },
   });
 
   try {
-    const result : any = await graphqlClient.request(query, { userId, cursor });
+    const result : any = await graphqlClient.request(query, { cursor });
     res.status(200).json({
       edges: result.allPosts.edges,
       pageInfo: result.allPosts.pageInfo,

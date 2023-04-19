@@ -1,6 +1,6 @@
-import { GraphQLClient, gql } from "graphql-request";
+import { GraphQLClient, gql } from 'graphql-request';
 
-const graphqlAPI = "https://gw.twetch.app"
+const graphqlAPI = 'https://gw.twetch.app';
 
 export default async function whoIs(req:any, res: any) {
   const authToken = req.headers.authorization;
