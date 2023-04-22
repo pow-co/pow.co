@@ -27,7 +27,7 @@ function TwetchProvider(props: { children: React.ReactNode }) {
   const [me, setMe] = useState<any>({});
 
   const logUser = useCallback(async (token: string) => {
-    const respLogUser = await fetch('/api/v1/auth/twetch/whoIs', {
+    const respLogUser = await fetch('/api/v1/twetch/auth/whoIs', {
       headers: {
         Authorization: `Bearer ${token}`,
         'content-type': 'application/json',
@@ -52,7 +52,7 @@ function TwetchProvider(props: { children: React.ReactNode }) {
       try {
         const resp = await TwetchWeb3.connect();
         setTwetchPaymail(resp.paymail);
-        const resMsg = await fetch('/api/v1/auth/twetch/challenge');
+        const resMsg = await fetch('/api/v1/twetch/auth/challenge');
         const msgData = await resMsg.json();
         const response = await TwetchWeb3.abi({
           contract: 'sign-message',
@@ -60,7 +60,7 @@ function TwetchProvider(props: { children: React.ReactNode }) {
         });
         const encodedSig = encodeURIComponent(response.sig);
         const authResponse = await fetch(
-          `/api/v1/auth/twetch?address=${response.address}&&message=${response.message}&&signature=${encodedSig}`,
+          `/api/v1/twetch/auth?address=${response.address}&&message=${response.message}&&signature=${encodedSig}`,
         );
         const authResponseData = await authResponse.json();
         setTokenTwetchAuth(authResponseData.token);

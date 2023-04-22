@@ -3,13 +3,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 const graphqlAPI = 'https://gw.twetch.app';
 
-export default async function global(req: NextApiRequest, res: NextApiResponse) {
+export default async function latest(req: NextApiRequest, res: NextApiResponse) {
   const authToken = req.headers.authorization;
   let query;
   const { cursor } = req.query;
   if (!cursor) {
     query = gql`
-      query GetGlobalFeed {
+      query GetLatestFeed {
         allPosts(first: 16, orderBy: CREATED_AT_DESC) {
           edges {
             node {
@@ -40,7 +40,7 @@ export default async function global(req: NextApiRequest, res: NextApiResponse) 
     `;
   } else {
     query = gql`
-      query GetGlobalFeedPagination($cursor: Cursor!) {
+      query GetLatestFeedPagination($cursor: Cursor!) {
         allPosts(first: 16, after: $cursor, orderBy: CREATED_AT_DESC) {
           edges {
             node {

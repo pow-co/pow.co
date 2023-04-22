@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import AuthTokenRepository from '../../../repositories/AuthTokenRepository';
-import HandCashService from '../../../services/HandCashService';
-import SessionTokenRepository from '../../../repositories/SessionTokenRepository';
+import AuthTokenRepository from '../../../../repositories/AuthTokenRepository';
+import HandCashService from '../../../../services/HandCashService';
+import SessionTokenRepository from '../../../../repositories/SessionTokenRepository';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

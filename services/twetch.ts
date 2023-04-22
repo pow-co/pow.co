@@ -29,8 +29,8 @@ export const getLocalFeedPagination = async (cursor: string) => {
   return result.json();
 };
 
-export const getGlobalFeed = async () => {
-  const result : any = await fetch('/api/v1/global', {
+export const getLatestFeed = async () => {
+  const result : any = await fetch('/api/v1/twetch/feed/latest', {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
@@ -39,8 +39,8 @@ export const getGlobalFeed = async () => {
   return result.json();
 };
 
-export const getGlobalFeedPagination = async (cursor: string) => {
-  const result : any = await fetch(`/api/v1/global?cursor=${cursor}`, {
+export const getLatestFeedPagination = async (cursor: string) => {
+  const result : any = await fetch(`/api/v1/twetch/feed/latest?cursor=${cursor}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
@@ -130,7 +130,7 @@ export const userProfileCardAnonQuery = async (id: number) => {
 };
 
 export const userProfileLatestFeedQuery = async (userId: number) => {
-  const result : any = await fetch(`/api/v1/user/${userId}`, {
+  const result : any = await fetch(`/api/v1/twetch/feed/user/${userId}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
@@ -140,7 +140,7 @@ export const userProfileLatestFeedQuery = async (userId: number) => {
 };
 
 export const userProfileLatestFeedPaginationQuery = async (userId: number, cursor: string) => {
-  const result : any = await fetch(`/api/v1/user/${userId}?cursor=${cursor}`, {
+  const result : any = await fetch(`/api/v1/twetch/feed/user/${userId}?cursor=${cursor}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
@@ -150,7 +150,7 @@ export const userProfileLatestFeedPaginationQuery = async (userId: number, curso
 };
 
 export const userProfileReplyFeedQuery = async (userId: number) => {
-  const result : any = await fetch(`/api/v1/user/${userId}/replies`, {
+  const result : any = await fetch(`/api/v1/twetch/feed/user/${userId}/replies`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
@@ -160,7 +160,7 @@ export const userProfileReplyFeedQuery = async (userId: number) => {
 };
 
 export const userProfileReplyFeedPaginationQuery = async (userId: number, cursor: string) => {
-  const result : any = await fetch(`/api/v1/user/${userId}/replies?cursor=${cursor}`, {
+  const result : any = await fetch(`/api/v1/twetch/feed/user/${userId}/replies?cursor=${cursor}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
@@ -170,7 +170,7 @@ export const userProfileReplyFeedPaginationQuery = async (userId: number, cursor
 };
 
 export const userProfileLikeFeedQuery = async (userId: number) => {
-  const result : any = await fetch(`/api/v1/user/${userId}/likes`, {
+  const result : any = await fetch(`/api/v1/twetch/feed/user/${userId}/likes`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
@@ -180,7 +180,7 @@ export const userProfileLikeFeedQuery = async (userId: number) => {
 };
 
 export const userProfileLikeFeedPaginationQuery = async (userId: number, cursor: string) => {
-  const result : any = await fetch(`/api/v1/user/${userId}/likes?cursor=${cursor}`, {
+  const result : any = await fetch(`/api/v1/twetch/feed/user/${userId}/likes?cursor=${cursor}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
@@ -190,7 +190,7 @@ export const userProfileLikeFeedPaginationQuery = async (userId: number, cursor:
 };
 
 export const userProfileMediaFeedQuery = async (userId: number) => {
-  const result: any = await fetch(`/api/v1/user/${userId}/media`, {
+  const result: any = await fetch(`/api/v1/twetch/feed/user/${userId}/media`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
@@ -200,7 +200,7 @@ export const userProfileMediaFeedQuery = async (userId: number) => {
 };
 
 export const userProfileMediaFeedPaginationQuery = async (userId: number, cursor: string) => {
-  const result :any = await fetch(`/api/v1/user/${userId}/media?cursor=${cursor}`, {
+  const result :any = await fetch(`/api/v1/twetch/feed/user/${userId}/media?cursor=${cursor}`, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('tokenTwetchAuth')}`,
       'content-type': 'application/json',
