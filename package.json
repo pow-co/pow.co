@@ -21,6 +21,7 @@
     "@remirror/react-editors": "^1.0.32",
     "@remirror/styles": "^2.0.5",
     "@runonbitcoin/nimble": "^1.0.14",
+    "@sensible-contract/sensible-web3": "^0.4.1",
     "@socialgouv/matomo-next": "^1.6.1",
     "@tailwindcss/typography": "^0.5.9",
     "@twetch/web3": "gitlab:twetch/web3",

@@ -10,17 +10,40 @@ import TuningPanel from "../components/TuningPanel";
 import { FormattedMessage } from "react-intl";
 import LocaleSelect from "../components/LocaleSelect";
 import { useBitcoin } from "../context/BitcoinContext";
+import { useSensilet } from "../context/SensiletContext";
 import WalletSelect from "../components/WalletSelect";
 import { useTuning } from "../context/TuningContext";
+
+import Web3 from '@sensible-contract/sensible-web3'
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
   const { logout, authenticated } = useBitcoin();
   const { hasTwetchPrivilege } = useRelay();
   const { signPosts, setSignPosts } = useTuning();
+  const { web3, web3Account, sensiletLogout, sensiletAuthenticate } = useSensilet()
   const [isDark, setIsDark] = useState(theme === "dark");
   const [walletPopupOpen, setWalletPopupOpen] = useState(false);
+  const [sensiletChecked, setSensiletChecked] = useState(!!web3Account)
 
+  async function connectSensilet() {
+    sensiletAuthenticate()
+
+  }
+
+  useEffect(() => {
+    setSensiletChecked(!!web3Account)
+  }, [web3Account])
+
+  async function toggleConnectSensilet() {
+
+    if (!web3Account) {
+
+	    sensiletAuthenticate()
+	} else {
+	sensiletLogout()
+}
+  }
   useEffect(() => {
     if (theme === "dark") {
       setIsDark(true);
@@ -147,7 +170,46 @@ export default function Settings() {
               </label>
             </div>
           </div>
-          {hasTwetchPrivilege && <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+          {web3Account ? (
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+            <div className="flex flex-col">
+              <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                <FormattedMessage id="Sensilet Wallet" />
+              </p>
+              <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                <FormattedMessage id={`Sensilet wallet connected ${web3Account}`} />
+              </p>
+            </div>
+            <div className="grow" />
+            <div className="relative">
+              <label className="flex items-center cursor-pointer">
+                <div className="relative">
+		  <button onClick={sensiletLogout}>Logout Sensilet</button>
+                </div>
+              </label>
+            </div>
+          </div>
+	  ) : (
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+            <div className="flex flex-col">
+              <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                <FormattedMessage id="Sensilet Wallet" />
+              </p>
+              <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                <FormattedMessage id={`Experimental Feature - Connect Sensilet Wallet`} />
+              </p>
+            </div>
+            <div className="grow" />
+            <div className="relative">
+              <label className="flex items-center cursor-pointer">
+                <div className="relative">
+		  <button onClick={connectSensilet}>Connect Sensilet</button>
+                </div>
+              </label>
+            </div>
+          </div>
+	  )}
+          {<div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
             <div className="flex flex-col">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                 {/* <FormattedMessage id="Language settings" /> */}
