@@ -3,12 +3,14 @@ import { useBitcoin } from '../context/BitcoinContext'
 import { useHandCash } from '../context/HandCashContext'
 import { useRelay } from '../context/RelayContext'
 import { useTwetch } from '../context/TwetchContext'
+import { useSensilet } from '../context/SensiletContext'
 
 const WalletSelect = () => {
     const { wallet, setWallet } = useBitcoin()
     const { relayxAuthenticate } = useRelay()
     const { twetchAuthenticate } = useTwetch()
     const { handcashAuthenticate } = useHandCash()
+    const { sensiletAuthenticate } = useSensilet()
 
 
     const handleChange = (e:any) => {
@@ -19,6 +21,9 @@ const WalletSelect = () => {
             break;
           case 'twetch':
             twetchAuthenticate()
+            break;
+          case 'sensilet':
+            sensiletAuthenticate()
             break;
           case 'handcash':
             handcashAuthenticate()
@@ -31,6 +36,7 @@ const WalletSelect = () => {
     <select value={wallet} onChange={handleChange} id="locale" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block grow p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
         <option value="relayx">RelayX</option>
         <option value="twetch">Twetch</option>
+        <option value="sensilet">Sensilet</option>
         {/* <option value="handcash">HandCash</option> */}
     </select>
   )

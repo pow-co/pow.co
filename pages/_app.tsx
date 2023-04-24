@@ -6,6 +6,7 @@ import '../styles/globals.css'
 import { ThemeProvider } from 'next-themes'
 import { config } from "../template_config"
 import { RelayProvider } from '../context/RelayContext'
+import { SensiletProvider } from '../context/SensiletContext'
 import { HandCashProvider } from '../context/HandCashContext'
 import { TuneProvider } from '../context/TuningContext'
 import Locales from '../context/LocalContext'
@@ -47,6 +48,7 @@ export default function App({ Component, pageProps }: AppProps) {
       />
       <ThemeProvider attribute='class' enableSystem={false} disableTransitionOnChange={true}>
         <RelayProvider>
+          <SensiletProvider>
           <TwetchProvider>
             <HandCashProvider>
               <BitcoinProvider>
@@ -59,6 +61,7 @@ export default function App({ Component, pageProps }: AppProps) {
               </BitcoinProvider>
             </HandCashProvider>
           </TwetchProvider>        
+          </SensiletProvider>
         </RelayProvider>
       </ThemeProvider>
     </>

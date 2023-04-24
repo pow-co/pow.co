@@ -4,13 +4,14 @@ import { config } from "../template_config"
 import { useRelay } from "./RelayContext";
 import { useTwetch } from "./TwetchContext";
 import { useHandCash } from "./HandCashContext";
+import { useSensilet } from "./SensiletContext";
 
 type BitcoinContextValue = {
     wallet: 'relayx' | 'twetch' | 'handcash';
     avatar: string | undefined;
     paymail: string | undefined;
     userName: string | undefined;
-    setWallet: (wallet: 'relayx' | 'twetch' | 'handcash') => void;
+    setWallet: (wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet') => void;
     authenticate: () => Promise<void>;
     authenticated: boolean;
     logout: () => void;
@@ -22,6 +23,7 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
     const { relayxAuthenticate, relayOne, relayxAuthenticated, relayxLogout, relayxAvatar, relayxPaymail, relayxUserName } = useRelay()
     const { twetchAuthenticate, twetchAuthenticated, twetchLogout, twetchAvatar, twetchPaymail, twetchUserName } = useTwetch()
     const { handcashAuthenticate, handcashAuthenticated, handcashLogout, handcashAvatar, handcashPaymail, handcashUserName} = useHandCash()
+    const { sensiletAuthenticate, sensiletAuthenticated, sensiletLogout, sensiletAvatar, sensiletPaymail, sensiletUserName} = useSensilet()
 
     const authenticate = useCallback(async () => {
         switch (wallet){
@@ -33,6 +35,9 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
                 break;
             case 'handcash':
                 await handcashAuthenticate()
+                break;
+            case 'sensilet':
+                await sensiletAuthenticate()
                 break;
             default:
                 break;
@@ -48,10 +53,12 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
                 return twetchAvatar
             case 'handcash':
                 return handcashAvatar
+            case 'sensilet':
+                return sensiletAvatar
             default:
                 break;
         }
-    },[wallet, relayxAvatar, twetchAvatar, handcashAvatar])
+    },[wallet, relayxAvatar, twetchAvatar, handcashAvatar, sensiletAvatar])
 
 
     const paymail = useMemo(() => {
@@ -62,10 +69,12 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
                 return twetchPaymail
             case 'handcash':
                 return handcashPaymail
+            case 'sensilet':
+                return sensiletPaymail
             default:
                 break;
         }
-    },[wallet, relayxPaymail, twetchPaymail, handcashPaymail])
+    },[wallet, relayxPaymail, twetchPaymail, handcashPaymail, sensiletPaymail])
 
     const userName = useMemo(() => {
         switch (wallet){
@@ -75,17 +84,20 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
                 return twetchUserName
             case 'handcash':
                 return handcashUserName
+            case 'sensilet':
+                return sensiletUserName
             default:
                 break;
         }
-    },[wallet, relayxUserName, twetchUserName, handcashUserName])
+    },[wallet, relayxUserName, twetchUserName, handcashUserName, sensiletUserName])
 
-    const authenticated = useMemo(()=> relayxAuthenticated || twetchAuthenticated || handcashAuthenticated, [relayxAuthenticated, twetchAuthenticated, handcashAuthenticated])
+    const authenticated = useMemo(()=> relayxAuthenticated || twetchAuthenticated || handcashAuthenticated || sensiletAuthenticated, [relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated])
 
     const logout = () => {
         relayxLogout()
         twetchLogout()
         handcashLogout()
+        sensiletLogout()
         localStorage.clear()
     }
 
