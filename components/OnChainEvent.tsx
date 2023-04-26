@@ -31,16 +31,16 @@ export default function OnchainEvent({ txid }: {txid: string}) {
       var [event] = data.events
     }
 
-    const marketId = event?.content?.url?.split('/')[4]
-    const itemId = event?.content?.url?.split('/')[5]
+    const marketId = event?.content?.url?.startsWith('https://relayx.com/market') || event?.content?.url?.startsWith('https://relayx.com/assets') ? event?.content?.url?.split('/')[4] : 'null';
+    const itemId = event?.content?.url?.startsWith('https://relayx.com/assets') ? event?.content?.url?.split('/')[5] : null;
 
     // Check if the event is a RelayX Marketplace Link and fetch the NFT data
-    const relayItemOrigin = event?.content?.url?.split('/').pop()
+    const relayItemOrigin = event?.content?.url?.startsWith('https://relayx.com/market') ? event?.content?.url?.split('/').pop() : null;
     // Conditionally fetch
-    const {data: nftData} =  useSWR(relayItemOrigin ? `https://staging-backend.relayx.com/api/market/${relayItemOrigin}` : null, fetcher)
-    const {data: nftItemData} =  useSWR(marketId ? `https://staging-backend.relayx.com/api/market/${marketId}/items/${itemId}`: null, fetcher)
+    const {data: nftData, error: relayMarketError, isLoading: relayMarketLoading} =  useSWR(relayItemOrigin ? `https://staging-backend.relayx.com/api/market/${relayItemOrigin}` : null, fetcher)
+    const {data: nftItemData, error: relayItemError, isLoading: relayItemLoading} = useSWR(itemId ? `https://staging-backend.relayx.com/api/market/${marketId}/items/${itemId}`: null, fetcher)
 
-    if (isLoading){
+    if (isLoading || relayMarketLoading || relayItemLoading) {
       return (
           <div className=''>
               <div role="status" className="max-w-sm animate-pulse">
@@ -149,7 +149,7 @@ export default function OnchainEvent({ txid }: {txid: string}) {
 
 
       // Check if it's a RelayX item link
-      if (url.includes('https://relayx.com/assets/' && nftItemData?.data)) {
+      if (url.includes('https://relayx.com/assets/') && nftItemData) {
         return <NFTItemCard nft={nftItemData?.data} />
       }
 
