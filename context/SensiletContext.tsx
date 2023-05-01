@@ -17,6 +17,7 @@ type SensiletContextValue = {
    sensiletAuthenticate: () => Promise<void>;
    sensiletAuthenticated: boolean;
    sensiletLogout: () => Promise<void>;
+   sensiletAvatar: string;
    sensiletPaymail: string;
    sensiletUserName: string;
    web3: any;
@@ -28,10 +29,12 @@ const SensiletContext = createContext<SensiletContextValue | undefined>(undefine
 
 const SensiletProvider = (props: { children: React.ReactNode }) => {
   const [hasTwetchPrivilege, setHasTwetchPrivilege] = useState(true)
-  const [web3, setWeb3] = useState()
-  const [web3Account, setWeb3Account] = useState()
-  const [sensiletPaymail, setSensiletPaymail] = useState()
-  const [sensiletUserName, setSensiletUserName] = useState()
+  const [web3, setWeb3] = useState<any>()
+  const [web3Account, setWeb3Account] = useState<any>()
+  const [sensiletPaymail, setSensiletPaymail] = useState<any>()
+  const [sensiletUserName, setSensiletUserName] = useState<any>()
+
+  const sensiletAvatar = '';
 
   const [ready, setReady] = useState(false);
 
@@ -39,6 +42,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
 
 	if (web3) { return }
 
+   //@ts-ignore
 	let _web3 = new Web3(window?.sensilet)
 		console.log('set web3', _web3)
 	//@ts-ignore
@@ -68,7 +72,8 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
      
     }
 
-    web3.wallet.getAccount().then(account => {
+    if (web3 && web3.wallet){
+    web3.wallet.getAccount().then((account: string) => {
 
       setWeb3Account(account)
 
@@ -76,11 +81,12 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
 
       setSensiletUserName(`${account}`)
 
-    }).catch(error => {
+    }).catch((error: any) => {
 
 	console.error('web3.wallet.getAccount().cancel', error)
 
     })
+}
 
   }, [web3]);
 
@@ -96,10 +102,10 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
     
   useEffect(() => {
 	if (!web3) { return }
-	web3.wallet.isConnect().then(isConnected => {
+	web3.wallet.isConnect().then((isConnected: boolean) => {
 		if (isConnected) {
 
-		    web3.wallet.getAccount().then(setWeb3Account).catch(error => {
+		    web3.wallet.getAccount().then(setWeb3Account).catch((error: any) => {
 
 			console.error('web3.wallet.getAccount().cancel', error)
 
@@ -119,6 +125,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
       sensiletAuthenticated,
       sensiletLogout,
       sensiletUserName,
+      sensiletAvatar,
       sensiletPaymail,
       ready
     }),
@@ -129,6 +136,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
       sensiletAuthenticated,
       sensiletLogout,
       sensiletUserName,
+      sensiletAvatar,
       sensiletPaymail,
       ready
     ]
