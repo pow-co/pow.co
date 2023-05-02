@@ -16,6 +16,9 @@
     "react/jsx-props-no-spreading": "off",
     "implicit-arrow-linebreak": "off",
     "max-len": "off",
-    "jsx-a11y/label-has-associated-control": "off"
+    "jsx-a11y/label-has-associated-control": "off",
+    "react/function-component-definition": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "react/require-default-props": "off"
   }
 }
