@@ -12,7 +12,7 @@ import axios from 'axios';
 import Gist from 'super-react-gist';
 import UserIcon from './UserIcon';
 import OnchainEvent from './OnChainEvent';
-
+import { useTuning } from '../context/TuningContext';
 import Twetch from './Twetch';
 import RelayClub from './RelayClub';
 import PostMedia from './PostMedia';
@@ -51,6 +51,7 @@ export interface Ranking {
   count?: number;
   difficulty?: number;
   createdAt?: Date;
+  rank?: number;
 }
 
 export const queryBMAP = (txid: string) => ({
@@ -66,7 +67,7 @@ export const queryBMAP = (txid: string) => ({
   },
 });
 
-function BoostContentCard({ content_txid, content_text, difficulty }: Ranking) {
+function BoostContentCard({ content_txid, content_text, difficulty, rank }: Ranking) {
   const [isTwetch, setIsTwetch] = useState(false);
   const [isClub, setIsClub] = useState(false);
   const router = useRouter();
@@ -77,12 +78,15 @@ function BoostContentCard({ content_txid, content_text, difficulty }: Ranking) {
   const [paymail, setPaymail] = useState<string>('');
   const [avatar, setAvatar] = useState<string>('');
   const [computedDiff, setComputedDiff] = useState<number>(difficulty || 0);
+  const { filter } = useTuning()
 
   const [loading, setLoading] = useState<boolean>(true);
 
   const [content, setContent] = useState<any>(null);
   const [tags, setTags] = useState<any>([]);
   const [timestamp, setTimestamp] = useState(0);
+
+  const gradient = "from-pink-400 to-violet-600"
 
   const getData = async () => {
     // const [content, bmapContent, bmapComments, tagsResult] = await Promise.all([
@@ -113,6 +117,7 @@ function BoostContentCard({ content_txid, content_text, difficulty }: Ranking) {
   };
 
   useEffect(() => {
+    console.log(rank)
     getData().then((res) => {
       setContent(res.content);
       setTags(res.tags);
@@ -247,20 +252,29 @@ function BoostContentCard({ content_txid, content_text, difficulty }: Ranking) {
 
   return (
     <div onClick={navigate} className="mt-0.5 grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 first:md:rounded-t-lg last:md:rounded-b-lg">
+      <div className='col-span-12 px-4 pt-4'>
+        <p className='text-2xl font-semibold '>
+          <span className={`text-transparent bg-clip-text bg-gradient-to-br ${gradient}`}>
+          {computedDiff.toFixed(4)}
+          </span> 
+          <span className='ml-1'>⛏️</span>
+        </p>
+      </div>
         {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-500 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
         <Twetch setIsTwetch={setIsTwetch} txid={content.txid} difficulty={difficulty || 0} tags={tags} />
         <RelayClub setIsClub={setIsClub} txid={content.txid} difficulty={difficulty || 0} tags={tags} />
         {!(isTwetch || isClub) && (
 <div className="col-span-12">
             <div className="max-w-screen mb-0.5 grid cursor-pointer grid-cols-12 items-start px-4 pt-4">
-                {paymail && (
-                    <div className="col-span-1">
-                        <Link onClick={(e:any) => e.stopPropagation()} href={`/profile/${paymail}`}>
-                            <UserIcon src={avatar} size={46} />
-                        </Link>
-                    </div>
-                )}
-                <div className={`col-span-${paymail ? 11 : 12} ml-6`}>
+                <div className="col-span-1 flex flex-col justify-center w-full h-full">
+                    {paymail && <Link className='justify-start' onClick={(e:any) => e.stopPropagation()} href={`/profile/${paymail}`}>
+                        <UserIcon src={avatar} size={46} />
+                    </Link>}
+                      <div className='grow'/>
+                      {rank && <p className='text-center'><span className={`${rank < 4 ? "font-semibold":"italic"}`}>#{rank}</span> {filter}</p>}
+                      <div className='grow'/>
+                </div>
+                <div className={`col-span-11 ml-6`}>
                        <div className="flex">
                             {paymail && (
                             <Link

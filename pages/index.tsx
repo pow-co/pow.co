@@ -12,6 +12,7 @@ export default function Home() {
   const { filter } = useTuning();
   const { authenticated } = useBitcoin();
   const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
+  // const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
 
   if (error) {
     return (
@@ -54,9 +55,9 @@ export default function Home() {
         <div className="mb-[200px] mt-5 lg:mt-10">
           {loading ? <Loader /> : (
             <>
-              {rankings?.map((post: Ranking) => (
+              {rankings?.map((post: Ranking, index: number) => (
                 <CardErrorBoundary key={post.content_txid}>
-                  <BoostContentCard {...post} />
+                  <BoostContentCard rank={index + 1} {...post} />
                 </CardErrorBoundary>
               ))}
               {days?.map((daysRankings: Ranking[], index: number) => (
@@ -66,7 +67,7 @@ export default function Home() {
                     <div className="mx-5 text-lg font-semibold text-gray-600 dark:text-gray-300">{`${index + 1} ${index + 1 > 1 ? 'days' : 'day'} before`}</div>
                     <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
                   </div>
-                  {daysRankings?.map((daysPost: Ranking) => (
+                  {daysRankings?.map((daysPost: Ranking, index: number) => (
                     <CardErrorBoundary key={daysPost.content_txid}>
                       <BoostContentCard {...daysPost} />
                     </CardErrorBoundary>
