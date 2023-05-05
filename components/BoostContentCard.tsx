@@ -1,9 +1,9 @@
 import moment from 'moment';
 import { BoostButton } from 'boostpow-button';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
-
+import { FormattedMessage } from 'react-intl';
 import { useRouter } from 'next/router';
 import { useTheme } from 'next-themes';
 import Linkify from 'linkify-react';
@@ -67,7 +67,9 @@ export const queryBMAP = (txid: string) => ({
   },
 });
 
-function BoostContentCard({ content_txid, content_text, difficulty, rank }: Ranking) {
+function BoostContentCard({
+  content_txid, content_text, difficulty, rank, 
+}: Ranking) {
   const [isTwetch, setIsTwetch] = useState(false);
   const [isClub, setIsClub] = useState(false);
   const router = useRouter();
@@ -78,7 +80,24 @@ function BoostContentCard({ content_txid, content_text, difficulty, rank }: Rank
   const [paymail, setPaymail] = useState<string>('');
   const [avatar, setAvatar] = useState<string>('');
   const [computedDiff, setComputedDiff] = useState<number>(difficulty || 0);
-  const { filter } = useTuning()
+  const { filter } = useTuning();
+
+  const filterLabel = useMemo(() => {
+    switch (filter) {
+      case 'last-hour':
+        return <FormattedMessage id="Last Hour" />;
+      case 'last-day':
+        return <FormattedMessage id="Last Day" />;
+      case 'last-week':
+        return <FormattedMessage id="Last Week" />;
+      case 'last-month':
+        return <FormattedMessage id="Last Month" />;
+      case 'last-year':
+        return <FormattedMessage id="Last Year" />;
+      default:
+        return <FormattedMessage id="All" />;
+    }
+  }, [filter]);
 
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -86,7 +105,7 @@ function BoostContentCard({ content_txid, content_text, difficulty, rank }: Rank
   const [tags, setTags] = useState<any>([]);
   const [timestamp, setTimestamp] = useState(0);
 
-  const gradient = "from-pink-400 to-violet-600"
+  const gradient = 'from-pink-400 to-violet-600';
 
   const getData = async () => {
     // const [content, bmapContent, bmapComments, tagsResult] = await Promise.all([
@@ -117,7 +136,7 @@ function BoostContentCard({ content_txid, content_text, difficulty, rank }: Rank
   };
 
   useEffect(() => {
-    console.log(rank)
+    console.log(rank);
     getData().then((res) => {
       setContent(res.content);
       setTags(res.tags);
@@ -252,12 +271,12 @@ function BoostContentCard({ content_txid, content_text, difficulty, rank }: Rank
 
   return (
     <div onClick={navigate} className="mt-0.5 grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 first:md:rounded-t-lg last:md:rounded-b-lg">
-      <div className='col-span-12 px-4 pt-4'>
-        <p className='text-2xl font-semibold '>
-          <span className={`text-transparent bg-clip-text bg-gradient-to-br ${gradient}`}>
+      <div className="col-span-12 px-4 pt-4">
+        <p className="text-2xl font-semibold ">
+          <span className={`bg-gradient-to-br bg-clip-text text-transparent ${gradient}`}>
           {computedDiff.toFixed(4)}
           </span> 
-          <span className='ml-1'>⛏️</span>
+          <span className="ml-1">⛏️</span>
         </p>
       </div>
         {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-500 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
@@ -266,15 +285,17 @@ function BoostContentCard({ content_txid, content_text, difficulty, rank }: Rank
         {!(isTwetch || isClub) && (
 <div className="col-span-12">
             <div className="max-w-screen mb-0.5 grid cursor-pointer grid-cols-12 items-start px-4 pt-4">
-                <div className="col-span-1 flex flex-col justify-center w-full h-full">
-                    {paymail && <Link className='justify-start' onClick={(e:any) => e.stopPropagation()} href={`/profile/${paymail}`}>
+                <div className="col-span-1 flex h-full w-full flex-col justify-center">
+                    {paymail && (
+<Link className="justify-start" onClick={(e:any) => e.stopPropagation()} href={`/profile/${paymail}`}>
                         <UserIcon src={avatar} size={46} />
-                    </Link>}
-                      <div className='grow'/>
-                      {rank && <p className='text-center'><span className={`${rank < 4 ? "font-semibold":"italic"}`}>#{rank}</span> {filter}</p>}
-                      <div className='grow'/>
+</Link>
+                    )}
+                      <div className="grow" />
+                      {rank && <p className="text-center"><span className={`${rank < 4 ? 'font-semibold' : 'italic'}`}>#{rank}</span> {filterLabel}</p>}
+                      <div className="grow" />
                 </div>
-                <div className={`col-span-11 ml-6`}>
+                <div className="col-span-11 ml-6">
                        <div className="flex">
                             {paymail && (
                             <Link
