@@ -24,7 +24,7 @@ export default function Compose() {
             d="M15.75 19.5L8.25 12l7.5-7.5"
           />
         </svg>
-        <div className="mb-[200px] mt-3 pb-3 pt-4 lg:mt-8 lg:rounded-xl">
+        <div className="mt-3 lg:mt-8">
           <ComposerV2 />
         </div>
       </div>

@@ -3,10 +3,10 @@ import {
 } from 'react';
 import type { CreateEditorStateProps, IdentifierSchemaAttributes } from 'remirror';
 import {
-  useRemirror, RemirrorProps, MentionAtomState, MentionAtomPopupComponent, ThemeProvider as RemirrorThemeProvider, Remirror, EditorComponent, Toolbar, DataTransferButtonGroup, HeadingLevelButtonGroup, BasicFormattingButtonGroup, ListButtonGroup, HistoryButtonGroup,
+  useRemirror, RemirrorProps, MentionAtomState, MentionAtomPopupComponent, ThemeProvider as RemirrorThemeProvider, Remirror, EditorComponent, Toolbar, DataTransferButtonGroup, HeadingLevelButtonGroup, BasicFormattingButtonGroup, ListButtonGroup, HistoryButtonGroup, useRemirrorContext,
 } from '@remirror/react';
 import {
-  MentionAtomExtension, MentionAtomNodeAttributes, PlaceholderExtension, wysiwygPreset, TableExtension,
+  MentionAtomExtension, MentionAtomNodeAttributes, PlaceholderExtension, wysiwygPreset, TableExtension, LinkExtension,
 } from 'remirror/extensions';
 import { AllStyledComponent } from '@remirror/styles/emotion';
 
@@ -64,6 +64,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   tags,
   ...rest
 }) => {
+  const [images, setImages] = useState<any>([])
   const extensions = useCallback(
     () => [
       new PlaceholderExtension({ placeholder }),
@@ -74,6 +75,10 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
         ],
       }),
       new TableExtension(),
+      new LinkExtension({ 
+        autoLink: true
+        
+      }),
       ...wysiwygPreset(),
     ],
     [placeholder],
@@ -81,8 +86,51 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
 
   const { manager } = useRemirror({ extensions, extraAttributes, stringHandler });
 
+  const handleFileInputChange = (e: any) => {
+    const files: any[] = Array.from(e.target.files);
+    const imageUrls: any[] = [];
+
+    // Limit the number of files to 4
+    if (files.length > 4) {
+      alert('Please select up to 4 images.');
+      return;
+    }
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith('image/')) {
+        alert('Please select only image files.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event: any) => {
+        imageUrls.push(event.target.result);
+        if (imageUrls.length === files.length) {
+          setImages((prevImages: any) => prevImages.concat(imageUrls));
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const thumbs = images.map((img: any) => (
+    // @ts-ignore
+    <div className="infline-flex m-4 h-full w-full rounded-lg p-2" key={img}>
+      <div className="flex min-w-0 overflow-hidden">
+        <img
+        // @ts-ignore
+          src={img}
+          className="block h-full w-auto rounded-lg"
+          // Revoke data uri after image is loaded
+          // @ts-ignore
+          onLoad={() => { URL.revokeObjectURL(img); }}
+        />
+      </div>
+    </div>
+  ));
+
   return (
-    <AllStyledComponent className="rounded-xl bg-primary-100 dark:bg-primary-700/20">
+    <AllStyledComponent className="p-4 sm:rounded-xl bg-primary-100 dark:bg-primary-700/20">
       <RemirrorThemeProvider theme={{
         color: {
           outline: 'none',
@@ -93,13 +141,45 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
           2: 'none',
           3: 'none',
         },
+        space: {
+          1: 'none',
+          2: 'none',
+          3: 'none',
+          4: 'none',
+          5: 'none',
+          6: 'none'
+        }
       }}
       >
-        <Remirror manager={manager} classNames={['prose dark:prose-invert text-gray-900 dark:text-white bg-transparent shadow-none placeholder:not-italic']} {...rest}>
+        <Remirror manager={manager}  classNames={['-p-4 prose dark:prose-invert text-gray-900 dark:text-white bg-transparent shadow-none placeholder:not-italic']} {...rest}>
           <EditorComponent />
-          <EditorToolbar />
+          <aside className='mt-4 flex flex-row flex-wrap'>
+            {thumbs}
+          </aside>
+          <div className='flex w-full items-center mt-5'>
+            <div onClick={()=>document.getElementById('file-input')?.click()} className=''>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-6 h-6 stroke-gray-600 dark:stroke-gray-400 cursor-pointer">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+            </div>
+            <input
+              type="file"
+              id="file-input"
+              accept="image/*"
+              multiple
+              onChange={handleFileInputChange}
+              className='hidden'
+            />
+            <div className='grow'/>
+            <div className=''>
+              <button className='flex text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-blue-400 to-blue-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>
+                Post $0.00
+              </button>
+            </div>
+          </div>
           <MentionComponent users={users} tags={tags} />
           {children}
+          
         </Remirror>
       </RemirrorThemeProvider>
     </AllStyledComponent>
@@ -117,3 +197,5 @@ const EditorToolbar : FC = () => (
     <ListButtonGroup />
   </Toolbar>
 );
+
+
