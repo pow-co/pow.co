@@ -136,7 +136,6 @@ function BoostContentCard({
   };
 
   useEffect(() => {
-    console.log(rank);
     getData().then((res) => {
       setContent(res.content);
       setTags(res.tags);
