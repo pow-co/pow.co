@@ -35,6 +35,8 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
   const [sensiletUserName, setSensiletUserName] = useState()
   const [sensiletPublicKey, setSensiletPublicKey] = useState<string | null>()
 
+  const sensiletAvatar = ''
+
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -88,6 +90,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
 }
 
     web3.wallet.getPublicKey().then(publicKey => {
+      console.log('web3.wallet.getPublicKey.result', publicKey)
 
       setSensiletPublicKey(publicKey)
 
@@ -97,9 +100,25 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
 
     })
 
-
-
   }, [web3]);
+
+  useEffect(() => {
+
+    if (!web3) { return }
+
+    web3.wallet.getPublicKey().then(publicKey => {
+
+      console.log('web3.wallet.getPublicKey.result', publicKey)
+
+      setSensiletPublicKey(publicKey)
+
+    }).catch(error => {
+
+      console.error('web3.wallet.getPublicKey().error', error)
+
+    })
+
+  }, [web3])
 
   const sensiletLogout = useCallback(async () => {
     if (web3?.wallet) {
