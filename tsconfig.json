@@ -17,5 +17,12 @@
     "experimentalDecorators": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/faq.js"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "plugins": [
+    {
+      "transform": "scrypt-ts/dist/transformation/transformer",
+      "outDir": "./artifact",
+      "transformProgram": true
+    }
+  ]
 }

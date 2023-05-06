@@ -29,12 +29,11 @@ const SensiletContext = createContext<SensiletContextValue | undefined>(undefine
 
 const SensiletProvider = (props: { children: React.ReactNode }) => {
   const [hasTwetchPrivilege, setHasTwetchPrivilege] = useState(true)
-  const [web3, setWeb3] = useState<any>()
-  const [web3Account, setWeb3Account] = useState<any>()
-  const [sensiletPaymail, setSensiletPaymail] = useState<any>()
-  const [sensiletUserName, setSensiletUserName] = useState<any>()
-
-  const sensiletAvatar = '';
+  const [web3, setWeb3] = useState()
+  const [web3Account, setWeb3Account] = useState()
+  const [sensiletPaymail, setSensiletPaymail] = useState()
+  const [sensiletUserName, setSensiletUserName] = useState()
+  const [sensiletPublicKey, setSensiletPublicKey] = useState<string | null>()
 
   const [ready, setReady] = useState(false);
 
@@ -67,8 +66,8 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
   const sensiletAuthenticate = useCallback(async () => {
     if (!web3) {
 
-	//@ts-ignore
-	setWeb3(new Web3(window?.sensilet));
+      //@ts-ignore
+      setWeb3(new Web3(window?.sensilet));
      
     }
 
@@ -83,10 +82,22 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
 
     }).catch((error: any) => {
 
-	console.error('web3.wallet.getAccount().cancel', error)
+      console.error('web3.wallet.getAccount().cancel', error)
 
     })
 }
+
+    web3.wallet.getPublicKey().then(publicKey => {
+
+      setSensiletPublicKey(publicKey)
+
+    }).catch(error => {
+
+      console.error('web3.wallet.getPublicKey().error', error)
+
+    })
+
+
 
   }, [web3]);
 
@@ -127,6 +138,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
       sensiletUserName,
       sensiletAvatar,
       sensiletPaymail,
+      sensiletPublicKey,
       ready
     }),
     [
@@ -138,6 +150,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
       sensiletUserName,
       sensiletAvatar,
       sensiletPaymail,
+      sensiletPublicKey,
       ready
     ]
   );
