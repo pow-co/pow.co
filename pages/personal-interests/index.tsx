@@ -13,14 +13,9 @@ import { useBitcoin } from "../../context/BitcoinContext";
 import { useSensilet } from "../../context/SensiletContext";
 import WalletSelect from "../../components/WalletSelect";
 
-import Web3 from '@sensible-contract/sensible-web3'
-
 import axios from 'axios'
 
-import { PubKey } from 'scrypt-ts'
-
-const { PersonalInterest } = require('../../contracts/personal-interests/dist/src/contracts/personalInterest')
-//import { PersonalInterest } from '../../contracts/personal-interests/src/contracts/personalInterest'
+const { PersonalInterest, DefaultProvider, SensiletSigner, bsv, findSig, removeInterest } = require('../../contracts/personal-interests/dist/src/contracts/personalInterest')
 
 const artifact = require('../../contracts/personal-interests/artifacts/src/contracts/personalInterest.json');
 
@@ -46,24 +41,9 @@ export default function Settings() {
   const [sensiletChecked, setSensiletChecked] = useState(!!web3Account)
   const [personalInterests, setPersonalInterests] = useState<PersonalInterestResponseItem[]>([]);
   const [personalInterestsLoading, setPersonalInterestsLoading] = useState<boolean>(false);
-  const [pubKey, setPubKey] = useState<PubKey | null>();
 
   //@ts-ignore
    window.PersonalInterest = PersonalInterest
-
-  useEffect(() => {
-
-    if (sensiletPublicKey) {
-
-      setPubKey(PubKey(sensiletPublicKey))
-
-    } else {
-
-      setPubKey(null)
-
-    }
-
-  }, [sensiletPublicKey])
 
   useEffect(() => {
 
@@ -136,9 +116,11 @@ export default function Settings() {
     }
   };
 
-  async function submitAddTopic() {
+  async function submitAddTopic(e) {
+    e.preventDefault()
+    console.log({ sensiletPublicKey })
 
-    if (!pubKey) {
+    if (!sensiletPublicKey) {
 
       console.log('cannot submit new topic of interest without pubKey set')
 
@@ -146,13 +128,32 @@ export default function Settings() {
 
     }
 
-    const instance = new PersonalInterest(
-        toByteString('music.house.soul', true),
-        pubKey,
-        1n
-    )
+    let instance = PersonalInterest.build({
+        topic: 'music.house.tech',
+        playerPublicKey: sensiletPublicKey,
+        weight: BigInt(1)
+    })
 
     console.log(instance, 'instance')
+
+    //@ts-ignore
+    window.instance = instance
+
+    const provider = new DefaultProvider(bsv.Networks.mainnet);
+    const signer = new SensiletSigner(provider);
+
+    await instance.connect(signer)
+
+    console.log('instance connected to sensilet web3 signer')
+
+    // Contract deployment.
+    const deployTx = await instance.deploy(1000)
+
+    console.log('PersonalInterest contract deployed: ', deployTx.id)
+
+    const { tx: callTx } = await removeInterest(instance, sensiletPublicKey, web3Account)
+
+    console.log(callTx, 'remove tx')
 
   }
 
@@ -210,7 +211,7 @@ export default function Settings() {
                 <div className="relative">
                   <label className="flex items-center cursor-pointer">
                     <div className="relative">
-                      <form onsubmit={submitAddTopic}>
+                      <form onSubmit={submitAddTopic}>
                         <input type="text"/>
                         <input type="submit" className="float-right"/>
                       </form>
