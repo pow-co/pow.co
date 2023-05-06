@@ -113,18 +113,19 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
     }
   };
 
-  const thumbs = images.map((img: any) => (
-    // @ts-ignore
-    <div className="infline-flex m-4 h-full w-full rounded-lg p-2" key={img}>
-      <div className="flex min-w-0 overflow-hidden">
-        <img
-        // @ts-ignore
-          src={img}
-          className="block h-full w-auto rounded-lg"
-          // Revoke data uri after image is loaded
-          // @ts-ignore
-          onLoad={() => { URL.revokeObjectURL(img); }}
-        />
+  const handleDelete = (index: number) => {
+    const newImages = images.filter((_: any, i: any) => i !== index);
+    setImages(newImages);
+  }
+
+  const thumbs = images.map((img: any, index: number) => (
+    <div draggable={true} id={index.toString()} className='relative'>
+      <div className='w-full h-full bg-cover bg-center rounded-xl relative cursor-pointer' style={{backgroundImage:`url("${img}")`}}>
+        <div onClick={() => handleDelete(index)} className='absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-opacity-50 bg-white flex items-center justify-center z-6'>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </div>
       </div>
     </div>
   ));
@@ -153,9 +154,9 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
       >
         <Remirror manager={manager}  classNames={['-p-4 prose dark:prose-invert text-gray-900 dark:text-white bg-transparent shadow-none placeholder:not-italic']} {...rest}>
           <EditorComponent />
-          <aside className='mt-4 flex flex-row flex-wrap'>
+          {images.length > 0 && <div className='grid grid-gap-0.5 gap-0.5 mt-4 overflow-hidden' style={{ height: "319.5px", gridTemplateColumns: `repeat(${images.length > 1 ? "2": "1"}, 1fr)`}}>
             {thumbs}
-          </aside>
+          </div>}
           <div className='flex w-full items-center mt-5'>
             <div onClick={()=>document.getElementById('file-input')?.click()} className=''>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-6 h-6 stroke-gray-600 dark:stroke-gray-400 cursor-pointer">
