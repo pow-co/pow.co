@@ -89,28 +89,44 @@ const Composer = () => {
 
             console.log("post.submit.relayx.response", resp)
 
-            axios.post('https://b.map.sv/ingest', {
-                rawTx: resp.rawTx
-            })
-            .then(result => {
-              console.debug('b.map.sv.ingest.result', result.data)
-            })
-            .catch(error => {
-              console.error('post.submit.b.map.sv.ingest.error', error)
-            })
+            try {
 
-            axios.post('https://pow.co/api/v1/posts', {
-                transactions: [{
-                  tx: resp.rawTx
-                }]
-            })
-            .then(result => {
-              console.debug('powco.posts.ingest.result', result.data)
-            })
-            .catch(error => {
-              console.error('post.submit.powco.error', error)
-            })
-            
+              axios.post('https://b.map.sv/ingest', {
+                  rawTx: resp.rawTx
+              })
+              .then(result => {
+                console.debug('b.map.sv.ingest.result', result.data)
+              })
+              .catch(error => {
+                console.error('post.submit.b.map.sv.ingest.error', error)
+              })
+
+            } catch(error) {
+
+                console.error('post.submit.b.map.sv.ingest.error', error)
+
+            }
+
+            try {
+
+              axios.post('https://pow.co/api/v1/posts', {
+                  transactions: [{
+                    tx: resp.rawTx
+                  }]
+              })
+              .then(result => {
+                console.debug('powco.posts.ingest.result', result.data)
+              })
+              .catch(error => {
+                console.error('post.submit.powco.error', error)
+              })
+
+            } catch(error) {
+
+                console.error('post.submit.powco.error', error)
+
+            }
+
             router.push(`/${resp.txid}`)
 
           } catch (error) {

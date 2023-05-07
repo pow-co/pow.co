@@ -136,8 +136,8 @@ export default function MyDropzone() {
     switch (wallet) {
       case 'relayx': {
         const send = {
-          to: 'johngalt@relayx.io',
-          amount: 0.001,
+          to: '1AVbmFm55TaioWhgSFSRJHEFqaLtZkT2mJ',
+          amount: 0.00001,
           currency: 'BSV',
           opReturn,
         };
@@ -153,11 +153,47 @@ export default function MyDropzone() {
               color: '#fff',
             },
           });
-          console.log('relayx.response', resp);
-          await axios.post('https://b.map.sv/ingest', {
-            rawTx: resp.rawTx,
-          });
-          router.push(`/${resp.txid}`);
+
+          console.log("post.submit.relayx.response", resp)
+
+          try {
+
+            axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawTx
+            })
+            .then(result => {
+              console.debug('b.map.sv.ingest.result', result.data)
+            })
+            .catch(error => {
+              console.error('post.submit.b.map.sv.ingest.error', error)
+            })
+
+          } catch(error) {
+              console.error('post.submit.b.map.sv.ingest.error', error)
+          }
+
+          try {
+
+            axios.post('https://pow.co/api/v1/posts', {
+                transactions: [{
+                  tx: resp.rawTx
+                }]
+            })
+            .then(result => {
+              console.debug('powco.posts.ingest.result', result.data)
+            })
+            .catch(error => {
+              console.error('post.submit.powco.error', error)
+            })
+
+          } catch(error) {
+
+              console.error('post.submit.powco.error', error)
+
+          }
+
+          router.push(`/${resp.txid}`)
+
         } catch (error) {
           toast('Error!', {
             icon: '🐛',
