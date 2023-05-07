@@ -15,9 +15,40 @@ jobs:
           command: |
             docker login --username $DOCKER_USER --password $DOCKER_PASSWORD
             docker push proofofwork/next.pow.co:$CIRCLE_BRANCH
+  deploy_develop:
+    docker:
+      - image: circleci/node:16
+    steps:
+      - add_ssh_keys
+      - run:
+          name: SSH And Deploy Develop
+          command: ssh -o StrictHostKeyChecking=no root@next.pow.co "/root/deploy_next_powco.sh"
+  deploy_master:
+    docker:
+      - image: circleci/node:16
+    steps:
+      - add_ssh_keys
+      - run:
+          name: SSH And Deploy Develop
+          command: ssh -o StrictHostKeyChecking=no root@pow.co "/root/deploy_powco.sh"
 
 workflows:
   version: 2
   build_and_deploy:
     jobs:
       - build_docker
+      - deploy_develop:
+          requires:
+            - build_docker
+          filters:
+            branches:
+              only: 
+                - develop
+      - deploy_master:
+          requires:
+            - build_docker
+          filters:
+            branches:
+              only: 
+                - master
+

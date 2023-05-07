@@ -1,0 +1,35 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "airbnb",
+    "airbnb-typescript",
+    "plugin:tailwindcss/recommended",
+    "plugin:react/jsx-runtime",
+    "eslint:recommended",
+    "next"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["unused-imports", "tailwindcss"],
+  "rules": {
+    "react/jsx-props-no-spreading": "off",
+    "implicit-arrow-linebreak": "off",
+    "max-len": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "react/require-default-props": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "consistent-return": "off",
+    "array-callback-return": "off",
+    "react/jsx-indent": "off",
+    "no-trailing-spaces": "off",
+    "tailwindcss/no-custom-classname": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "react/no-array-index-key": "off",
+    "react/no-unstable-nested-components": "off",
+    "@typescript-eslint/no-shadow": "off",
+    "react/no-unused-prop-types": "off",
+    "import/no-cycle": "off"
+  }
+}

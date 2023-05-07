@@ -11,8 +11,8 @@ import CardErrorBoundary from '../components/CardErrorBoundary';
 export default function Home() {
   const { filter } = useTuning();
   const { authenticated } = useBitcoin();
-  //const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
-  const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
+  const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
+  // const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
 
   if (error) {
     return (
