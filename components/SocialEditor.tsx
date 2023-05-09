@@ -9,6 +9,9 @@ import {
   MentionAtomExtension, MentionAtomNodeAttributes, PlaceholderExtension, wysiwygPreset, TableExtension, LinkExtension,
 } from 'remirror/extensions';
 import { AllStyledComponent } from '@remirror/styles/emotion';
+import BSocial from 'bsocial';
+import { useBitcoin } from '../context/BitcoinContext';
+import { signOpReturn } from '../utils/bap';
 
 const extraAttributes: IdentifierSchemaAttributes[] = [
   { identifiers: ['mention', 'emoji'], attributes: { role: { default: 'presentation' } } },
@@ -64,6 +67,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   tags,
   ...rest
 }) => {
+  const { paymail } = useBitcoin()
   const [images, setImages] = useState<any>([])
   const extensions = useCallback(
     () => [
@@ -129,6 +133,39 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
       </div>
     </div>
   ));
+
+  const submitPost = async (e: any) => {
+    e.preventDefault()
+
+    const bsocial = new BSocial('pow.co')
+    let content = "" // TODO
+    let signWithPaymail = true //TODO
+    let replyTx=""
+    let post: any;
+    if (replyTx) {
+      post = bsocial.reply(replyTx)
+      post.setType('reply')
+    } else {
+      post = bsocial.post()
+    }
+
+    post.addMarkdown(content)
+    
+    if (images.length > 0){
+      images.forEach((file: any) => {
+        post.addImage(file)
+      });
+    }
+
+    if (signWithPaymail){
+      post.addMapData('paymail', paymail)
+    }
+
+    const hexArrayOps = post.getOps('hex')
+    const opReturn = signOpReturn(hexArrayOps)
+    console.log({hexArrayOps, opReturn})
+
+  }
 
   return (
     <AllStyledComponent className="p-4 sm:rounded-xl bg-primary-100 dark:bg-primary-700/20">
