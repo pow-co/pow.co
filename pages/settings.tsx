@@ -11,6 +11,7 @@ import { FormattedMessage } from "react-intl";
 import LocaleSelect from "../components/LocaleSelect";
 import { useBitcoin } from "../context/BitcoinContext";
 import WalletSelect from "../components/WalletSelect";
+import PersonalInterestsPopup from "../components/PersonalInterestsPopup";
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
@@ -18,6 +19,7 @@ export default function Settings() {
   const { hasTwetchPrivilege } = useRelay()
   const [isDark, setIsDark] = useState(theme === "dark");
   const [walletPopupOpen, setWalletPopupOpen] = useState(false);
+  const [personalInterestPopupOpen, setPersonalInterestPopupOpen] = useState(false);
 
   useEffect(() => {
     if (theme === "dark") {
@@ -119,6 +121,25 @@ export default function Settings() {
               </label>
             </div>
           </div>
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+            <div className="flex flex-col">
+              <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                Personal Interests
+              </p>
+              <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                Customize your pow.co feed with topics of your choice
+              </p>
+            </div>
+            <div className="grow" />
+            <div className="flex justify-center relative">
+                <button 
+                    className='flex max-w-[111px] text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-blue-400 to-blue-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'
+                    onClick={()=> setPersonalInterestPopupOpen(true)}
+                >
+                    Select Interests
+                </button>
+            </div>
+          </div>
           {hasTwetchPrivilege && <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
             <div className="flex flex-col">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
@@ -167,6 +188,12 @@ export default function Settings() {
       >
         <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
       </Drawer>
+      <Drawer
+        selector="#personalInterestPopupControler"
+        isOpen={personalInterestPopupOpen}
+        onClose={() => setPersonalInterestPopupOpen(false)}>
+          <PersonalInterestsPopup onClose={() => setPersonalInterestPopupOpen(false)}/>
+       </Drawer> 
     </PanelLayout>
   );
 }
