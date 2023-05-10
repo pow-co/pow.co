@@ -79,26 +79,29 @@ export default function DetailPage() {
     setLoading(true)
     query.txid && getData().then((res) => {
       setTwetch(res.twetchResult)
-      setReplies(res.comments)
+      setReplies(res.replies)
       setInReplyTx(res.inReplyTx)
       setLoading(false)
     })
   },[query])
 
   const getData = async () => {
-    const [twetchResult, bmapResponse, commentsResponse] = await Promise.all([
+    const [twetchResult, bmapResponse, commentsResponse, repliesResponse] = await Promise.all([
       twetchDetailQuery(query.txid?.toString()).catch((err)=>console.log(err)),
       axios.get(`https://b.map.sv/q/${query.txid && btoa(JSON.stringify(queryBMAP(query.txid?.toString())))}`)
         .catch((error) => ({ data: { c: [] } })),
       axios.get(`https://b.map.sv/q/${query.txid && btoa(JSON.stringify(queryComments(query.txid?.toString())))}`)
         .catch((error) => ({ data: { c: [] } })),
+      axios.get(`https://pow.co/api/v1/content/${query.txid}/replies`)
     ]);
 
+    setReplies(repliesResponse.data.replies)
+    const replies = repliesResponse.data.replies
   
     const bmap = bmapResponse.data.c[0] || {}
     const comments = commentsResponse.data.c || [];
     const inReplyTx =  bmap.MAP && bmap?.MAP[0].tx 
-    return { twetchResult, bmap, comments, inReplyTx } 
+    return { twetchResult, bmap, comments, inReplyTx, replies } 
 
   }
 
@@ -200,8 +203,8 @@ export default function DetailPage() {
 
           return <TwetchCard key={t.node.transaction} {...t.node}/>
         })}
-        {replies?.map((reply:BMAPData)=>{
-          return <BoostContentCard key={reply.tx.h} content_txid={reply.tx.h} />
+        {replies?.map((reply:any)=>{
+          return <BoostContentCard key={reply.txid} content_txid={reply.txid} />
         })}
       </div>
     </div>

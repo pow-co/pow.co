@@ -109,7 +109,7 @@ function BoostContentCard({
 
   const getData = async () => {
     // const [content, bmapContent, bmapComments, tagsResult] = await Promise.all([
-    const [contentResult, bmapContentResult, bmapCommentsResult] = await Promise.all([
+    const [contentResult, bmapContentResult, bmapCommentsResult, powcoCommentsResult] = await Promise.all([
       axios.get(`${BASE}/content/${content_txid}`)
         .catch((err) => {
           console.error('api.content.fetch.error', err);
@@ -123,15 +123,20 @@ function BoostContentCard({
         console.error('bmap.post.fetch.error', err);
         return { data: { c: [] } };
       }),
+      axios.get(`https://pow.co/api/v1/content/${content_txid}/replies`).catch((err) => {
+        console.error('bmap.post.fetch.error', err);
+        return { data : { replies: [] } };
+      }),
     ]);
 
     const { content } = contentResult.data;
     const { tags } = contentResult.data;
     const bmapContent = bmapContentResult.data.c[0] || null;
     const bmapComments = bmapCommentsResult.data.c || [];
+    const powcoComments = powcoCommentsResult.data.replies || [];
 
     return {
-      content, tags, bmapContent, bmapComments, 
+      content, tags, bmapContent, bmapComments,  powcoComments
     };
   };
 
@@ -164,7 +169,7 @@ function BoostContentCard({
         default:
           setAvatar('');
       }
-      setCommentCount(res.bmapComments.length);
+      setCommentCount(res.powcoComments.length);
       setLoading(false);
     });
     /* axios.get(`${BASE}/content/${content_txid}`).then(({data}) => {
