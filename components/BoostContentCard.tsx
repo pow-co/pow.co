@@ -103,6 +103,7 @@ function BoostContentCard({
   const [content, setContent] = useState<any>(null);
   const [tags, setTags] = useState<any>([]);
   const [timestamp, setTimestamp] = useState(0);
+  const [ordinal, setOrdinal] = useState(null);
 
   const gradient = 'from-pink-400 to-violet-600';
 
@@ -160,6 +161,9 @@ function BoostContentCard({
       }
       setCommentCount(res.powcoComments.length);
       setLoading(false);
+      if (res.content.bmap?.ORD) {
+        setOrdinal(res.content.bmap.ORD[0])
+      }
     });
     /* axios.get(`${BASE}/content/${content_txid}`).then(({data}) => {
             setContent(data.content)
@@ -231,6 +235,9 @@ function BoostContentCard({
 
     return (
             <>
+            {ordinal && (
+              <img src={`data:image/jpeg;base64,${ordinal.data}`} className="h-full w-full rounded-lg" />
+            )}
             {content.content_type?.match('image') && (
               content.content_text ? <img src={`data:image/jpeg;base64,${content.content_text}`} className="h-full w-full rounded-lg" /> : <PostMedia files={[content.txid]} />
             )}
