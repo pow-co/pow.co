@@ -1,17 +1,23 @@
 import {
-  FC, PropsWithChildren, useCallback, useMemo, useState,
+  FC, PropsWithChildren, useCallback, useMemo, useState, useRef
 } from 'react';
 import type { CreateEditorStateProps, IdentifierSchemaAttributes } from 'remirror';
 import {
-  useRemirror, RemirrorProps, MentionAtomState, MentionAtomPopupComponent, ThemeProvider as RemirrorThemeProvider, Remirror, EditorComponent, Toolbar, DataTransferButtonGroup, HeadingLevelButtonGroup, BasicFormattingButtonGroup, ListButtonGroup, HistoryButtonGroup, useRemirrorContext,
+  useRemirror, RemirrorProps, MentionAtomState, MentionAtomPopupComponent, ThemeProvider as RemirrorThemeProvider, Remirror, EditorComponent, Toolbar, DataTransferButtonGroup, HeadingLevelButtonGroup, BasicFormattingButtonGroup, ListButtonGroup, HistoryButtonGroup, useRemirrorContext, useHelpers,
 } from '@remirror/react';
 import {
-  MentionAtomExtension, MentionAtomNodeAttributes, PlaceholderExtension, wysiwygPreset, TableExtension, LinkExtension,
+  MentionAtomExtension, MarkdownExtension, MentionAtomNodeAttributes, PlaceholderExtension, wysiwygPreset, TableExtension, LinkExtension,
 } from 'remirror/extensions';
+import { wrapRelayx } from 'stag-relayx'
+import TwetchWeb3 from '@twetch/web3';
+import axios from 'axios';
 import { AllStyledComponent } from '@remirror/styles/emotion';
 import BSocial from 'bsocial';
 import { useBitcoin } from '../context/BitcoinContext';
 import { signOpReturn } from '../utils/bap';
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/router';
+import { Tooltip } from 'react-tooltip';
 
 const extraAttributes: IdentifierSchemaAttributes[] = [
   { identifiers: ['mention', 'emoji'], attributes: { role: { default: 'presentation' } } },
@@ -67,8 +73,14 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   tags,
   ...rest
 }) => {
-  const { paymail } = useBitcoin()
+  const { paymail, wallet } = useBitcoin()
+  const [signWithPaymail, setSignWithPaymail] = useState(true)
   const [images, setImages] = useState<any>([])
+  const router = useRouter()
+
+  //@ts-ignore
+  const stag = wrapRelayx(window.relayone)
+  
   const extensions = useCallback(
     () => [
       new PlaceholderExtension({ placeholder }),
@@ -78,6 +90,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
           { name: 'tag', char: '#' },
         ],
       }),
+      new MarkdownExtension(),
       new TableExtension(),
       new LinkExtension({ 
         autoLink: true
@@ -134,12 +147,8 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
     </div>
   ));
 
-  const submitPost = async (e: any) => {
-    e.preventDefault()
-
+  const submitPost = async (textContent: string) => {
     const bsocial = new BSocial('pow.co')
-    let content = "" // TODO
-    let signWithPaymail = true //TODO
     let replyTx=""
     let post: any;
     if (replyTx) {
@@ -149,7 +158,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
       post = bsocial.post()
     }
 
-    post.addMarkdown(content)
+    post.addMarkdown(textContent)
     
     if (images.length > 0){
       images.forEach((file: any) => {
@@ -165,6 +174,192 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
     const opReturn = signOpReturn(hexArrayOps)
     console.log({hexArrayOps, opReturn})
 
+    toast('Publishing Your Post to the Network', {
+      icon: '⛏️',
+      style: {
+      borderRadius: '10px',
+      background: '#333',
+      color: '#fff',
+      },
+    });
+
+    switch (wallet) {
+      case "relayx":
+        const send = {
+          to: '1AVbmFm55TaioWhgSFSRJHEFqaLtZkT2mJ',
+          amount: 0.00001,
+          currency: 'BSV',
+          opReturn
+        }
+        console.log("relayone.send", send)
+        try {
+          let resp: any = await stag.relayone!.send(send)
+          toast('Success!', {
+            icon: '✅',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
+
+          console.log("post.submit.relayx.response", resp)
+
+          try {
+
+            axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawTx
+            })
+            .then(result => {
+              console.debug('b.map.sv.ingest.result', result.data)
+            })
+            .catch(error => {
+              console.error('post.submit.b.map.sv.ingest.error', error)
+            })
+
+          } catch(error) {
+
+              console.error('post.submit.b.map.sv.ingest.error', error)
+
+          }
+
+          try {
+
+            axios.post('https://pow.co/api/v1/posts', {
+                transactions: [{
+                  tx: resp.rawTx
+                }]
+            })
+            .then(result => {
+              console.debug('powco.posts.ingest.result', result.data)
+            })
+            .catch(error => {
+              console.error('post.submit.powco.error', error)
+            })
+
+          } catch(error) {
+
+              console.error('post.submit.powco.error', error)
+
+          }
+
+          router.push(`/${resp.txid}`)
+
+        } catch (error) {
+          console.log(error)
+          if(stag.relayone!.errors.isLowFunds(error)) {
+            toast('Error! Too Low Funds', {
+              icon: '🐛',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+          });
+          }
+          else {
+            toast('Error!', {
+              icon: '🐛',
+              style: {
+              borderRadius: '10px',
+              background: '#333',
+              color: '#fff',
+              },
+            });
+          }
+        }
+        break;
+      case "twetch":
+        try {
+          const outputs = [{
+            sats:0,
+            args: opReturn,
+            address: null
+          },{
+            to: '1AVbmFm55TaioWhgSFSRJHEFqaLtZkT2mJ',
+            sats: 0.00001 * 1e8
+          }]
+          const resp = await TwetchWeb3.abi({
+            contract: "payment",
+            outputs: outputs,
+          })
+          console.log("twetch.response", resp)
+          toast('Success!', {
+            icon: '✅',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
+          try {
+
+            axios.post('https://b.map.sv/ingest', {
+                rawTx: resp.rawtx
+            })
+            .then(result => {
+              console.debug('b.map.sv.ingest.result', result.data)
+            })
+            .catch(error => {
+              console.error('post.submit.b.map.sv.ingest.error', error)
+            })
+
+          } catch(error) {
+
+              console.error('post.submit.b.map.sv.ingest.error', error)
+
+          }
+
+          try {
+
+            axios.post('https://pow.co/api/v1/posts', {
+                transactions: [{
+                  tx: resp.rawtx
+                }]
+            })
+            .then(result => {
+              console.debug('powco.posts.ingest.result', result.data)
+            })
+            .catch(error => {
+              console.error('post.submit.powco.error', error)
+            })
+
+          } catch(error) {
+
+              console.error('post.submit.powco.error', error)
+
+          }
+          router.push(`/${resp.txid}`)
+
+        } catch (error) {
+          console.log(error)
+          toast('Error!', {
+            icon: '🐛',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+          });
+        }
+        break;
+      case "handcash":
+        //TODO
+        break;
+      default: 
+        console.log("no wallet selected")
+    }
+  }
+
+
+  const SubmitButton = () =>  {
+    const { getMarkdown } = useHelpers()
+    const handleClick = useCallback(()=> submitPost(getMarkdown()), [getMarkdown])
+    return (
+      <button onClick={handleClick} className='flex text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-blue-400 to-blue-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>
+        Post $0.00
+      </button>
+    )
   }
 
   return (
@@ -173,6 +368,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
         color: {
           outline: 'none',
           border: 'none',
+          text: 'none'
         },
         boxShadow: {
           1: 'none',
@@ -189,7 +385,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
         }
       }}
       >
-        <Remirror manager={manager}  classNames={['-p-4 prose dark:prose-invert text-gray-900 dark:text-white bg-transparent shadow-none placeholder:not-italic']} {...rest}>
+        <Remirror manager={manager} classNames={['p-4 prose dark:prose-invert text-gray-900 dark:text-white bg-transparent shadow-none placeholder:not-italic']} {...rest}>
           <EditorComponent />
           {images.length > 0 && <div className='grid grid-gap-0.5 gap-0.5 mt-4 overflow-hidden' style={{ height: "319.5px", gridTemplateColumns: `repeat(${images.length > 1 ? "2": "1"}, 1fr)`}}>
             {thumbs}
@@ -209,10 +405,21 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
               className='hidden'
             />
             <div className='grow'/>
+            <div id="sign-option" onClick={()=>setSignWithPaymail(!signWithPaymail)} className='mr-2 cursor-pointer'>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 ${signWithPaymail ? "stroke-primary-500": "stroke-gray-600 dark:stroke-gray-400"}`}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <Tooltip 
+                anchorSelect='#sign-option'
+                style={{width: 'fit-content', borderRadius: '10px'}}
+                place="left"
+                className="dark:bg-gray-100 text-white dark:text-black italic"
+              >
+                Sign with paymail?
+              </Tooltip>
+            </div>
             <div className=''>
-              <button className='flex text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-blue-400 to-blue-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>
-                Post $0.00
-              </button>
+              <SubmitButton/>
             </div>
           </div>
           <MentionComponent users={users} tags={tags} />
