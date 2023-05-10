@@ -92,10 +92,23 @@ const CommentComposer = ({replyTx}: CommentComposerProps) => {
               },
             });
             console.log("relayx.response", resp)
-            const bMapResult = await axios.post('https://b.map.sv/ingest', {
-            rawTx: resp.rawTx
+            axios.post('https://b.map.sv/ingest', {
+              rawTx: resp.rawTx
             })
+            .catch(error => console.error('b.map.sv.ingest.error', error))
+
+            try {
+
+              await axios.get(`https://pow.co/api/v1/content/${resp.txid}`)
+
+            } catch(error) {
+
+              console.error('powco.replies.ingest.error', error)
+
+            }
+
             router.reload()
+
           } catch (error) {
             console.log(error)
             toast('Error!', {
