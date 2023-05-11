@@ -145,16 +145,16 @@ function BoostContentCard({
       if (res.content.createdAt) {
         setTimestamp(moment(res.content.createdAt).unix());
       }
-      setPaymail(res.content.map?.paymail);
+      setPaymail(res.content.bmap?.MAP[0]?.paymail);
       switch (true) {
-        case res.content.map?.paymail?.includes('relayx'):
-          setAvatar(`https://a.relayx.com/u/${res.content.map?.paymail}`);
+        case res.content.bmap?.MAP[0]?.paymail?.includes('relayx'):
+          setAvatar(`https://a.relayx.com/u/${res.content.bmap?.MAP[0]?.paymail}`);
           break;
-        case res.content.map?.paymail?.includes('twetch'):
-          setAvatar(`https://auth.twetch.app/api/v2/users/${res.content.map?.paymail.split('@')[0]}/icon`);
+        case res.content.bmap?.MAP?.paymail?.includes('twetch'):
+          setAvatar(`https://auth.twetch.app/api/v2/users/${res.content.bmap?.MAP[0]?.paymail.split('@')[0]}/icon`);
           break;
-        case res.content.map?.paymail?.includes('handcash'):
-          setAvatar(`https://cloud.handcash.io/v2/users/profilePicture/${res.content.map?.paymail.split('@')[0]}`);
+        case res.content.bmap?.MAP?.paymail?.includes('handcash'):
+          setAvatar(`https://cloud.handcash.io/v2/users/profilePicture/${res.content.map[0]?.paymail.split('@')[0]}`);
           break;
         default:
           setAvatar('');
