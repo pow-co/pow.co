@@ -10,6 +10,7 @@ import axios from "axios";
 import { useTheme } from "next-themes";
 import CommentComposer from "../components/CommentComposer";
 import { useBitcoin } from "../context/BitcoinContext";
+import ComposerV2 from "../components/ComposerV2";
 
 
 export default function DetailPage() {
@@ -141,7 +142,7 @@ export default function DetailPage() {
         {query.txid && <BoostContentCard content_txid={query.txid.toString()}/>}
         {query.txid &&
           <div className="mt-1 bg-primary-100 dark:bg-primary-600/20 px-4 pt-2 pb-1 sm:last:rounded-b-lg">
-            <CommentComposer replyTx={query.txid?.toString()}/>
+            <ComposerV2 inReplyTo={query.txid?.toString()}/>
           </div>}
         {twetch?.postsByReplyPostId.edges.map((t:any)=>{
 
