@@ -14,6 +14,8 @@ import { useTheme } from 'next-themes'
 import { toast } from 'react-hot-toast'
 import { MessageItem } from '../../components/MessageItem'
 
+import useWebSocket from 'react-use-websocket'
+
 import axios from 'axios'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -55,6 +57,12 @@ const messageQuery = (verboseMode: boolean, channelId?: string, userId?: string,
   return btoa(JSON.stringify(q));
 };
 
+interface Channel {
+  channel: string;
+  last_message_bmap: any;
+  last_message_timestamp: Date;
+}
+
 const Chat = () => {
   const router = useRouter()
   const theme = useTheme()
@@ -67,8 +75,35 @@ const Chat = () => {
   const [pending, setPending] = useState<any>()
   const socketRef = useRef<EventSource | null>(null);
 
-  const composerRef = useRef(null)
+  const { getWebSocket } = useWebSocket(`wss://pow.co/websockets/chat/channels/${channelId}`, {
 
+    onOpen: async () => {
+
+    },
+    onMessage: async (message) => {
+      refreshMessages()
+    },
+    onClose: async () => {
+
+    }
+  })
+
+  useEffect(() => {
+
+    const socket = getWebSocket()
+
+    return function() {
+
+      if (socket) {
+
+        socket.close()
+
+      }
+
+    }
+  }, [])
+
+  const composerRef = useRef(null)
   async function refreshMessages() {
 
     axios.get(`https://pow.co/api/v1/chat/channels/${channelId}`).then(({data}) =>{

@@ -3,13 +3,36 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState} from 'react'
 import useSWR, { Fetcher} from "swr";
 import UserIcon from './UserIcon';
+import axios from 'axios'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-
+interface Channel {
+  channel: string;
+  last_message_bmap: any;
+  last_message_timestamp: Date;
+}
 
 const ChannelList = () => {
     const router = useRouter()
+
+    const [channels, setChannels] = useState<Channel[]>([])
+
+    async function refreshChannels() {
+
+      axios.get(`https://pow.co/api/v1/chat/channels`).then(({data}) =>{
+
+        setChannels(data.channels)
+
+      })
+
+    }
+
+    useEffect(() => {
+
+      refreshChannels()
+
+    }, [])
 
     const ChannelItem = (props:any) => {
         const navigate = (e:any) => {
@@ -30,9 +53,9 @@ const ChannelList = () => {
                   </div>
                   <div className='col-span-8'>
                       <h2 className='text-lg truncate font-semibold'>{props.channel}</h2>
-                      <p className='truncate'>{props.last_message}</p>
+                      <p className='truncate'>{props.last_message_bmap.B[0].content}</p>
                   </div>
-                  <p className='col-span-2 text-xs text-center'>{moment(props.last_message_time * 1000).fromNow()}</p>
+                  <p className='col-span-2 text-xs text-center'>{moment(props.last_message_timestamp).fromNow()}</p>
               </div>
         )
         }
@@ -82,7 +105,7 @@ const ChannelList = () => {
       };
       const queryChannelsB64 = btoa(JSON.stringify(queryChannels));
       const { data, error, isLoading } = useSWR(`https://b.map.sv/q/${queryChannelsB64}`, fetcher)
-      const channels = data?.c || []
+      //const channels = data?.c || []
   return (
     <div className='flex flex-col  overflow-hidden'>
         <div className='sticky w-full z-10 flex p-4 bg-primary-300 dark:bg-primary-800/20'>
@@ -95,7 +118,7 @@ const ChannelList = () => {
         </div>
         <div id="scrollable" className='relative overflow-y-auto' style={{height:"calc(100vh - 128px)"}}>
             {channels.map((channel: any)=> {
-                return <ChannelItem key={channel._id} {...channel} selected={query.channelId === channel._id}/>
+                return <ChannelItem key={channel.channel} {...channel} selected={query.channelId === channel.channel}/>
             })}
         </div>
     </div>
