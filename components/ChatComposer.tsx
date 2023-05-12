@@ -21,8 +21,9 @@ import moment from "moment";
 interface ChatComposerProps {
   channelId: string;
   onNewMessageSent: (message: any) => void
+  onChatImported?: (message: any) => void
 }
-const ChatComposer = ({ channelId, onNewMessageSent }: ChatComposerProps) => {
+const ChatComposer = ({ channelId, onNewMessageSent, onChatImported }: ChatComposerProps) => {
   //const dispatch = useDispatch();
   // const user = useSelector((state) => state.session.user);
   const { relayOne } = useRelay();
@@ -107,10 +108,17 @@ const ChatComposer = ({ channelId, onNewMessageSent }: ChatComposerProps) => {
             outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
             let { rawTx, txid } = await relayOne!.send({ outputs });
 
-            console.log("Sent", txid);
-            await axios.post('https://b.map.sv/ingest', {
+            axios.post('https://b.map.sv/ingest', {
                 rawTx: rawTx
-            });
+            }).catch(error => console.error(error))
+
+            const { data } = await axios.get(`https://pow.co/api/v1/chat/messages/${txid}`)
+
+            onChatImported(data)
+
+            console.log('powco.bitchat.message.imported', data)
+
+            return data
             
             break;
           case "twetch":

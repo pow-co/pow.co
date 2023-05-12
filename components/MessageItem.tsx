@@ -74,7 +74,7 @@ export const MessageItem = (props:any, isSide: boolean) => {
               <p className='ml-2cursor-pointer text-lg text-blue-600 font-semibold hover:underline'>{props.MAP[0].paymail}</p>
             </Link>
             <a href={`https://whatsonchain.com/tx/${props.tx.h}`} target="_blank" rel="noreferrer">
-              <span className='text-xs text-gray-500 font-semibold'>{moment(props.timestamp * 1000).fromNow()}</span>
+              <span className='text-xs text-gray-500 font-semibold'>{moment(props.timestamp).fromNow()}</span>
             </a>
           </div>
           <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover text-primary-500 hover:underline'}}>{props.B[0].content}</Linkify></div>
