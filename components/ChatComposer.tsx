@@ -114,7 +114,10 @@ const ChatComposer = ({ channelId, onNewMessageSent, onChatImported }: ChatCompo
 
             const { data } = await axios.get(`https://pow.co/api/v1/chat/messages/${txid}`)
 
-            onChatImported(data)
+            if (onChatImported){
+
+              onChatImported(data)
+           }
 
             console.log('powco.bitchat.message.imported', data)
 

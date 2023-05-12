@@ -75,7 +75,7 @@ const Chat = () => {
 
       setMessages(data.messages)
 
-      setPending()
+      setPending(null)
     })
 
   }
