@@ -32,7 +32,9 @@ export interface ReactEditorProps
 
 export interface SocialEditorProps
   extends Partial<ReactEditorProps>,
-  Pick<MentionComponentProps, 'users' | 'tags'> {}
+  Pick<MentionComponentProps, 'users' | 'tags'> {
+    inReplyTo?: string;
+  }
 
 interface MentionComponentProps<
 UserData extends MentionAtomNodeAttributes = MentionAtomNodeAttributes,
@@ -71,6 +73,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   children,
   users,
   tags,
+  inReplyTo,
   ...rest
 }) => {
   const { paymail, wallet } = useBitcoin()
@@ -149,10 +152,9 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
 
   const submitPost = async (textContent: string) => {
     const bsocial = new BSocial('pow.co')
-    let replyTx=""
     let post: any;
-    if (replyTx) {
-      post = bsocial.reply(replyTx)
+    if (inReplyTo) {
+      post = bsocial.reply(inReplyTo)
       post.setType('reply')
     } else {
       post = bsocial.post()
