@@ -18,6 +18,7 @@ import { signOpReturn } from '../utils/bap';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/router';
 import { Tooltip } from 'react-tooltip';
+import { useTuning } from '../context/TuningContext';
 
 const extraAttributes: IdentifierSchemaAttributes[] = [
   { identifiers: ['mention', 'emoji'], attributes: { role: { default: 'presentation' } } },
@@ -77,7 +78,8 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   ...rest
 }) => {
   const { paymail, wallet } = useBitcoin()
-  const [signWithPaymail, setSignWithPaymail] = useState(true)
+  const { signPosts } = useTuning()
+  const [signWithPaymail, setSignWithPaymail] = useState(signPosts)
   const [images, setImages] = useState<any>([])
   const router = useRouter()
 

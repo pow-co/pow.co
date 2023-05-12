@@ -21,6 +21,8 @@ type ContextValue = {
     zenMode: boolean;
     setZenMode: (zenMode: boolean) => void;
     startTimestamp: number;
+    signPosts: boolean;
+    setSignPosts: (signPosts: boolean) => void;
 
 }
 
@@ -48,6 +50,7 @@ const TuneProvider = (props: { children: React.ReactNode }) => {
   const [zenMode, setZenMode] = useLocalStorage(zenModeStorageKey, false);
   const [locale, setLocale] = useLocalStorage(langStorageKey, "en");
   const [sort, setSort] = useLocalStorage(sortStorageKey, "latest");
+  const [signPosts, setSignPosts] = useLocalStorage(signSettingStorageKey, true)
   const [startTimestamp, setStartTimestamp] = useState(0);
   //const [endTimestamp, setEndTimestamp] = useState(moment.now().unix());
 
@@ -66,6 +69,8 @@ const TuneProvider = (props: { children: React.ReactNode }) => {
       setLocale,
       sort,
       setSort,
+      signPosts,
+      setSignPosts,
       zenMode,
       setZenMode,
       startTimestamp,
@@ -77,6 +82,8 @@ const TuneProvider = (props: { children: React.ReactNode }) => {
       setLocale,
       sort,
       setSort,
+      signPosts,
+      setSignPosts,
       startTimestamp,
       zenMode,
       setZenMode,
@@ -104,3 +111,4 @@ const filterStorageKey = `${config.appname}__TuneProvider_filter`;
 const sortStorageKey = `${config.appname}__TuneProvider_sort`;
 const zenModeStorageKey = `${config.appname}__TuneProvider_zenMode`;
 const langStorageKey = `${config.appname}__TuneProvider_lang`;
+const signSettingStorageKey = `${config.appname}__SignWithPaymail`
