@@ -11,11 +11,13 @@ import { FormattedMessage } from "react-intl";
 import LocaleSelect from "../components/LocaleSelect";
 import { useBitcoin } from "../context/BitcoinContext";
 import WalletSelect from "../components/WalletSelect";
+import { useTuning } from "../context/TuningContext";
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
   const { logout, authenticated } = useBitcoin();
-  const { hasTwetchPrivilege } = useRelay()
+  const { hasTwetchPrivilege } = useRelay();
+  const { signPosts, setSignPosts } = useTuning();
   const [isDark, setIsDark] = useState(theme === "dark");
   const [walletPopupOpen, setWalletPopupOpen] = useState(false);
 
@@ -95,8 +97,34 @@ export default function Settings() {
                     checked={isDark}
                     onChange={toggleTheme}
                   />
-                  <div className="w-10 toggle h-4 bg-gray-400 rounded-full shadow-inner"></div>
-                  <div className="dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition"></div>
+                  <div className={`w-10 toggle h-4 ${isDark ? "bg-primary-500" : "bg-gray-400"} rounded-full shadow-inner`}></div>
+                  <div className={`dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${isDark ? 'transform translate-x-6' : ''}`}></div>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+            <div className="flex flex-col">
+              <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                Sign with paymail
+              </p>
+              <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                Sign your interactions with your wallet's paymail by default
+              </p>
+            </div>
+            <div className="grow" />
+            <div className="relative">
+              <label className="flex items-center cursor-pointer">
+                <div className="relative">
+                  <input
+                    id="toggleTheme"
+                    type="checkbox"
+                    className="sr-only"
+                    checked={signPosts}
+                    onChange={()=>setSignPosts(!signPosts)}
+                  />
+                  <div className={`w-10 toggle h-4 ${signPosts ? "bg-primary-500" : "bg-gray-400"} rounded-full shadow-inner`}></div>
+                  <div className={`dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${signPosts ? 'transform translate-x-6' : ''}`}></div>
                 </div>
               </label>
             </div>

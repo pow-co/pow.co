@@ -19,7 +19,6 @@ import PostMedia from './PostMedia';
 
 import { useBitcoin } from '../context/BitcoinContext';
 import { BASE } from '../hooks/useAPI';
-import { queryComments } from '../pages/[txid]';
 
 const Markdown = require('react-remarkable');
 
@@ -104,68 +103,67 @@ function BoostContentCard({
   const [content, setContent] = useState<any>(null);
   const [tags, setTags] = useState<any>([]);
   const [timestamp, setTimestamp] = useState(0);
+  const [ordinal, setOrdinal] = useState<any>();
 
   const gradient = 'from-pink-400 to-violet-600';
 
   const getData = async () => {
     // const [content, bmapContent, bmapComments, tagsResult] = await Promise.all([
-    const [contentResult, bmapContentResult, bmapCommentsResult] = await Promise.all([
+    const [contentResult, powcoCommentsResult] = await Promise.all([
       axios.get(`${BASE}/content/${content_txid}`)
         .catch((err) => {
           console.error('api.content.fetch.error', err);
           return { data: { content: {} } };
         }),
-      axios.get(`https://b.map.sv/q/${content_txid && btoa(JSON.stringify(queryBMAP(content_txid)))}`).catch((err) => {
-        console.error('bmap.post.fetch.error', err);
-        return { data: { c: [] } };
-      }),
-      axios.get(`https://b.map.sv/q/${content_txid && btoa(JSON.stringify(queryComments(content_txid)))}`).catch((err) => {
-        console.error('bmap.post.fetch.error', err);
-        return { data: { c: [] } };
+      axios.get(`${BASE}/content/${content_txid}/replies`).catch((err) => {
+        console.error('api.replies.fetch.error', err);
+        return { data : { replies: [] } };
       }),
     ]);
 
     const { content } = contentResult.data;
     const { tags } = contentResult.data;
-    const bmapContent = bmapContentResult.data.c[0] || null;
-    const bmapComments = bmapCommentsResult.data.c || [];
+    const powcoComments = powcoCommentsResult.data.replies || [];
 
     return {
-      content, tags, bmapContent, bmapComments, 
+      content, tags,  powcoComments
     };
   };
 
   useEffect(() => {
     getData().then((res) => {
+      console.log(res)
       setContent(res.content);
+      setInReplyTo(res.content.context_txid || '')
       setTags(res.tags);
       if (!difficulty) {
         setComputedDiff(res.tags.reduce((acc: number, curr: any) => acc + curr.difficulty, 0));
       }
-      if (res.bmapContent?.MAP[0].type === 'reply' && res.bmapContent?.MAP[0].context === 'tx') {
+      /* if (res.bmapContent?.MAP[0].type === 'reply' && res.bmapContent?.MAP[0].context === 'tx') {
         setInReplyTo(res.bmapContent.MAP[0].tx);
-      }
+      } */
       if (res.content.createdAt) {
         setTimestamp(moment(res.content.createdAt).unix());
-      } else {
-        setTimestamp(res.bmapContent?.timestamp);
       }
-      setPaymail(res.bmapContent?.MAP[0].paymail);
+      setPaymail(res.content.bmap?.MAP[0]?.paymail);
       switch (true) {
-        case res.bmapContent?.MAP[0]?.paymail?.includes('relayx'):
-          setAvatar(`https://a.relayx.com/u/${res.bmapContent.MAP[0].paymail}`);
+        case res.content.bmap?.MAP[0]?.paymail?.includes('relayx'):
+          setAvatar(`https://a.relayx.com/u/${res.content.bmap?.MAP[0]?.paymail}`);
           break;
-        case res.bmapContent?.MAP[0]?.paymail?.includes('twetch'):
-          setAvatar(`https://auth.twetch.app/api/v2/users/${res.bmapContent.MAP[0].paymail.split('@')[0]}/icon`);
+        case res.content.bmap?.MAP?.paymail?.includes('twetch'):
+          setAvatar(`https://auth.twetch.app/api/v2/users/${res.content.bmap?.MAP[0]?.paymail.split('@')[0]}/icon`);
           break;
-        case res.bmapContent?.MAP?.paymail?.includes('handcash'):
-          setAvatar(`https://cloud.handcash.io/v2/users/profilePicture/${res.bmapContent.MAP[0].paymail.split('@')[0]}`);
+        case res.content.bmap?.MAP?.paymail?.includes('handcash'):
+          setAvatar(`https://cloud.handcash.io/v2/users/profilePicture/${res.content.map[0]?.paymail.split('@')[0]}`);
           break;
         default:
           setAvatar('');
       }
-      setCommentCount(res.bmapComments.length);
+      setCommentCount(res.powcoComments.length);
       setLoading(false);
+      if (res.content.bmap?.ORD) {
+        setOrdinal(res.content.bmap.ORD[0])
+      }
     });
     /* axios.get(`${BASE}/content/${content_txid}`).then(({data}) => {
             setContent(data.content)
@@ -237,6 +235,9 @@ function BoostContentCard({
 
     return (
             <>
+            {ordinal && (
+              <img src={`data:image/jpeg;base64,${ordinal?.data}`} className="h-full w-full rounded-lg" />
+            )}
             {content.content_type?.match('image') && (
               content.content_text ? <img src={`data:image/jpeg;base64,${content.content_text}`} className="h-full w-full rounded-lg" /> : <PostMedia files={[content.txid]} />
             )}

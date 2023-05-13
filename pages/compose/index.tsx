@@ -3,6 +3,7 @@ import Head from "next/head";
 import ThreeColumnLayout from "../../components/ThreeColumnLayout";
 import Composer from "../../components/Composer";
 import { useRouter } from "next/router";
+import ComposerV2 from "../../components/ComposerV2";
 
 export default function Compose() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function Compose() {
           />
         </svg>
         <div className="mt-3 lg:mt-8 mb-[200px] lg:rounded-xl pt-4 pb-3">
-            <Composer/>
+            <ComposerV2/>
         </div>
       </div>
     </ThreeColumnLayout>

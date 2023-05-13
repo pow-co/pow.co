@@ -14,6 +14,10 @@ import { useTheme } from 'next-themes'
 import { toast } from 'react-hot-toast'
 import { MessageItem } from '../../components/MessageItem'
 
+import useWebSocket from 'react-use-websocket'
+
+import axios from 'axios'
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const messageQuery = (verboseMode: boolean, channelId?: string, userId?: string, myId?: string) => {
@@ -53,6 +57,12 @@ const messageQuery = (verboseMode: boolean, channelId?: string, userId?: string,
   return btoa(JSON.stringify(q));
 };
 
+interface Channel {
+  channel: string;
+  last_message_bmap: any;
+  last_message_timestamp: Date;
+}
+
 const Chat = () => {
   const router = useRouter()
   const theme = useTheme()
@@ -61,10 +71,55 @@ const Chat = () => {
   const channelId = query.channelId?.toString()
   const [isMobile, setIsMobile] = useState(false)
   const [newMessages, setNewMessages] = useState<any>([])
+  const [_messages, setMessages] = useState<any>([])
   const [pending, setPending] = useState<any>()
   const socketRef = useRef<EventSource | null>(null);
 
+  const { getWebSocket } = useWebSocket(`wss://pow.co/websockets/chat/channels/${channelId}`, {
+
+    onOpen: async () => {
+
+    },
+    onMessage: async (message) => {
+      refreshMessages()
+    },
+    onClose: async () => {
+
+    }
+  })
+
+  useEffect(() => {
+
+    const socket = getWebSocket()
+
+    return function() {
+
+      if (socket) {
+
+        socket.close()
+
+      }
+
+    }
+  }, [])
+
   const composerRef = useRef(null)
+  async function refreshMessages() {
+
+    axios.get(`https://pow.co/api/v1/chat/channels/${channelId}`).then(({data}) =>{
+
+      setMessages(data.messages)
+
+      setPending(null)
+    })
+
+  }
+
+  useEffect(() =>{
+
+    refreshMessages()
+    
+  }, [channelId])
 
   /* useEffect(() => {
     if (composerRef.current) {
@@ -155,15 +210,19 @@ const Chat = () => {
           </div>
           <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: isMobile ? "calc(100vh - 148px)" : "calc(100vh - 218px)"}} >
             {pending ? <div className='opacity-60'><MessageItem {...pending}/></div> : <></>}
-            {newMessages?.map((message: any) => {
+            {/*newMessages?.map((message: any) => {
               return <MessageItem key={message.tx.h} {...message}/>
-            })}
-            {messages?.map((message: any) => {
+            })*/}
+            {/*messages?.map((message: any) => {
               return <MessageItem key={message.tx.h} {...message}/>
+            })*/}
+
+            {_messages?.map((message: any) => {
+              return <MessageItem timestamp={message.createdAt} key={message.txid} {...message.bmap}/>
             })}
           </div>
           <div ref={composerRef} className='sticky px-4'>
-            <ChatComposer channelId={channelId!} onNewMessageSent={(newMessage:any) => setPending(newMessage)}/>
+            <ChatComposer channelId={channelId!} onNewMessageSent={(newMessage:any) => setPending(newMessage)} onChatImported={refreshMessages} />
           </div>
         </div>
         {/* <div className={`${query.channelId ? "hidden lg:block lg:col-span-3" : "hidden"}  bg-primary-100 dark:bg-primary-900/20`}>

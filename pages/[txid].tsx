@@ -2,65 +2,15 @@ import { useEffect, useState } from "react"
 import ThreeColumnLayout from "../components/ThreeColumnLayout"
 import Loader from "../components/Loader"
 import { useTuning } from "../context/TuningContext"
-import { useAPI } from "../hooks/useAPI"
 import BoostContentCard from "../components/BoostContentCard";
-import { BoostButton } from "boostpow-button";
-import { Ranking } from "../components/BoostContentCard";
 import { toast } from "react-hot-toast"
 import { useRouter } from "next/router";
-import { GetServerSideProps } from "next";
 import { TwetchCard, twetchDetailQuery } from "../components/Twetch";
-import { RelayClubCard, relayDetailQuery } from "../components/RelayClub";
 import axios from "axios";
-import UserIcon from "../components/UserIcon";
-import moment from "moment";
-import PostDescription from "../components/PostDescription";
 import { useTheme } from "next-themes";
-const Markdown = require('react-remarkable')
-import OnchainEvent from "../components/OnChainEvent";
-import PostMedia from "../components/PostMedia";
-import Linkify from "linkify-react";
-import { queryBMAP } from "../components/BoostContentCard"
-import { BFILE_REGEX } from "../components/BoostContentCard";
 import CommentComposer from "../components/CommentComposer";
-import ReplyCard, { BMAPData } from "../components/ReplyCard";
 import { useBitcoin } from "../context/BitcoinContext";
-
-const RemarkableOptions = {
-    breaks: true,
-    html: true,
-    typographer: true,
-    /* highlight: function (str: any, lang: any) {
-      if (lang && hljs.getLanguage(lang)) {
-        try {
-          return hljs.highlight(lang, str).value;
-        } catch (err) {}
-      }
-
-      try {
-        return hljs.highlightAuto(str).value;
-      } catch (err) {}
-
-      return ''; // use external default escaping
-    } */
-}
-
-export const queryComments = (replyTx: string) => {
-  return {
-    "v": 3,
-    "q": {
-      "find": {
-        "MAP.type": "reply",
-        "MAP.context": "tx",
-        "MAP.tx": replyTx
-      },
-      "project": {
-        "out": 0,
-        "in": 0
-      }
-    }
-  }
-}
+import ComposerV2 from "../components/ComposerV2";
 
 
 export default function DetailPage() {
@@ -79,26 +29,24 @@ export default function DetailPage() {
     setLoading(true)
     query.txid && getData().then((res) => {
       setTwetch(res.twetchResult)
-      setReplies(res.comments)
+      setReplies(res.replies)
       setInReplyTx(res.inReplyTx)
       setLoading(false)
     })
   },[query])
 
   const getData = async () => {
-    const [twetchResult, bmapResponse, commentsResponse] = await Promise.all([
+    const [twetchResult, contentResponse, repliesResponse] = await Promise.all([
       twetchDetailQuery(query.txid?.toString()).catch((err)=>console.log(err)),
-      axios.get(`https://b.map.sv/q/${query.txid && btoa(JSON.stringify(queryBMAP(query.txid?.toString())))}`)
-        .catch((error) => ({ data: { c: [] } })),
-      axios.get(`https://b.map.sv/q/${query.txid && btoa(JSON.stringify(queryComments(query.txid?.toString())))}`)
-        .catch((error) => ({ data: { c: [] } })),
+      axios.get(`https://pow.co/api/v1/content/${query.txid}`),
+      axios.get(`https://pow.co/api/v1/content/${query.txid}/replies`)
     ]);
 
-  
-    const bmap = bmapResponse.data.c[0] || {}
-    const comments = commentsResponse.data.c || [];
-    const inReplyTx =  bmap.MAP && bmap?.MAP[0].tx 
-    return { twetchResult, bmap, comments, inReplyTx } 
+    //setReplies(repliesResponse.data.replies)
+    const replies = repliesResponse.data.replies
+    const inReplyTx =  contentResponse.data.content.context_txid || ''
+
+    return { twetchResult, inReplyTx, replies } 
 
   }
 
@@ -194,14 +142,14 @@ export default function DetailPage() {
         {query.txid && <BoostContentCard content_txid={query.txid.toString()}/>}
         {query.txid &&
           <div className="mt-1 bg-primary-100 dark:bg-primary-600/20 px-4 pt-2 pb-1 sm:last:rounded-b-lg">
-            <CommentComposer replyTx={query.txid?.toString()}/>
+            <ComposerV2 inReplyTo={query.txid?.toString()}/>
           </div>}
         {twetch?.postsByReplyPostId.edges.map((t:any)=>{
 
           return <TwetchCard key={t.node.transaction} {...t.node}/>
         })}
-        {replies?.map((reply:BMAPData)=>{
-          return <BoostContentCard key={reply.tx.h} content_txid={reply.tx.h} />
+        {replies?.map((reply:any)=>{
+          return <BoostContentCard key={reply.txid} content_txid={reply.txid} />
         })}
       </div>
     </div>
