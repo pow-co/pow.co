@@ -5,6 +5,7 @@ import { useAPI } from "../../hooks/useAPI"
 import BoostContentCard from "../../components/BoostContentCard";
 import { Ranking } from "../../components/BoostContentCard";
 import { useRouter } from "next/router";
+import BoostContentCardV2 from "../../components/BoostContentCardV2";
 
 
 export default function TopicPage() {
@@ -49,7 +50,7 @@ export default function TopicPage() {
     <div className="col-span-12 lg:col-span-6 min-h-screen">
       <div className="mt-5 lg:mt-10 mb-[200px]">
         {rankings?.map((post: Ranking) => {
-          return <BoostContentCard key={post.content_txid} {...post}/>
+          return <BoostContentCardV2 key={post.content_txid} {...post}/>
         } )}
       </div>
     </div>
