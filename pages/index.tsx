@@ -7,6 +7,7 @@ import BoostContentCard, { Ranking } from '../components/BoostContentCard';
 import FindOrCreate from '../components/FindOrCreate';
 import { useBitcoin } from '../context/BitcoinContext';
 import CardErrorBoundary from '../components/CardErrorBoundary';
+import BoostContentCardV2 from '../components/BoostContentCardV2';
 
 export default function Home() {
   const { filter } = useTuning();
@@ -57,7 +58,7 @@ export default function Home() {
             <>
               {rankings?.map((post: Ranking, index: number) => (
                 <CardErrorBoundary key={post.content_txid}>
-                  <BoostContentCard rank={index + 1} {...post} />
+                  <BoostContentCardV2 rank={index + 1} {...post} />
                 </CardErrorBoundary>
               ))}
               {days?.map((daysRankings: Ranking[], index: number) => (
@@ -69,7 +70,7 @@ export default function Home() {
                   </div>
                   {daysRankings?.map((daysPost: Ranking, index: number) => (
                     <CardErrorBoundary key={daysPost.content_txid}>
-                      <BoostContentCard {...daysPost} />
+                      <BoostContentCardV2 {...daysPost} />
                     </CardErrorBoundary>
                   ))}
                 </div>

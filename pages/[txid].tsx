@@ -11,6 +11,7 @@ import { useTheme } from "next-themes";
 import CommentComposer from "../components/CommentComposer";
 import { useBitcoin } from "../context/BitcoinContext";
 import ComposerV2 from "../components/ComposerV2";
+import BoostContentCardV2 from "../components/BoostContentCardV2";
 
 
 export default function DetailPage() {
@@ -138,18 +139,14 @@ export default function DetailPage() {
           />
         </svg>
       <div className="mt-5 lg:mt-10 pb-[200px]">
-        {inReplyTx && <BoostContentCard content_txid={inReplyTx} />}
-        {query.txid && <BoostContentCard content_txid={query.txid.toString()}/>}
+        {inReplyTx && <BoostContentCardV2 content_txid={inReplyTx} />}
+        {query.txid && <BoostContentCardV2 content_txid={query.txid.toString()}/>}
         {query.txid &&
           <div className="mt-1 bg-primary-100 dark:bg-primary-600/20 px-4 pt-2 pb-1 sm:last:rounded-b-lg">
             <ComposerV2 inReplyTo={query.txid?.toString()}/>
           </div>}
-        {twetch?.postsByReplyPostId.edges.map((t:any)=>{
-
-          return <TwetchCard key={t.node.transaction} {...t.node}/>
-        })}
         {replies?.map((reply:any)=>{
-          return <BoostContentCard key={reply.txid} content_txid={reply.txid} />
+          return <BoostContentCardV2 key={reply.txid} content_txid={reply.txid} />
         })}
       </div>
     </div>

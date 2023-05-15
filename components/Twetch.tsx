@@ -49,6 +49,9 @@ export const twetchDetailQuery = async (txid: string | undefined) => {
             }
           }
           replyPostId
+          postByReplyPostId {
+            transaction
+          }
           transaction
           type
           youBranchedCalc
