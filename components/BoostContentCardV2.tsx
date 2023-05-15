@@ -16,6 +16,8 @@ import Linkify from 'linkify-react';
 import { TwitterTweetEmbed } from 'react-twitter-embed';
 import { youtubePlayerOpts } from './YoutubeMetadataOnchain';
 import Youtube from "react-youtube"
+import { twetchDetailQuery } from './Twetch';
+import { NFTJig, relayDetailQuery } from './RelayClub';
 
 const Markdown = require('react-remarkable');
 
@@ -39,6 +41,8 @@ const RemarkableOptions = {
 };
 
 export const BFILE_REGEX = /b:\/\/([a-fA-F0-9]{64})/g;
+
+const youtubeLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
 
 function extractUrls(text: string) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -76,6 +80,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const gradient = 'from-pink-400 to-violet-600';
     const [computedDiff, setComputedDiff] = useState<number>(difficulty || 0)
     const [paymail, setPaymail] = useState("")
+    const [userName, setUserName] = useState("")
+    const [isTwetch, setIsTwetch] = useState(false)
     const avatar = useMemo(() => {
         switch (true){
             case paymail?.includes('relayx'):
@@ -109,10 +115,12 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const [tags, setTags] = useState([])
     const [commentCount, setCommentCount] = useState(0)
     const [contentText, setContentText] = useState("")
+    const [channel, setChannel] = useState("")
     const [postMedia, setPostMedia] = useState<any[]>([])
     const [linkUnfurls, setLinkUnfurls] = useState<any[]>([])
-    const [tweetId, setTweetId] = useState('')
+    const [tweetId, setTweetId] = useState<string>('')
     const [youtubeId, setYoutubeId] = useState('')
+    const [jig, setJig] = useState(null)
 
     useEffect(() => {
         getData().then((res) => {
@@ -121,7 +129,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
             if (!difficulty) {
                 setComputedDiff(res.tags.reduce((acc: number, curr: any) => acc + curr.difficulty, 0));
             }
-            setCommentCount(res.replies.length)
+            setCommentCount((prev: number) => prev + res.replies.length)
             setLoading(false)
         })
     },[])
@@ -129,46 +137,90 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     useEffect(() => {
         let urls = extractUrls(contentText) || []
         urls.forEach(url => {
-            fetchPreview(url).then((res) => {
-                setLinkUnfurls((prev: any) => [...prev, res])
-            })
+            if (url.includes("youtu")){
+                const youtubeMatch = youtubeLinkRegex.exec(url)
+                youtubeMatch && setYoutubeId(youtubeMatch[1])
+            } else if (url.includes("twitter")) {
+                setTweetId(url.split('/').pop() || '')
+            } else {
+                fetchPreview(url).then((res)=>{
+                    setLinkUnfurls((prev: any) => [...prev, res])
+                })
+            }
         });
     },[contentText])
 
     const parseContent = async (content: any) => {
-        console.log(content)
-        setTimestamp(moment(content.createdAt).unix())
+        //console.log(content)
+        
         if (content.bmap){
             if (content.bmap.B && content.bmap.MAP){
-                content.bmap.B.forEach((bContent: any) => {
-                    if (bContent['content-type'].includes('text')){
-                        setContentText(bContent.content)
-                    } else if (bContent['content-type'].includes('image')){
-                        setPostMedia((prev: any) => {
-                            if (!prev.includes(bContent.content)) {
-                                return [...prev, bContent.content];
-                            }
-                            return prev;
-                        });
-                    } else {
-                        console.log("unsupported content type")
-                    }
-                });
-                setPaymail(content.bmap.MAP[0].paymail)
-                setInReplyTo(content.bmap.MAP[0].tx || "")
+                if (content.bmap.MAP[0].app === "twetch"){
+                    console.log("this is a twetch")
+                    twetchDetailQuery(content_txid).then((res) => {
+                        console.log(res)
+                        setContentText(res.bContent || "")
+                        setPaymail(`${res.userId}@twetch.me`)
+                        setUserName(res.userByUserId.name)
+                        setPostMedia(JSON.parse(res.files) || [])
+                        setInReplyTo(res.postByReplyPostId?.transaction || "")
+                        setTimestamp(moment(res.createdAt).unix())
+                        setCommentCount(res.postsByReplyPostId.totalCount)
+                        setIsTwetch(true)
+                    })
+                } else if (content.bmap.MAP[0].app == "relayclub" && content.bmap.MAP[0].context === "club"){
+                    relayDetailQuery(content_txid).then((res) => {
+                        console.log(res)
+                        setContentText(res.text)
+                        setPaymail(res.user.paymail)
+                        setTimestamp(res.time)
+                        setCommentCount(res.replies.total)
+                        setJig(res.jig)
+                    })
+                } else {
+                    content.bmap.B.forEach((bContent: any) => {
+                        if (bContent['content-type'].includes('text')){
+                            setContentText(bContent.content)
+                        } else if (bContent['content-type'].includes('image')){
+                            setPostMedia((prev: any) => {
+                                if (!prev.includes(bContent.content)) {
+                                    return [...prev, bContent.content];
+                                }
+                                return prev;
+                            });
+                        } else {
+                            console.log("unsupported content type")
+                        }
+                    });
+                    setPaymail(content.bmap.MAP[0].paymail)
+                    setInReplyTo(content.bmap.MAP[0].tx || "")
+                    setChannel(content.bmap.MAP[0].channel || "")
+                    setTimestamp(moment(content.createdAt).unix())
+                }
             } else {
                 //console.log("BMAP without B nor MAP", content)
                 if (content.bmap.twetch){
-                    setLinkUnfurls([{
+                    twetchDetailQuery(content_txid).then((res) => {
+                        console.log(res)
+                        setContentText(res.bContent || "")
+                        setPaymail(`${res.userId}@twetch.me`)
+                        setUserName(res.userByUserId.name)
+                        setPostMedia(JSON.parse(res.files) || [])
+                        setInReplyTo(res.postByReplyPostId?.transaction || "")
+                        setTimestamp(moment(res.createdAt).unix())
+                        setCommentCount(res.postsByReplyPostId.totalCount)
+                        setIsTwetch(true)
+                    })
+                    /* setLinkUnfurls([{
                         url: `https://twetch.com/t/${content_txid}`,
                         image: 'https://pbs.twimg.com/card_img/1653550875279851526/c2a7LseN?format=jpg&name=medium',
                         description: 'Encrypted Twetch content'
-                    }])
+                    }]) */
                 }
 
                 if (content.bmap.ORD){
                     content.bmap.ORD.map((ordi: any) => {
-                        console.log(ordi)
+                        //console.log(ordi)
                         if (ordi.contentType.includes("image")){
                             setPostMedia((prev: any) => {
                                 if (!prev.includes(ordi.data)) {
@@ -182,6 +234,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
             }
         } else {
             //console.log("EMPTY BMAP", content)
+            setTimestamp(moment(content.createdAt).unix())
             switch (true){
                 case content.content_type?.includes("application/json"):
                     // onchainsv
@@ -190,7 +243,6 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                     events.forEach((ev:any) => {
                         if (ev.type === "url"){
                             if (ev.content.url.includes("youtu")){
-                                const youtubeLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
                                 const youtubeMatch = youtubeLinkRegex.exec(ev.content.url)
                                 youtubeMatch && setYoutubeId(youtubeMatch[1])
                             } else if (ev.content.url.includes("twitter")) {
@@ -280,6 +332,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                 </p>
             </div>
             {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-500 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
+            {channel.length > 0 && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in channel <span className="text-primary-500 hover:underline"><Link href={`/chat/${channel}`}>{channel}</Link></span></p>}
             <div className='col-span-12 max-w-screen mb-0.5 grid cursor-pointer grid-cols-12 items-start px-4 pt-4'>
                 <div className='col-span-1 flex h-full w-full flex-col justify-center'>
                     {paymail && (
@@ -298,9 +351,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                                 <Link 
                                     href={`/profile/${paymail}`}
                                     onClick={(e:any)=> e.stopPropagation()}
-                                    className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-base font-bold leading-4 text-gray-900 hover:underline dark:text-white"
                                 >
-                                    {paymail}
+                                    {isTwetch ? <p><span className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap font-bold  text-gray-900 hover:underline dark:text-white">{userName}</span><span className='text-sm font-semibold hover:underline text-gray-400 dark:text-gray-600 ml-1'>{paymail}</span></p> : <p className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap font-bold text-gray-900 hover:underline dark:text-white">{paymail}</p>}
                                 </Link>
                             )}
                         </div>
@@ -344,7 +396,10 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                         {postMedia.map((media: any, index: number) => (
                             <div id={`media_${content_txid}_${index.toString()}`} className='relative rounded-xl overflow-hidden'>
                                 <div className='h-full'>
-                                    <img src={`data:image/jpeg;base64,${media}`} className='rounded-xl h-full w-full grid object-cover'/>
+                                    {isTwetch ? 
+                                    <img src={`https://dogefiles.twetch.app/${media}`} className='rounded-xl h-full w-full grid object-cover'/>
+                                    :
+                                    <img src={`data:image/jpeg;base64,${media}`} className='rounded-xl h-full w-full grid object-cover'/>}
                                 </div>
                             </div>
                         ))}
@@ -368,6 +423,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                             </div>
                         </a>
                     ))}
+                    {jig && <NFTJig jig={jig} />}
                     {youtubeId.length > 0 && <Youtube videoId={youtubeId} opts={youtubePlayerOpts}/>}
                     {tweetId.length > 0 && <TwitterTweetEmbed tweetId={tweetId}/>}
                     <div className="flex w-full px-16">
