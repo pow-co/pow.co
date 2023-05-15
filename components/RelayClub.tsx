@@ -384,3 +384,108 @@ export const RelayClubCard = (props: any) => {
         </div>
     )
 }
+
+export const NFTJig = (props: any) => {
+  const { wallet } = useBitcoin()
+  const { relayOne } = useRelay()
+  const router = useRouter()
+
+  const buyItem = async () => {
+    const ownerResponse = await relayOne!.alpha.run.getOwner();
+    
+    try {
+
+        const response = await axios.post(
+            "https://staging-backend.relayx.com/api/dex/buy2",
+                {
+                buyer: ownerResponse,
+                cls: props.jig.cls.origin,
+                location: props.jig.location,
+                }
+        );
+
+        const sendResponse = await relayOne!.send(response.data.data.rawtx);
+        console.log(sendResponse)
+        return sendResponse
+        
+    } catch (error) {
+      console.log(error)
+        throw error
+        
+    }
+        
+  };
+
+  const handleBuy = async (e: any) => {
+    e.preventDefault()
+    if (wallet !== "relayx"){
+      toast('Cannot buy run NFTs with Twetch Wallet. Please switch to RelayX', {
+        icon: '🛑',
+        style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+        },
+      });
+      return
+    }
+    toast('Publishing Your Buy Order to the Network', {
+      icon: '⛏️',
+      style: {
+      borderRadius: '10px',
+      background: '#333',
+      color: '#fff',
+      },
+    });
+    try {
+        const resp = await buyItem()
+        toast('Success!', {
+          icon: '✅',
+          style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          },
+        });
+        router.reload()
+    } catch (error) {
+        console.log(error)
+        toast('Error!', {
+          icon: '🐛',
+          style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          },
+      });
+    }
+  }
+
+  return (
+    <div className="bg-primary-300 dark:bg-primary-700 rounded-lg mt-4">
+      <img alt="berry" src={`https://berry.relayx.com/${props.jig.image}`} className="rounded-t-lg object-cover object-center"/>
+      <div className="flex items-center p-2">
+        <div className="mr-2">
+          <Link onClick={(e:any)=> e.stopPropagation()}  href={`/profile/${props.jig.cls.user?.paymail}`}>
+            <UserIcon size={36} src={`https://a.relayx.com/u/${props.jig.cls.user?.paymail}`}/>
+          </Link>
+        </div>
+        <div className="grow">
+          <div className="flex flex-col">
+            <Link onClick={(e:any)=> e.stopPropagation()}  href={`/profile/${props.jig.cls.user?.paymail}`}>
+              <h2 className="cursor-pointer text-xl font-bold hover:underline">1{props.jig.cls.user?.paymail.split('@')[0]}</h2>
+            </Link>
+            <p className="">{props.jig.name} #{props.jig.no}/{props.jig.total}</p>
+          </div>
+        </div>
+        {props.jig.order && <div className="mr-5">
+          {props.jig.order.status === "sold" ? (
+            <div className="px-5 py-2 bg-red-600 rounded-2xl text-white">Sold</div>
+          ):(
+            <div onClick={handleBuy} className="px-5 py-2 bg-blue-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
+          )}
+        </div>}
+      </div>
+    </div>
+  )
+}
