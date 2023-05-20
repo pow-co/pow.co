@@ -105,7 +105,7 @@ export default function MeetingPage() {
 
         console.log('USE EFFECT', {nJitsis})
 
-        if (relayxPaymail && tokenBalance && tokenBalance >= MINIMUM_POWCO_BALANCE) {
+        if (relayxPaymail && tokenBalance && tokenBalance >= 0) {
 
             // @ts-ignore
             if (!window.JitsiMeetExternalAPI) {
