@@ -19,11 +19,11 @@ import moment from "moment";
 //import InvisibleSubmitButton from "./InvisibleSubmitButton";
 
 interface ChatComposerProps {
-  channelId: string;
+  channel: string;
   onNewMessageSent: (message: any) => void
   onChatImported?: (message: any) => void
 }
-const ChatComposer = ({ channelId, onNewMessageSent, onChatImported }: ChatComposerProps) => {
+const ChatComposer = ({ channel, onNewMessageSent, onChatImported }: ChatComposerProps) => {
   //const dispatch = useDispatch();
   // const user = useSelector((state) => state.session.user);
   const { relayOne } = useRelay();
@@ -52,7 +52,7 @@ const ChatComposer = ({ channelId, onNewMessageSent, onChatImported }: ChatCompo
         await sendMessage(
           paymail!,
           content,
-          channelId //activeChannel?.channel || channelId || null
+          channel //activeChannel?.channel || channel || null
         ).then(()=>setSending(false));
       }
   }
@@ -108,20 +108,37 @@ const ChatComposer = ({ channelId, onNewMessageSent, onChatImported }: ChatCompo
             outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
             let { rawTx, txid } = await relayOne!.send({ outputs });
 
+	    console.log('relayone.result', { rawTx, txid })
+
             axios.post('https://b.map.sv/ingest', {
                 rawTx: rawTx
             }).catch(error => console.error(error))
 
-            const { data } = await axios.get(`https://pow.co/api/v1/chat/messages/${txid}`)
+            try {
 
-            if (onChatImported){
+		    const { data } = await axios.get(`https://pow.co/api/v1/chat/messages/${txid}`)
 
-              onChatImported(data)
-           }
+		    if (onChatImported){
+
+		      onChatImported(data)
+		   }
+
+            return data
 
             console.log('powco.bitchat.message.imported', data)
 
-            return data
+	} catch(error) {
+
+		console.error('powco.bitchat.message.import.error', error)
+
+		if (onChatImported) {
+
+		      onChatImported({})
+		}
+
+	}
+
+
             
             break;
           case "twetch":
@@ -212,7 +229,7 @@ const ChatComposer = ({ channelId, onNewMessageSent, onChatImported }: ChatCompo
               autoComplete="off"
               className="m-0 w-full appearance-none resize-none border-0 bg-transparent p-0  focus:ring-0 focus:outline-none focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0"
               style={{height:rows > 1 ? "48px": "24px", maxHeight:"48px"}}
-              placeholder={`${sending ? "Sending..." : `Message in ${channelId} chat`}`}
+              placeholder={`${sending ? "Sending..." : `Message in ${channel} chat`}`}
               onKeyUp={handleKeyUp}
               onKeyDown={handleKeyDown}
             />

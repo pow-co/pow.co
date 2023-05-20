@@ -115,12 +115,11 @@ export default function MeetingPage() {
         <PanelLayout>
             {relayxAuthenticated ? <div className='grid grid-cols-12 w-full h-full'>
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
-                    {tokenBalance >= MINIMUM_POWCO_BALANCE && livestream && (
+                    { livestream && (
                         <LiveStream room={room} hls_url={livestream.playback.hls_url}/>
                     )}
                     
-                    <h2 className='p-5 text-xl text-center font-bold '>Meet {room}</h2>
-                    <h6 className='text-center'>{MINIMUM_POWCO_BALANCE} pow.co tokens required to view Live Stream (balance: {tokenBalance})</h6>
+                    <h2 className='p-5 text-xl text-center font-bold '>#{room} Live Stream</h2>
                 </div>
                 <div className='col-span-12 xl:col-span-4 '>
                     <div className='center'>
