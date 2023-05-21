@@ -19,7 +19,7 @@ export default function TopicPage() {
     tag = ''
   }
   const hexTag = Buffer.from(tag, 'utf-8').toString('hex')
-  const { data, error, loading } = useAPI(`/boost/rankings?start_date=${startTimestamp}&tag=${hexTag}`, '')
+  const { data, error, loading } = useAPI(`/boost/rankings?tag=${hexTag}`, '')
 
   if (loading){
     return (
