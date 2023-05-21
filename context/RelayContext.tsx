@@ -94,6 +94,7 @@ type RelayContextValue = {
    tokenBalance: number;
    ready: boolean;
    isApp: boolean;
+   checkNFTBalance:({token, paymail}: {token: string, paymail?: string}) => Promise<number>
    setRelayAuthToken:(relayAuthToken: string | undefined) => void 
    setRelayxPaymail: (paymail: string | undefined) => void;
    setRunOwner: (runOwner: string) => void;
@@ -140,6 +141,33 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       }
     })();
   }, [relayxPaymail]);
+
+
+  async function checkNFTBalance({ token, paymail }: { token: string, paymail?: string }): Promise<number> {
+
+    if (!paymail) { paymail = relayxPaymail }
+
+    if (!paymail) { return 0 }
+
+    const { data } = await axios.get(
+      `https://staging-backend.relayx.com/api/token/${token}/owners`
+    );
+
+    console.log("checkNFTBalance.result.raw", data)
+
+    const [owner] = data.data.owners.filter((owner : RunOwner) => {
+      return owner.paymail === relayxPaymail;
+    });
+
+    console.log('owner', owner)
+
+    if (!owner || !owner.amount) {
+      return 0
+    }
+
+    return owner.amount
+
+  }
 
   useEffect(() => {
     (async () => {
@@ -214,6 +242,7 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
 
   const value = useMemo(
     () => ({
+      checkNFTBalance,
       relayxAvatar,
       relayxUserName,
       relayOne,
@@ -232,6 +261,7 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       isApp,
     }),
     [
+      checkNFTBalance,
       relayxAvatar,
       relayxUserName,
       relayOne,

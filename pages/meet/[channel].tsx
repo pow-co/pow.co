@@ -70,9 +70,9 @@ const events = [
     'peerConnectionFailure'
 ]
 
-import { channels } from '../live/[channelId]'
+import { channels } from '../live/[channel]'
 
-import { getLivestream, Livestream } from '../live/[channelId]'
+import { getLivestream, Livestream } from '../live/[channel]'
 
 export default function MeetingPage() {
 
@@ -80,7 +80,14 @@ export default function MeetingPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken, checkNFTBalance } = useRelay()
+
+    const [livestream, setLivestream] = useState<Livestream | null>(null)
+    const [isLiveTokenHolder, setIsLiveTokenHolder] = useState<boolean>(false)
+    const [isMeetTokenHolder, setIsMeetTokenHolder] = useState<boolean>(false)
+
+    const [liveToken, setLiveToken] = useState<string | null>(null);
+    const [meetToken, setMeetToken] = useState<string | null>(null);
 
     const [jitsiInitialized, setJitsiInitialized] = useState<boolean>()
 
@@ -92,14 +99,121 @@ export default function MeetingPage() {
 
     const [jitsiJWT, setJitsiJWT] = useState<string>()
 
-    const [livestream, setLivestream] = useState<Livestream | null>()
-
     const defaultRoom = "pow.co"
-    const room = query.roomId ? query.roomId.toString() : defaultRoom
+    const room = query.channel ? query.channel.toString() : defaultRoom
+    const channel: string = query?.channel ? query.channel.toString() : defaultRoom
 
     const roomName = `vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/${room}`
 
     getLivestream({ channel: room }).then(setLivestream)
+
+    useEffect(() => {
+
+      if (!livestream) { return }
+
+      console.log('livestream', livestream)
+
+      if (livestream.live_token) {
+
+        setLiveToken(livestream.live_token)
+
+      } else {
+
+        switch(channel) {
+          case 'geist':
+            setLiveToken('0d003ae4fca0d99fc4ff7baabc98984ef95e638bb59459fadf37207daf499581_o2')
+            break;
+          case 'test':
+            setLiveToken('0d003ae4fca0d99fc4ff7baabc98984ef95e638bb59459fadf37207daf499581_o2')
+            break;
+        }
+
+      }
+
+      if (livestream.meet_token) {
+
+        setMeetToken(livestream.meet_token)
+
+      } else {
+
+        switch(channel) {
+          case 'geist':
+            setMeetToken('56f6c76cddb826c4dde3d7c8230317b48075960f4b329b3bd0a1f476c7b5c970_o2')
+            break;
+          case 'test':
+            setMeetToken('56f6c76cddb826c4dde3d7c8230317b48075960f4b329b3bd0a1f476c7b5c970_o2')
+            break;
+        }
+
+      }
+
+
+    }, [livestream])
+
+    useEffect(() => {
+
+      if (!liveToken) { return } 
+
+      checkNFTBalance({ token: liveToken }).then((balance) => {
+
+        console.log('nft.balance', { token: liveToken, balance })
+
+        if (balance > 0) {
+
+          setIsLiveTokenHolder(true)
+
+        } else {
+
+          setIsLiveTokenHolder(false)
+
+        }
+
+      })
+      .catch(error => {
+
+        console.error('checkNFTBalance.error', error)
+
+        setIsLiveTokenHolder(false)
+
+      })
+
+    }, [liveToken])
+
+    useEffect(() => {
+
+      if (!meetToken) { return } 
+
+      checkNFTBalance({ token: meetToken }).then((balance) => {
+
+        console.log('nft.balance', { token: meetToken, balance })
+
+        if (balance > 0) {
+
+          setIsMeetTokenHolder(true)
+
+        } else {
+
+          setIsMeetTokenHolder(false)
+
+        }
+
+      })
+      .catch(error => {
+
+        console.error('checkNFTBalance.error', error)
+
+        setIsMeetTokenHolder(false)
+
+      })
+
+    }, [meetToken])
+
+    useEffect(() => {
+
+      getLivestream({ channel }).then(setLivestream)
+
+    }, [])
+
 
     useEffect(() => {
 
@@ -302,25 +416,43 @@ export default function MeetingPage() {
         <PanelLayout>
             {relayxAuthenticated ? <div className='grid grid-cols-12 w-full h-full'>
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
-                    <div id="tokenmeet-room-container"/>
-                    <h2 className='p-5 text-xl font-bold '>Meet {room}</h2>
-                    {livestream && !isRecording && (
-                        <button onClick={() => startLivestream()}>
-                            Start Livestream
-                        </button>
+
+                    {meetToken && !isMeetTokenHolder && (
+                      <h2 className='p-5 text-xl text-center font-bold '>
+                        <h1 className="mb-4 text-4xl font-extrabold text-center tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+                          <a href={`https://relayx.com/market/${meetToken}`} target="_blank" rel="noreferrer">
+                            <button className="btn bg-black hover:bg-grey-700 text-white font-bold py-2 px-4 rounded">Buy Membership Card</button>
+                          </a>
+                        </h1>
+                      </h2>
+                    )}
+                    {(!meetToken  || isMeetTokenHolder ) && (
+                      <>
+                      <div id="tokenmeet-room-container"/>
+                      <div>
+
+                        {livestream && !isRecording && (
+                            <button onClick={() => startLivestream()}>
+                                Start Livestream
+                            </button>
+                        )}
+
+                        {isRecording && (
+                            <button onClick={() => stopLivestream()}>
+                                Stop Livestream
+                            </button>
+                        )}
+                      </div>
+                      </>
                     )}
 
-                    {isRecording && (
-                        <button onClick={() => stopLivestream()}>
-                            Stop Livestream
-                        </button>
-                    )}
+                    <h2 className='p-5 text-xl font-bold '>Meet #{room}</h2>
 
                 </div>
                 <div className='col-span-12 xl:col-span-4 '>
                     <div className=''>
                         <h3 className='p-3 text-lg font-bold'>Live Chat in {room}</h3>
-                        <SideChat room={room.toString()} />
+                        <SideChat room={channel} />
                     </div>
                 </div>
             </div> : (<div className='mt-10 flex flex-col justify-center items-center'>

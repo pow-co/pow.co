@@ -15,7 +15,7 @@ import { ReactNode } from 'react';
 import { BoostButton } from 'boostpow-button';
 import { useRouter } from 'next/router';
 import { useBitcoin } from '../context/BitcoinContext';
-import { LiveStream } from '../pages/live/[channelId]';
+import { LiveStream } from '../pages/live/[channel]';
 import Link from 'next/link';
 import ReactPlayer from 'react-player';
 import moment from 'moment';
