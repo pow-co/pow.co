@@ -97,7 +97,7 @@ const SideBarDrawer = () => {
                         <div className='text-base leading-4 grow'>Chat</div>
                     </div>
                 </Link>
-                <Link href="/meet">
+                <Link href="/meet/powco-development">
                     <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 mr-2.5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
