@@ -20,18 +20,21 @@ import moment from "moment";
 
 interface ChatComposerProps {
   channel: string;
-  onNewMessageSent: (message: any) => void
-  onChatImported?: (message: any) => void
+  onNewMessageSent: (message: any) => void;
+  onChatImported?: (message: any) => void;
 }
-const ChatComposer = ({ channel, onNewMessageSent, onChatImported }: ChatComposerProps) => {
+const ChatComposer = ({
+  channel,
+  onNewMessageSent,
+  onChatImported,
+}: ChatComposerProps) => {
   //const dispatch = useDispatch();
   // const user = useSelector((state) => state.session.user);
   const { relayOne } = useRelay();
-  const { paymail, wallet } = useBitcoin()
-  const [inputValue, setInputValue] = useState("")
-  const [sending, setSending] = useState(false)
-  const [rows, setRows] = useState(1)
-  
+  const { paymail, wallet } = useBitcoin();
+  const [inputValue, setInputValue] = useState("");
+  const [sending, setSending] = useState(false);
+  const [rows, setRows] = useState(1);
 
   //const { profile, authToken, hcDecrypt } = useHandcash();
   //const { identity } = useBap();
@@ -40,129 +43,140 @@ const ChatComposer = ({ channel, onNewMessageSent, onChatImported }: ChatCompose
   let timeout = undefined;
 
   const handleSubmit = async () => {
-      if (!paymail){
-        alert("Please, connect your wallet")
-          return
-      }
-      const content = inputValue
+    if (!paymail) {
+      alert("Please, connect your wallet");
+      return;
+    }
+    const content = inputValue;
 
-      if (content !== "" && paymail) {
-        setInputValue("")
-        setSending(true)
-        await sendMessage(
-          paymail!,
-          content,
-          channel //activeChannel?.channel || channel || null
-        ).then(()=>setSending(false));
-      }
-  }
+    if (content !== "" && paymail) {
+      setInputValue("");
+      setSending(true);
+      await sendMessage(
+        paymail!,
+        content,
+        channel //activeChannel?.channel || channel || null
+      ).then(() => setSending(false));
+    }
+  };
 
-  const sendMessage = 
-    async (pm: string, content: string, channel:string) => {
-        let dataPayload = [
-          B_PREFIX, // B Prefix
-          content,
-          "text/plain",
-          "utf-8",
-          "|",
-          MAP_PREFIX, // MAP Prefix
-          "SET",
-          "app",
-          "chat.pow.co",
-          "type",
-          "message",
-          "paymail",
-          pm,
-        ];
+  const sendMessage = async (pm: string, content: string, channel: string) => {
+    let dataPayload = [
+      B_PREFIX, // B Prefix
+      content,
+      "text/plain",
+      "utf-8",
+      "|",
+      MAP_PREFIX, // MAP Prefix
+      "SET",
+      "app",
+      "chat.pow.co",
+      "type",
+      "message",
+      "paymail",
+      pm,
+    ];
 
-        // add channel
-        if (channel) {
-          dataPayload.push("context", "channel", "channel", channel);
-        }
+    // add channel
+    if (channel) {
+      dataPayload.push("context", "channel", "channel", channel);
+    }
 
-        const script = nimble.Script.fromASM(
-          "OP_0 OP_RETURN " +
-            dataPayload
-              .map((str) => bops.to(bops.from(str, "utf8"), "hex"))
-              .join(" ")
-        );
-        let outputs
-        let futureBMAP = {
-          B:[{
-            content:content,
-            "content-type":"text/plain",
-            encoding: "utf-8"
-          }],
-          MAP: [{
-            channel: channel,
-            paymail: paymail
-          }],
-          timestamp:moment().unix(),
-          tx:{
-            h: "pending"
+    const script = nimble.Script.fromASM(
+      "OP_0 OP_RETURN " +
+        dataPayload
+          .map((str) => bops.to(bops.from(str, "utf8"), "hex"))
+          .join(" ")
+    );
+    let outputs;
+    let futureBMAP = {
+      B: [
+        {
+          content: content,
+          "content-type": "text/plain",
+          encoding: "utf-8",
+        },
+      ],
+      MAP: [
+        {
+          channel: channel,
+          paymail: paymail,
+        },
+      ],
+      timestamp: moment().unix(),
+      tx: {
+        h: "pending",
+      },
+    };
+    onNewMessageSent(futureBMAP);
+    switch (wallet) {
+      case "relayx":
+        outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
+        let { rawTx, txid } = await relayOne!.send({ outputs });
+
+        console.log("relayone.result", { rawTx, txid });
+
+        axios.post('https://pow.co/api/v1/posts', {
+          transactions: [{
+            tx: rawTx
+          }]
+        })
+        .then(result => {
+          console.debug('powco.posts.ingest.result', result.data)
+        })
+        .catch(error => {
+          console.error('post.submit.powco.error', error)
+        })
+
+        axios
+          .post("https://b.map.sv/ingest", {
+            rawTx: rawTx,
+          })
+          .catch((error) => console.error(error));
+
+        try {
+          const { data } = await axios.get(
+            `https://pow.co/api/v1/chat/messages/${txid}`
+          );
+
+          if (onChatImported) {
+            onChatImported(data);
+          }
+
+          return data;
+
+          console.log("powco.bitchat.message.imported", data);
+        } catch (error) {
+          console.error("powco.bitchat.message.import.error", error);
+
+          if (onChatImported) {
+            onChatImported({});
           }
         }
-        onNewMessageSent(futureBMAP)
-        switch (wallet){
-          case "relayx":
-            outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
-            let { rawTx, txid } = await relayOne!.send({ outputs });
 
-	    console.log('relayone.result', { rawTx, txid })
-
-            axios.post('https://b.map.sv/ingest', {
-                rawTx: rawTx
-            }).catch(error => console.error(error))
-
-            try {
-
-		    const { data } = await axios.get(`https://pow.co/api/v1/chat/messages/${txid}`)
-
-		    if (onChatImported){
-
-		      onChatImported(data)
-		   }
-
-            return data
-
-            console.log('powco.bitchat.message.imported', data)
-
-	} catch(error) {
-
-		console.error('powco.bitchat.message.import.error', error)
-
-		if (onChatImported) {
-
-		      onChatImported({})
-		}
-
-	}
-
-
-            
-            break;
-          case "twetch":
-            outputs = [{
-              sats:0,
-              script: script.toASM(),
-              address: null
-            }]
-            const resp = await TwetchWeb3.abi({
-              contract: "payment",
-              outputs: outputs
-            })
-            await axios.post('https://b.map.sv/ingest', {
-              rawTx: resp.rawtx
-            })
-            break;
-          case "handcash":
-            break;
-          default:
-            console.log("no wallet selected")
-        }
-        
-        
+        break;
+      case "twetch":
+        outputs = [
+          {
+            sats: 0,
+            script: script.toASM(),
+            address: null,
+          },
+        ];
+        const resp = await TwetchWeb3.abi({
+          contract: "payment",
+          outputs: outputs,
+        });
+        await axios.post("https://b.map.sv/ingest", {
+          rawTx: resp.rawtx,
+        });
+        break;
+      case "handcash":
+        break;
+      default:
+        console.log("no wallet selected");
     }
+  };
 
   //const typingUser = useSelector((state) => state.chat.typingUser);
 
@@ -180,9 +194,9 @@ const ChatComposer = ({ channel, onNewMessageSent, onChatImported }: ChatCompose
     if (ctrlDown && event.keyCode == cKey) console.log("Document catch Ctrl+C");
     if (ctrlDown && event.keyCode == vKey) console.log("Document catch Ctrl+V");
 
-    if (event.keyCode == enterKey && !event.shiftKey){
-      event.preventDefault()
-      handleSubmit()
+    if (event.keyCode == enterKey && !event.shiftKey) {
+      event.preventDefault();
+      handleSubmit();
     }
   };
 
@@ -194,7 +208,7 @@ const ChatComposer = ({ channel, onNewMessageSent, onChatImported }: ChatCompose
     let vKey = 86;
     let cKey = 67;
 
-    setRows(event.target.value.split("\n").length)
+    setRows(event.target.value.split("\n").length);
 
     if (event.keyCode == ctrlKey || event.keyCode == cmdKey) ctrlDown = false;
 
@@ -211,14 +225,18 @@ const ChatComposer = ({ channel, onNewMessageSent, onChatImported }: ChatCompose
     }
   };
 
-  const handleChange = (e:any) => {
-    e.preventDefault()
-    setInputValue(e.target.value)
-  }
+  const handleChange = (e: any) => {
+    e.preventDefault();
+    setInputValue(e.target.value);
+  };
 
   return (
     <div className="w-full items-center border-t-0 dark:border-white/20 bg-white dark:bg-gray-800 !bg-transparent py-2">
-      <form onSubmit={handleSubmit} autoComplete="off" className="stretch mx-2 flex flex-row gap-3 last:mb-2 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-3xl">
+      <form
+        onSubmit={handleSubmit}
+        autoComplete="off"
+        className="stretch mx-2 flex flex-row gap-3 last:mb-2 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-3xl"
+      >
         <div className="relative flex h-full flex-1 md:flex-col">
           <div className="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
             <textarea
@@ -228,14 +246,16 @@ const ChatComposer = ({ channel, onNewMessageSent, onChatImported }: ChatCompose
               onChange={handleChange}
               autoComplete="off"
               className="m-0 w-full appearance-none resize-none border-0 bg-transparent p-0  focus:ring-0 focus:outline-none focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0"
-              style={{height:rows > 1 ? "48px": "24px", maxHeight:"48px"}}
-              placeholder={`${sending ? "Sending..." : `Message in ${channel} chat`}`}
+              style={{ height: rows > 1 ? "48px" : "24px", maxHeight: "48px" }}
+              placeholder={`${
+                sending ? "Sending..." : `Message in ${channel} chat`
+              }`}
               onKeyUp={handleKeyUp}
               onKeyDown={handleKeyDown}
             />
-            <button type="submit" className="hidden"/>
-            </div>
+            <button type="submit" className="hidden" />
           </div>
+        </div>
       </form>
       {/* <div>
         {typingUser && `${typingUser.paymail} is typing...`}
