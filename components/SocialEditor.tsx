@@ -162,7 +162,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
       post = bsocial.post()
     }
 
-    post.addMarkdown(textContent)
+    textContent && post.addMarkdown(textContent)
     
     if (images.length > 0){
       images.forEach((file: any) => {
@@ -175,7 +175,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
     }
 
     const hexArrayOps = post.getOps('hex')
-    const opReturn = signOpReturn(hexArrayOps)
+    const opReturn = hexArrayOps.map((op: any) => `0x${op}`);
     console.log({hexArrayOps, opReturn})
 
     toast('Publishing Your Post to the Network', {
