@@ -18,6 +18,7 @@ import { youtubePlayerOpts } from './YoutubeMetadataOnchain';
 import Youtube from "react-youtube"
 import { twetchDetailQuery } from './Twetch';
 import { NFTJig, relayDetailQuery } from './RelayClub';
+import ReactPlayer from 'react-player/lazy';
 
 const Markdown = require('react-remarkable');
 
@@ -120,6 +121,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const [linkUnfurls, setLinkUnfurls] = useState<any[]>([])
     const [tweetId, setTweetId] = useState<string>('')
     const [youtubeId, setYoutubeId] = useState('')
+    const [playerURLs, setPlayerURLs] = useState<string[]>([])
     const [jig, setJig] = useState(null)
 
     useEffect(() => {
@@ -133,22 +135,21 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
             setLoading(false)
         })
     },[])
-
+    const playerKeys = ["youtube", "youtu", "soundcloud", "facebook", "vimeo", "wistia", "mixcloud", "dailymotion", "twitch"]
     useEffect(() => {
-        let urls = extractUrls(contentText) || []
+        let urls = extractUrls(contentText) || [];
         urls.forEach(url => {
-            if (url.includes("youtu")){
-                const youtubeMatch = youtubeLinkRegex.exec(url)
-                youtubeMatch && setYoutubeId(youtubeMatch[1])
-            } else if (url.includes("twitter")) {
-                setTweetId(url.split('/').pop() || '')
-            } else {
-                fetchPreview(url).then((res)=>{
-                    setLinkUnfurls((prev: any) => [...prev, res])
-                })
-            }
+          if (playerKeys.some(key => url.includes(key))) {
+            setPlayerURLs(prev => [...prev, url]);
+          } else if (url.includes("twitter")) {
+            setTweetId(url.split('/').pop() || '');
+          } else {
+            fetchPreview(url).then((res) => {
+              setLinkUnfurls((prev: any) => [...prev, res]);
+            });
+          }
         });
-    },[contentText])
+      }, [contentText]);
 
     const parseContent = async (content: any) => {
         //console.log(content)
@@ -242,9 +243,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                     let { events } = onchainData.data
                     events.forEach((ev:any) => {
                         if (ev.type === "url"){
-                            if (ev.content.url.includes("youtu")){
-                                const youtubeMatch = youtubeLinkRegex.exec(ev.content.url)
-                                youtubeMatch && setYoutubeId(youtubeMatch[1])
+                            if (playerKeys.some(key => ev.content.url.includes(key))) {
+                                setPlayerURLs([ev.content.url]);
                             } else if (ev.content.url.includes("twitter")) {
                                 setTweetId(ev.content.url.split('/').pop())
                             } else {
@@ -424,7 +424,9 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                         </a>
                     ))}
                     {jig && <NFTJig jig={jig} />}
-                    {youtubeId.length > 0 && <Youtube videoId={youtubeId} opts={youtubePlayerOpts}/>}
+                    {playerURLs.length > 0 && playerURLs.map((url: string, index: number) => (
+                        <ReactPlayer key={`${content_txid}_player_index`} controls={true} url={url} style={{ maxWidth:"100%" }}/>
+                    ))}
                     {tweetId.length > 0 && <TwitterTweetEmbed tweetId={tweetId}/>}
                     <div className="flex w-full px-16">
                         <div className="grow" />
