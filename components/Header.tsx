@@ -108,7 +108,7 @@ function Header() {
           </Link>
           {authenticated ? (
             <>
-              {/* <Link href="/notifications">
+              <Link href="/notifications">
               <div className="ml-4 h-8 w-8 flex justify-center items-center cursor-pointer relative">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +125,7 @@ function Header() {
                   />
                 </svg>
               </div>
-            </Link> */}
+            </Link>
               <Link href={`/profile/${paymail}`}>
                 <div className="relative ml-4 flex h-8 w-8 cursor-pointer items-center justify-center">
                   <UserIcon src={avatar!} size={36} />
@@ -174,8 +174,8 @@ function Header() {
               </svg>
             </button>
           )}
-          {authenticated ? (null
-          /* <Link href="/notifications" className="h-8 mr-2">
+          {authenticated ? (
+          <Link href="/notifications" className="h-8 mr-2">
               <div className="ml-4 h-8 w-8 flex justify-center items-center cursor-pointer relative">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -192,7 +192,7 @@ function Header() {
                   />
                 </svg>
               </div>
-            </Link> */
+            </Link>
           ) : (
             <button
               type="button"
