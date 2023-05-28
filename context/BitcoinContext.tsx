@@ -4,6 +4,8 @@ import { config } from "../template_config"
 import { useRelay } from "./RelayContext";
 import { useTwetch } from "./TwetchContext";
 import { useHandCash } from "./HandCashContext";
+import axios from "axios";
+import moment from "moment";
 
 type BitcoinContextValue = {
     wallet: 'relayx' | 'twetch' | 'handcash';
@@ -22,6 +24,42 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
     const { relayxAuthenticate, relayOne, relayxAuthenticated, relayxLogout, relayxAvatar, relayxPaymail, relayxUserName } = useRelay()
     const { twetchAuthenticate, twetchAuthenticated, twetchLogout, twetchAvatar, twetchPaymail, twetchUserName } = useTwetch()
     const { handcashAuthenticate, handcashAuthenticated, handcashLogout, handcashAvatar, handcashPaymail, handcashUserName} = useHandCash()
+
+    useEffect(() => {
+        console.log(moment().subtract(48,'hours').valueOf())
+        Promise.all([
+            axios.get(`https://pow.co/api/v1/boost/work?start=${moment().subtract(24,'hours').valueOf()}&end=${moment().valueOf()}`),
+            axios.get(`https://pow.co/api/v1/boost/work?start=${moment().subtract(48,'hours').valueOf()}&end=${moment().subtract(24,'hours').valueOf()}`)
+        ]).then((arrayResp: any) => {
+            let todayWork = arrayResp[0].data.work;
+            let yesterdayWork = arrayResp[1].data.work;
+            console.log(todayWork,yesterdayWork);
+
+
+            let todayValue = 0; 
+            let todayDifficulty = 0;
+            let yesterdayValue = 0;
+            let yesterdayDifficulty = 0;
+
+            for (const work of todayWork){
+                
+                todayValue = todayValue + work.value
+                todayDifficulty =  todayDifficulty + work.difficulty
+            }
+
+            for (const work of yesterdayWork){
+                
+                yesterdayValue += work.value
+                yesterdayDifficulty += work.difficulty
+            }
+
+            console.log("today:", todayValue, "sats earned by miners", todayDifficulty, "difficulty")
+            console.log("yesterday:", yesterdayValue, "sats earned by miners", yesterdayDifficulty, "difficulty")
+        })
+        
+
+    },[])
+
 
     const authenticate = useCallback(async () => {
         switch (wallet){
