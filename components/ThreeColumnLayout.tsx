@@ -8,7 +8,7 @@ const SideBar = dynamic(() => import ('./SideBar'), { ssr: false })
 const SidebarTuning = dynamic(() => import('./SidebarTuning'), { ssr: false })
 const SidebarTopics = dynamic(() => import('./SidebarTopics'), { ssr: false })
 
-const ThreeColumnLayout = (props: { children: React.ReactNode }) => {
+const ThreeColumnLayout = (props: { children: React.ReactNode, RightSidebar?: React.ReactNode }) => {
   const { authenticated } = useBitcoin()
 
   const ToastTroubleShoot = () => {
@@ -40,12 +40,16 @@ const ThreeColumnLayout = (props: { children: React.ReactNode }) => {
           <div className='hidden lg:block col-span-2'/>
         </div>
         <div className='hidden xl:block col-span-3 sticky top-[72px] w-full px-7'>
-          <div className='fixed top-[102px] z-50 w-[344px]'>
-            <SidebarTuning/>
-          </div>
-          <div className='fixed top-[333px] z-50 w-[344px]'>
-            <SidebarTopics/>
-          </div>
+	  {props.RightSidebar ? props.RightSidebar : (
+		<>
+		  <div className='fixed top-[102px] z-50 w-[344px]'>
+		    <SidebarTuning/>
+		  </div>
+		  <div className='fixed top-[333px] z-50 w-[344px]'>
+		    <SidebarTopics/>
+		  </div>
+		</>
+	  )}
 
         </div>
       </div>

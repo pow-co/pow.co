@@ -4,6 +4,8 @@ import Head from 'next/head';
 import Script from 'next/script';
 import { SensiletProvider } from '../context/SensiletContext'
 
+import { GetServerSideProps } from 'next'
+
 import '../styles/globals.css';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'react-hot-toast';
@@ -18,7 +20,12 @@ import { BitcoinProvider } from '../context/BitcoinContext';
 import { TwetchProvider } from '../context/TwetchContext';
 import 'react-tooltip/dist/react-tooltip.css';
 
+import { useSubdomain } from '../hooks/subdomain'
+
 export default function App({ Component, pageProps }: AppProps) {
+
+  const { subdomain } = useSubdomain()
+
   useEffect(() => {
     const MATOMO_URL = String(process.env.NEXT_PUBLIC_MATOMO_URL);
 

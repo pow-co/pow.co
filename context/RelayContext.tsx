@@ -90,6 +90,7 @@ type RelayContextValue = {
    relayAuthToken: string | undefined;
    hasTwetchPrivilege: boolean;
    relayxAuthenticate: () => Promise<void>;
+   getTokenBalance: ({token_contract}: {token_contract: string}) => Promise<{balance: number}>;
    relayxAuthenticated: boolean;
    tokenBalance: number;
    ready: boolean;
@@ -122,6 +123,27 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       setReady(true);
     }
   }, []);
+
+  async function getTokenBalance({ token_contract }: {token_contract: string}): Promise<{balance: number}> {
+
+	try {
+
+	      const { data } = await axios.get(
+		`https://staging-backend.relayx.com/api/token/${token_contract}/owners`
+	      );
+
+	      const [owner] = data.data.owners.filter((owner : RunOwner) => {
+		return owner.paymail === relayxPaymail;
+	      });
+
+	      return {balance:owner.amount}
+
+      }catch(error) {
+	console.error('get token balance.error', error)
+	return {balance:0}
+      }
+
+  }
 
   useEffect(() => {
     (async () => {
@@ -230,6 +252,7 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       ready,
       tokenBalance,
       isApp,
+      getTokenBalance
     }),
     [
       relayxAvatar,
@@ -247,6 +270,7 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       ready,
       tokenBalance,
       isApp,
+      getTokenBalance
     ]
   );
 
