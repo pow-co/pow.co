@@ -57,10 +57,6 @@ function FindOrCreate() {
 
         console.log(result, isNew);
         router.prefetch(`/${result.txid}`);
-        const win = window.open(`/${result.txid}`, "_blank");
-        if (win) {
-          win.focus();
-        }
         router.push(`/${result.txid}`);
       } catch (error) {
         console.log(error);
