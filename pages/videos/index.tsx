@@ -12,7 +12,7 @@ import { useEffect, useState } from "react"
 
 async function listVideos(): Promise<LiveapiVideo[]> {
 
-  const { data: { videos } } = await axios.get('https://tokenmeet.live/api/v1/videos')
+  const { data: { videos } } = await axios.get('https://api.tokenmeet.live/api/v1/videos')
 
   return videos
 }

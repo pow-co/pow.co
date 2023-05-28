@@ -125,7 +125,7 @@ export default function MeetingPage() {
             setJitsiInitialized(true)
 
 
-            axios.post('https://tokenmeet.live/api/v1/jaas/auth', {
+            axios.post('https://api.tokenmeet.live/api/v1/jaas/auth', {
                 wallet: 'relay',
                 paymail: relayxPaymail,
                 token: relayAuthToken

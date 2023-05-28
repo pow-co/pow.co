@@ -49,7 +49,7 @@ export default function Watch({ channel }: {channel?: string}) {
 
   useEffect(() => {
 
-    axios.get(`https://tokenmeet.live/api/v1/shows/${query.channel}`).then((data) => {
+    axios.get(`https://api.tokenmeet.live/api/v1/shows/${query.channel}`).then((data) => {
 
 	console.log('data', data)
 
