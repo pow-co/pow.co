@@ -130,10 +130,10 @@ const Chat = () => {
           <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: isMobile ? "calc(100vh - 148px)" : "calc(100vh - 218px)"}} >
             {pending ? <div className='opacity-60'><MessageItem {...pending}/></div> : <></>}
             {newMessages?.map((message: any) => {
-              return <MessageItem key={message.txid} {...message.bmap}/>
+              return <MessageItem key={message.txid} {...message}/>
             })}
             {messages?.map((message: any) => {
-              return <MessageItem key={message.txid} {...message.bmap}/>
+              return <MessageItem key={message.txid} {...message}/>
             })}
 
           </div>

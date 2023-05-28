@@ -89,26 +89,28 @@ const ChatComposer = ({
           .join(" ")
     );
     let outputs;
-    let futureBMAP = {
-      B: [
-        {
-          content: content,
-          "content-type": "text/plain",
-          encoding: "utf-8",
-        },
-      ],
-      MAP: [
-        {
-          channel: channel,
-          paymail: paymail,
-        },
-      ],
-      timestamp: moment().unix(),
-      tx: {
-        h: "pending",
+    let pendingMsg = {
+      bmap:{
+        B: [
+          {
+            content: content,
+            "content-type": "text/plain",
+            encoding: "utf-8",
+          },
+        ],
+        MAP: [
+          {
+            channel: channel,
+            paymail: paymail,
+          },
+        ],
+        tx: {
+          h: "pending",
+        }
       },
+      createdAt:moment()
     };
-    onNewMessageSent(futureBMAP);
+    onNewMessageSent(pendingMsg);
     switch (wallet) {
       case "relayx":
         outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
