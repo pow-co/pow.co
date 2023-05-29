@@ -50,6 +50,21 @@ function extractUrls(text: string) {
     return text.match(urlRegex);
 }
 
+function normalizeUrls(urls: string[]): string[] {
+    const normalizedUrls: string[] = [];
+  
+    for (const url of urls) {
+      let normalizedUrl = url;
+  
+      // Remove the "m." subdomain from the URL
+      normalizedUrl = normalizedUrl.replace(/m\./i, '');
+
+      normalizedUrls.push(normalizedUrl);
+    }
+  
+    return normalizedUrls;
+  }
+
 const fetchPreview = async (url: string) => {
     let metadata = {url: url}
     try {
@@ -131,13 +146,14 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
             if (!difficulty) {
                 setComputedDiff(res.tags.reduce((acc: number, curr: any) => acc + curr.difficulty, 0));
             }
-            setCommentCount((prev: number) => prev + res.replies.length)
+            setCommentCount(res.replies.length)
             setLoading(false)
         })
     },[])
     const playerKeys = ["youtube", "youtu", "soundcloud", "facebook", "vimeo", "wistia", "mixcloud", "dailymotion", "twitch"]
     useEffect(() => {
-        let urls = extractUrls(contentText) || [];
+        let urls : string[] = extractUrls(contentText) || [];
+        urls = normalizeUrls(urls)
         urls.forEach(url => {
           if (playerKeys.some(key => url.includes(key))) {
             setPlayerURLs(prev => [...prev, url]);
@@ -244,7 +260,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                     events.forEach((ev:any) => {
                         if (ev.type === "url"){
                             if (playerKeys.some(key => ev.content.url.includes(key))) {
-                                setPlayerURLs([ev.content.url]);
+                                let normalizedUrl = normalizeUrls([ev.content.url])
+                                setPlayerURLs(normalizedUrl);
                             } else if (ev.content.url.includes("twitter")) {
                                 setTweetId(ev.content.url.split('/').pop())
                             } else {
