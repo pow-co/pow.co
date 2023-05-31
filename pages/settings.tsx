@@ -16,7 +16,6 @@ import { useTuning } from "../context/TuningContext";
 export default function Settings() {
   const { theme, setTheme } = useTheme();
   const { logout, authenticated } = useBitcoin();
-  const { hasTwetchPrivilege } = useRelay();
   const { signPosts, setSignPosts } = useTuning();
   const [isDark, setIsDark] = useState(theme === "dark");
   const [walletPopupOpen, setWalletPopupOpen] = useState(false);
@@ -147,7 +146,7 @@ export default function Settings() {
               </label>
             </div>
           </div>
-          {hasTwetchPrivilege && <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
             <div className="flex flex-col">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                 {/* <FormattedMessage id="Language settings" /> */}
@@ -166,7 +165,7 @@ export default function Settings() {
                 </div>
               </label>
             </div>
-          </div>}
+          </div>
           {authenticated && <button
             onClick={logout}
             className="h-[52px] p-5 flex bg-red-500 text-white text-base font-semibold my-4 w-full border-none rounded-lg cursor-pointer items-center justify-center transition duration-500 transform hover:-translate-y-1 hover:bg-red-600"
