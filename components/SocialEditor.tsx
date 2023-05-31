@@ -277,11 +277,11 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
         try {
           const outputs = [{
             sats:0,
-            args: opReturn,
+            args: hexArrayOps.map((item: any) => Buffer.from(item, "hex").toString('utf-8')),
             address: null
           },{
             to: '1AVbmFm55TaioWhgSFSRJHEFqaLtZkT2mJ',
-            sats: 0.00001 * 1e8
+            sats: 0.0001 * 1e8
           }]
           const resp = await TwetchWeb3.abi({
             contract: "payment",

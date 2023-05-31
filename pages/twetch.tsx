@@ -13,19 +13,16 @@ export default function TwetchFeed() {
   const [posts, setPosts] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [cursor, setCursor] = useState('');
-  const { hasTwetchPrivilege } = useRelay();
   const { authenticated } = useBitcoin();
 
   useEffect(() => {
-    if (hasTwetchPrivilege) {
-      getLatestFeed().then((data) => {
-        console.log(data);
-        setPosts(data.edges.map((post: any) => post.node));
-        setHasMore(data.pageInfo.hasNextPage);
-        setCursor(data.pageInfo.endCursor);
-      });
-    }
-  }, [hasTwetchPrivilege]);
+    getLatestFeed().then((data) => {
+      console.log(data);
+      setPosts(data.edges.map((post: any) => post.node));
+      setHasMore(data.pageInfo.hasNextPage);
+      setCursor(data.pageInfo.endCursor);
+    })
+  }, []);
 
   const refresh = async () => {
     setPosts([]);
@@ -77,7 +74,6 @@ export default function TwetchFeed() {
           {/* {rankings?.map((post: Ranking) => {
             return <BoostContentCard key={post.content_txid} {...post}/>
           } )} */}
-          {hasTwetchPrivilege ? (
             <div className="w-full">
               <div className="relative">
                 <InfiniteScroll
@@ -97,25 +93,6 @@ export default function TwetchFeed() {
                 </InfiniteScroll>
               </div>
             </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center">
-              <p className="py-2 text-5xl">😔</p>
-              <p className="text-center text-xl">
-                You need the
-                <strong>Twetch Boost Privilege NFT</strong>
-                {' '}
-                to visit this page.
-              </p>
-              <a
-                href="https://relayx.com/market/011a97bdc1868fc53342cb9bffdc3e42782a9c258fbb6597cd20effa3a4d6077_o2"
-                target="_blank"
-                rel="noreferrer"
-                className="mb-6 mt-12 flex cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-blue-400 to-blue-500 px-5 py-2 text-center text-base font-semibold text-white transition duration-500 hover:-translate-y-1"
-              >
-                Buy it now!
-              </a>
-            </div>
-          )}
         </div>
       </div>
       {authenticated && (

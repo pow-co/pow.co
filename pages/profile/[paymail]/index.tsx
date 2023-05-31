@@ -120,7 +120,6 @@ const ProfilePage = (props: ProfileCardProps ) => {
     const [posts, setPosts] = useState([]);
     const [hasMore, setHasMore] = useState(true);
     const [cursor, setCursor] = useState("");
-    const { hasTwetchPrivilege } = useRelay()
     const router = useRouter();
     const query = router.query;
     const paymail = query.paymail?.toString()
@@ -128,7 +127,7 @@ const ProfilePage = (props: ProfileCardProps ) => {
     const isRelayXUser = paymail?.includes("relayx")
 
     useEffect(() => {
-        if (isTwetchUser && hasTwetchPrivilege){
+        if (isTwetchUser){
             const userId = parseInt(paymail!.split("@")[0])
             userProfileLatestFeedQuery(userId).then((data) => {
               setPosts(data.edges.map((post: any) => post.node));
@@ -144,13 +143,13 @@ const ProfilePage = (props: ProfileCardProps ) => {
                 setCursor("")
             })
         }
-      }, [paymail, hasTwetchPrivilege]);
+      }, [paymail]);
     
       const refresh = async () => {
         setPosts([]);
         setCursor("");
         setHasMore(true);
-        if (isTwetchUser && hasTwetchPrivilege){
+        if (isTwetchUser){
             const userId = parseInt(paymail!.split("@")[0])
             userProfileLatestFeedQuery(userId).then((data) => {
               setPosts(data.edges.map((post: any) => post.node));
@@ -161,7 +160,7 @@ const ProfilePage = (props: ProfileCardProps ) => {
       };
     
       const fetchMore = async () => {
-        if(isTwetchUser && hasTwetchPrivilege){
+        if(isTwetchUser){
             const userId = parseInt(paymail!.split("@")[0])
             cursor &&
               userProfileLatestFeedPaginationQuery(userId, cursor).then((data) => {
@@ -193,7 +192,7 @@ const ProfilePage = (props: ProfileCardProps ) => {
                   </Link>
                 </div>
             </div>
-            {isRelayXUser || (isTwetchUser && hasTwetchPrivilege) ? (<div className="w-full">
+            <div className="w-full">
                 <div className="relative">
                     <InfiniteScroll
                     dataLength={posts.length}
@@ -219,18 +218,7 @@ const ProfilePage = (props: ProfileCardProps ) => {
                         </div>
                     </InfiniteScroll>
                 </div>
-            </div>) : (
-                <div className='flex flex-col items-center justify-center'>
-                    <p className='text-5xl py-2'>😔</p>
-                    <p className='text-xl text-center'>You need the <strong>Twetch Boost Privilege NFT</strong> to visit this page.</p>
-                    <a 
-                        href="https://relayx.com/market/011a97bdc1868fc53342cb9bffdc3e42782a9c258fbb6597cd20effa3a4d6077_o2"
-                        target="_blank"
-                        rel="noreferrer"
-                        className='flex text-base text-white font-semibold mt-12 mb-6 border-none rounded-md bg-gradient-to-tr from-blue-400 to-blue-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'
-                    >Buy it now!</a>
-                </div>
-            )}
+          </div>
         </div>
     </ThreeColumnLayout>
   )
