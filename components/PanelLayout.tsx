@@ -5,7 +5,7 @@ const SideBar = dynamic(() => import ('./SideBar'), { ssr: false })
 
 const PanelLayout = (props: { children: React.ReactNode }) => {
   return (
-    <div className='bg-primary-300 dark:bg-primary-700/20'>
+    <div className='bg-primary-300 dark:bg-primary-700/20 h-full'>
       <Header/>
       <div className='h-16'/>
       <div className='grid grid-cols-12 sm:pr-5'>
@@ -14,7 +14,7 @@ const PanelLayout = (props: { children: React.ReactNode }) => {
             <SideBar/>
           </div>
         </div>
-        <div className='col-span-12 lg:col-span-10' style={{height: 'calc(100vh - 64px)'}}>
+        <div className='col-span-12 lg:col-span-10'>
           {props.children}
         </div>
       </div>

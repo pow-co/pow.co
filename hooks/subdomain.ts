@@ -57,17 +57,19 @@ export function useSubdomain(position = 0) {
     try {
 
       let hostname = window?.location?.hostname
-
+      //let hostname = "peafowlexcellence.com"
       if (domains[hostname]) {
-	      return domains[hostname]
+        return domains[hostname]
       }
-
+      
       let subdomain = window?.
-        location?.
-        hostname?.
-        split('.')[position];
-
+      location?.
+      hostname?.
+      split('.')[position];
+      
       if (window?.location?.hostname?.split('.').length == 2) { return null }
+
+      if(subdomain === "localhost"){ return null}
 
       return subdomain
 
@@ -77,7 +79,7 @@ export function useSubdomain(position = 0) {
   });
 
   useEffect(() => {
-
+      console.log("the subdomain is",subdomain)
       if (subdomain && allSettings[subdomain]) {
 
 	      setSettings(allSettings[subdomain])
