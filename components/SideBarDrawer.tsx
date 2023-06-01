@@ -36,11 +36,11 @@ const SideBarDrawer = () => {
         authenticate()
     }
 
-  const chatPath = subdomain ? `/chat/${subdomain}` : `/chat/powco-development`
-  const meetPath = subdomain ? `/meet/${subdomain}` : `/meet/powco-development`
-  const livePath = subdomain ? `/live/${subdomain}` : `/live/powco-development`
-  const watchPath = subdomain ? `/watch/${subdomain}` : `/watch/powco-development`
-  const marketPath = subdomain ? `/market/${subdomain}` : `/market/powco-development`;
+  const chatPath = subdomain ? `/chat/${subdomain}` : `/chat/powco`
+  const meetPath = subdomain ? `/meet/${subdomain}` : `/meet/powco`
+  const livePath = subdomain ? `/live/${subdomain}` : `/live/powco`
+  const watchPath = subdomain ? `/watch/${subdomain}` : `/watch/powco`
+  const marketPath = subdomain ? `/market/${subdomain}` : `/market/powco`;
 
   return (
     <div className="fixed inset-0 w-9/12 h-screen">

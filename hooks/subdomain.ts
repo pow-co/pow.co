@@ -33,6 +33,8 @@ const allSettings: Settings = {
 	  header_logo_url: 'https://i1.sndcdn.com/avatars-FpI7waRL4lhRDZi3-n1jgWA-t500x500.jpg'
   },
   'geist': {},
+  'scrypt': {
+  },
   'peafowl-excellence': {}
 }
 
@@ -46,7 +48,9 @@ const domains: Domains = {
   'peafowlexcellence.com': 'peafowl-excellence',
   'spacedisco.com': 'spacedisco',
   'geist.live': 'geist',
-  'bethebroadcast.club': 'bethebroadcast'
+  'bethebroadcast.club': 'bethebroadcast',
+  'scrypt.live': 'scrypt',
+  'pow.co': 'powco'
 }
 
 export function useSubdomain(position = 0) {

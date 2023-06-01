@@ -100,7 +100,7 @@ export default function MeetingPage() {
 
     const [livestream, setLivestream] = useState<Livestream | null>(null)
 
-    const defaultRoom = "powco-development"
+    const defaultRoom = "powco"
     const room: string = query.channelId ? query.channelId.toString() : defaultRoom
 
     const login = (e: any) => {
@@ -190,7 +190,7 @@ export async function getLivestream({ channel }: { channel: string }) {
 }
 
 export const channels: Channels = {
-    'powco-development': {
+    'powco': {
         id: '640c9021ac7dd5844a79d6b9',
         hls_url: 'https://live.liveapi.com/63d46a33f1a83789fcb550b3/lv_0a34a0d0c01911edb4658f5d662562f3/index.m3u8',
         injest_url: 'rtmp://ingest.liveapi.com/static/lv_0a34a0d0c01911edb4658f5d662562f3?password=7f0135b6'

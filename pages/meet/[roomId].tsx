@@ -261,7 +261,7 @@ export default function MeetingPage() {
 
                 const result: any = await sendMessage({
                     app: 'chat.pow.co',
-                    channel: 'powco-development',
+                    channel: 'powco',
                     message: event.message,
                     paymail: relayxPaymail
                 })

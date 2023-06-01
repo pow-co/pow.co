@@ -33,10 +33,10 @@ const SideBar = () => {
         authenticate()
     }
 
-  const chatPath = subdomain ? `/chat/${subdomain}` : `/chat/powco-development`
-  const meetPath = subdomain ? `/meet/${subdomain}` : `/meet/powco-development`
-  const livePath = subdomain ? `/live/${subdomain}` : `/live/powco-development`
-  const watchPath = subdomain ? `/watch/${subdomain}` : `/watch/powco-development`
+  const chatPath = subdomain ? `/chat/${subdomain}` : `/chat/powco`
+  const meetPath = subdomain ? `/meet/${subdomain}` : `/meet/powco`
+  const livePath = subdomain ? `/live/${subdomain}` : `/live/powco`
+  const watchPath = subdomain ? `/watch/${subdomain}` : `/watch/powco`
 
   return (
     <div className='py-6 xl:p-6 items-center bg-primary-200 dark:bg-primary-800/20 w-full h-full flex flex-col'>

@@ -229,7 +229,7 @@ export default function MeetingPage() {
 
                 const result: any = await sendMessage({
                     app: 'chat.pow.co',
-                    channel: 'powco-development',
+                    channel: 'powco',
                     message: event.message,
                     paymail: relayxPaymail
                 })
@@ -262,7 +262,7 @@ export default function MeetingPage() {
                 <div className='col-span-12 xl:col-span-4 '>
                     <div className=''>
                         <h3 className='p-3 text-lg font-bold'>Live Chat</h3>
-                        <SideChat room="powco-development" />
+                        <SideChat room="powco" />
                     </div>
                 </div>
             </div>) 
