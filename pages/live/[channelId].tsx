@@ -185,7 +185,7 @@ export async function getLivestream({ channel }: { channel: string }) {
 
     const { data } = await axios.get(`https://api.tokenmeet.live/api/v1/livestreams/${channel}`)
 
-    return data
+    return data.livestream
 
 }
 

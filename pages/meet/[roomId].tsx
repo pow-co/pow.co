@@ -172,6 +172,9 @@ export default function MeetingPage() {
                 jitsi.addListener('recordStatusChanged', (event: any) => {
 
                     console.log('--RECORDING STATUS CHANGED--', event)
+
+                    // TODO: Post this to the server for logging and accurate state transmission
+
                 })
 
 
@@ -255,8 +258,6 @@ export default function MeetingPage() {
 
         if (type === "outgoingMessage") {
 
-            console.log('OUTGOING MESSAGE', event)
-
             try {
 
                 const result: any = await sendMessage({
@@ -284,13 +285,30 @@ export default function MeetingPage() {
 
     const startLivestream = async () => {
 
-        jitsi.executeCommand('startRecording', {
+      console.log('jitsi.livestream.start', livestream)
+
+      const { ingest } = livestream.liveapi_data
+
+      if (ingest?.server && ingest?.key) {
+
+        console.log('jitsi.executeCommand.startRecording', {
             mode: 'stream',
-            rtmpStreamKey: `${livestream?.ingest.server}/${livestream?.ingest.key}`
+            rtmpStreamKey: `${ingest.server}/${ingest.key}`
         })
+
+        const result = jitsi.executeCommand('startRecording', {
+            mode: 'stream',
+            rtmpStreamKey: `${ingest.server}/${ingest.key}`
+        })
+
+        console.log('jitsi.executeCommand.startRecording.result', result)
+
+      }
     }
 
     const stopLivestream = async () => {
+
+        console.log('jitsi.livestream.stop', livestream)
 
         jitsi.executeCommand('stopRecording', {
             mode: 'stream'
