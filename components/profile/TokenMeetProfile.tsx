@@ -10,10 +10,8 @@ import BoostContentCardV2 from "../BoostContentCardV2";
 import { useSubdomain } from "../../hooks/subdomain";
 import { useState, useEffect } from "react";
 import PanelLayout from "../PanelLayout";
-import EpisodeDashboard from "../EpisodeDashboard";
+import EpisodeDashboard, { Episode } from "../EpisodeDashboard";
 import axios from "axios";
-
-import { Episode } from "../../pages/watch/[channel]";
 
 interface TokenmeetVideo {}
 
@@ -47,7 +45,7 @@ export default function TokenMeetProfile({ channel }: { channel: string }) {
       .then((data) => {
         console.log("channel data", data);
 
-        setVideos(data.data.videos);
+        setVideos(data.data.videos.sort((a: any, b: any) => b.id - a.id));
         setLoading(false);
       })
       .catch((error) => {
@@ -86,7 +84,6 @@ export default function TokenMeetProfile({ channel }: { channel: string }) {
   }
 
   return (
-    <PanelLayout>
       <div className="mb-[200px] min-h-screen mt-5 sm:mt-10">
         <div className="grid grid-cols-1 w-full gap-2 sm:gap-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
           {episodes.map((episode: any) => {
@@ -116,6 +113,5 @@ export default function TokenMeetProfile({ channel }: { channel: string }) {
           })}
         </div>
       </div>
-    </PanelLayout>
   );
 }

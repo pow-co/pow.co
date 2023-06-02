@@ -1,107 +1,353 @@
-import ThreeColumnLayout from "../../components/ThreeColumnLayout"
-import Loader from "../../components/Loader"
-import Link from "next/link"
-import { useTuning } from "../../context/TuningContext"
-import { useAPI } from "../../hooks/useAPI"
-import BoostContentCard from "../../components/BoostContentCard";
-import { Ranking } from "../../components/BoostContentCard";
-import { useRelay } from "../../context/RelayContext"
-import { FormattedMessage } from "react-intl"
-import BitcoinBrowser from "../../components/BitcoinBrowser"
-import FindOrCreate from "../../components/FindOrCreate"
-import PanelLayout from "../../components/PanelLayout"
-import YouTube from "react-youtube"
-import { youtubePlayerOpts } from "../../components/YoutubeMetadataOnchain"
-import VideoCard from "../../components/VideoCard"
-import TuningPanel from "../../components/TuningPanel"
-import { useBitcoin } from "../../context/BitcoinContext"
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
-import EpisodeDashboard from '../../components/EpisodeDashboard'
+import PanelLayout from '../../components/PanelLayout'
+import { useRelay } from '../../context/RelayContext'
+import { sendMessage } from '../../utils/bsocial/message'
+import { useTokenMeetLiveWebsocket } from '../../hooks/useWebsocket'
+import { Socket } from 'socket.io-client/build/esm/socket';
+import { MessageItem } from '../../components/MessageItem'
+import Script from 'next/script'
+import useSWR from "swr"
+import { FormattedMessage } from 'react-intl'
+import { useRouter } from 'next/router'
+import { SideChat } from '../../components/SideChat'
 
-export interface Episode {
-	id: number;
-	title: string;
-	date: string;
-	duration: number;
-	participants: string[];
-	token_origin: string;
-	hls_playback_url: string;
-	hls_live_url: string;
-	hls_playback_audio_url: string;
-	hls_playback_embed_url: string;
-	show_id: number;
-	createdAt: string;
-	updatedAt: string;
-}
+import TokenMeetProfile from '../../components/profile/TokenMeetProfile'
 
-export default function Watch({ channel }: {channel?: string}) {
-  const { startTimestamp, filter, setFilter } = useTuning()
-  const { authenticated } = useBitcoin()
-  const { query } = useRouter()
 
-  const [episodes, setEpisodes] = useState<Episode[]>([])
+const MINIMUM_POWCO_BALANCE = 1
 
-  const [loading, setLoading] = useState<boolean>(true)
+const events = [
+    'cameraError',
+    'avatarChanged',
+    'audioAvailabilityChanged',
+    'audioMuteStatusChanged',
+    'breakoutRoomsUpdated',
+    'browserSupport',
+    'contentSharingParticipantsChanged',
+    'dataChannelOpened',
+    'endpointTextMessageReceived',
+    'faceLandmarkDetected',
+    'errorOccurred',
+    'knockingParticipant',
+    'largeVideoChanged',
+    'log',
+    'micError',
+    'screenSharingStatusChanged',
+    'dominantSpeakerChanged',
+    'raiseHandUpdated',
+    'tileViewChanged',
+    'chatUpdated',
+    'incomingMessage',
+    'mouseEnter',
+    'mouseLeave',
+    'mouseMove',
+    'toolbarButtonClicked',
+    'outgoingMessage',
+    'displayNameChange',
+    'deviceListChanged',
+    'emailChange',
+    'feedbackSubmitted',
+    'filmstripDisplayChanged',
+    'moderationStatusChanged',
+    'moderationParticipantApproved',
+    'moderationParticipantRejected',
+    'participantJoined',
+    'participantKickedOut',
+    'participantLeft',
+    'participantRoleChanged',
+    'participantsPaneToggled',
+    'passwordRequired',
+    'videoConferenceJoined',
+    'videoConferenceLeft',
+    'videoAvailabilityChanged',
+    'videoMuteStatusChanged',
+    'videoQualityChanged',
+    'readyToClose',
+    'recordingLinkAvailable',
+    'recordingStatusChanged',
+    'subjectChange',
+    'suspendDetected',
+    'peerConnectionFailure'
+]
 
-  const [error, setError] = useState<Error>()
+import { channels } from '../live/[channelId]'
 
-  useEffect(() => {
+import { getLivestream, Livestream } from '../live/[channelId]'
 
-    axios.get(`https://api.tokenmeet.live/api/v1/shows/${query.channel}`).then((data) => {
+export default function MeetingPage() {
 
-	console.log('data', data)
+    const [isRecording, setIsRecording] = useState<boolean>(false)
 
-	setEpisodes(data.data.episodes)
-	setLoading(false)
+    const { query } = useRouter()
 
-    })
-    .catch(error => { 
-	setLoading(false);
-	setError(error)
-	console.error('error getting token meet episodes for channel', error)
-	})
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
 
-  }, [])
+    const [jitsiInitialized, setJitsiInitialized] = useState<boolean>()
 
-  if (loading){
-    return (
-      <>
-      <PanelLayout>
-        <div className="mt-5 lg:mt-10">
-          <Loader/>
-        </div>
-      </PanelLayout>
-      </>
-    )
-  }
+    const [nJitsis, setNJitsis] = useState<number>(1)
 
-  if (error) {
-    return (
-      <PanelLayout>
-        Error, something happened
-      </PanelLayout>
-    )
-  }
+    const [jitsi, setJitsi] = useState<any>()
 
-  
+    const { isConnected, socket } = useTokenMeetLiveWebsocket()
+
+    const [jitsiJWT, setJitsiJWT] = useState<string>()
+
+    const [livestream, setLivestream] = useState<Livestream | null>()
+
+    const defaultRoom = "pow.co"
+    const room = query.channel ? query.channel.toString() : defaultRoom
+
+    const roomName = `vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/${room}`
+
+    getLivestream({ channel: room }).then(setLivestream)
+
+    useEffect(() => {
+
+        console.log('USE EFFECT', {nJitsis})
+
+        if (relayxPaymail && tokenBalance && tokenBalance >= 0) {
+
+            // @ts-ignore
+            if (!window.JitsiMeetExternalAPI) {
+
+                setTimeout(() => {
+                    setNJitsis(nJitsis + 1)
+                }, 520)
+                
+                return
+            }
+
+            if (jitsiInitialized) {
+
+                return
+            }
+
+            setJitsiInitialized(true)
+
+
+            axios.post('https://api.tokenmeet.live/api/v1/jaas/auth', {
+                wallet: 'relay',
+                paymail: relayxPaymail,
+                token: relayAuthToken
+            })
+            .then(({data}) => {
+
+                const domain = "8x8.vc";
+
+                setJitsiJWT(data.jwt)
+
+                const options = {
+                    jwt: data.jwt,                
+                    roomName,
+                    width: '100%',
+                    height: 700,
+                    parentNode: document.querySelector('#tokenmeet-room-container'),
+                    lang: 'en',
+                    configOverwrite: {
+                        prejoinPageEnabled: false,
+                        startWithAudioMuted: true,
+                        startWithVideoMuted: true
+                    },
+                };
+
+    
+                // @ts-ignore
+                const _jitsi = new window.JitsiMeetExternalAPI(domain, options);
+
+                setJitsi(_jitsi)
+
+                // @ts-ignore
+                window.jitsi = _jitsi
+
+                socket.on('jitsi.executeCommand', message => {
+
+                    const { command, params } = message
+
+                    console.log('jitsi.executeCommand', {command, params})
+
+                    jitsi.executeCommand(command, params)
+
+                })
+
+                jitsi.addListener('recordStatusChanged', (event: any) => {
+
+                    console.log('--RECORDING STATUS CHANGED--', event)
+                })
+
+
+                socket.on('jitsi.callFunction', async (message) => {
+
+                    const { method, params, uid } = message
+
+                    console.log('jitsi.callFunction', {method, params, uid})
+
+                    const result = await jitsi[method](...params)
+
+                    socket.emit('jitsi.callFunctionResult', {
+                        uid,
+                        result
+                    })
+                    
+                })
+
+                const handlers: any = events.reduce((acc: any, type: string) => {
+
+                    acc[type] = (event: any) => {
+
+                        if (event) {
+                            handleJitsiEvent(type, event, socket)
+                        }                    
+                    }
+
+                    return acc
+
+                }, {})
+
+                for (let type of events) {
+                        
+                        jitsi.addListener(type, handlers[type])
+                }
+
+                return function() {
+
+                    for (let type of events) {
+                            
+                        jitsi.removeListener(type, handlers[type])
+                    }
+                            
+                    jitsi.dispose()
+                }
+            })
+            .catch(error => {
+
+                console.log('AUTH ERROR', error)
+
+            })
+        }
+
+        console.log('--end use effect--', {nJitsis})
+
+    // @ts-ignore
+    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT, tokenBalance])
+
+
+    async function handleJitsiEvent(type: string, event: any, socket: Socket) {
+
+        //TODO: Pipe the event to websocket server
+
+        console.log('JIITSI EVENT', {type, event, relayxPaymail})
+
+        socket.emit('jitsi-event', {
+            type,
+            event,
+            paymail: relayxPaymail,
+            jwt: jitsiJWT,
+            timestamp: new Date().toISOString(),
+            roomName
+        })
+
+        if (type === 'recordingStatusChanged') {
+
+            const { on } = event
+
+            setIsRecording(on)
+        }
+
+        if (type === "outgoingMessage") {
+
+            console.log('OUTGOING MESSAGE', event)
+
+            try {
+
+                const result: any = await sendMessage({
+                    app: 'chat.pow.co',
+                    channel: 'powco',
+                    message: event.message,
+                    paymail: relayxPaymail
+                })
+
+                console.log('bsocial.sendMessage.result', result)
+
+            } catch(error) {
+
+                console.error('bsocial.sendMessage.error', error)
+            }
+
+
+        }
+    }
+
+    const login = (e: any) => {
+        e.preventDefault()
+        relayxAuthenticate()
+    }
+
+    const startLivestream = async () => {
+
+        jitsi.executeCommand('startRecording', {
+            mode: 'stream',
+            rtmpStreamKey: `${livestream?.ingest.server}/${livestream?.ingest.key}`
+        })
+    }
+
+    const stopLivestream = async () => {
+
+        jitsi.executeCommand('stopRecording', {
+            mode: 'stream'
+        })
+    }
   return (
+    <>
+        <Script src={'https://8x8.vc/vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/external_api.js'}></Script>
+        <PanelLayout>
+            <div className='grid grid-cols-12 w-full h-full'>
+                <div className='col-span-12 xl:col-span-8 xl:pr-4'>
+                    <TokenMeetProfile channel={room}/>
+                    <h2 className='p-5 text-xl font-bold '>Meet {room}</h2>
+                    {livestream && !isRecording && (
+                        <button onClick={() => startLivestream()}>
+                            Start Livestream
+                        </button>
+                    )}
 
-    <PanelLayout>
-      <div className="mb-[200px] min-h-screen mt-5 sm:mt-10">
-        <div className="grid grid-cols-1 w-full gap-2 sm:gap-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
-          {episodes.map((episode: any) => {
-	    if (!episode.hls_playback_url) { return <></>}
-	    return <EpisodeDashboard loading={loading} episode={episode}/>
+                    {isRecording && (
+                        <button onClick={() => stopLivestream()}>
+                            Stop Livestream
+                        </button>
+                    )}
 
-          })} 
-          
-        </div>
-
-      </div>
-
-
-    </PanelLayout>
+                </div>
+                <div className='col-span-12 xl:col-span-4 '>
+                    <div className=''>
+                        <h3 className='p-3 text-lg font-bold'>Live Chat in {room}</h3>
+                        <SideChat room={room.toString()} />
+                    </div>
+                </div>
+            </div>
+        </PanelLayout>
+    </>
   )
 }
+
+
+interface cameraError {
+    type: string;
+    message: string;
+}
+
+interface avatarChanged {
+    id: string, // the id of the participant that changed his avatar.
+    avatarURL: string // the new avatar URL.
+}
+
+interface audioAvailabilityChanged {
+    available: boolean // new available status - boolean
+}
+
+interface audioMuteStatusChanged {
+    muted: boolean // new muted status - boolean
+}
+
+
+
