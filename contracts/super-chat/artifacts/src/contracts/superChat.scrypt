@@ -1,0 +1,10 @@
+
+contract SuperChat {
+  bytes message;
+  constructor(bytes message) {
+    this.message = message;
+  }
+  public function cancel() {
+    require(true);
+  }
+}
