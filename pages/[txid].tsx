@@ -17,8 +17,6 @@ import { SuperChat } from '../contracts/super-chat/dist/src/contracts/superChat'
 
 import SuperChatArtifact from "../contracts/super-chat/artifacts/src/contracts/superChat.json"
 
-import Web3 from '@sensible-contract/sensible-web3'
-
 export default function DetailPage() {
   const { startTimestamp } = useTuning()
   const [loading, setLoading] = useState(false)
@@ -44,22 +42,11 @@ export default function DetailPage() {
   
   useEffect(() => {
 
-    //@ts-ignore
-    if (!window.sensilet) { return }
-
-    import('@sensible-contract/sensible-web3').then(Web3 => {
-
-      //@ts-ignore
-      window.Web3 = Web3
-
-    })
-
     SuperChat.loadArtifact(SuperChatArtifact)
 
     //@ts-ignore
     window.SuperChat = SuperChat
 
-    //@ts-ignore
   }, [])
 
   const getData = async () => {

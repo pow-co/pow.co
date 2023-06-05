@@ -11,7 +11,7 @@ import { lsTest, useLocalStorage } from "../utils/storage";
 
 import { config } from "../template_config"
 
-import { SensiletSigner, DefaultProvider } from 'scrypt-ts'
+import { SensiletSigner, DefaultProvider, bsv } from 'scrypt-ts'
 
 type SensiletContextValue = {
    sensiletAuthenticate: () => Promise<void>;
@@ -37,7 +37,9 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
   const [sensiletUserName, setSensiletUserName] = useState<string>()
   const [sensiletPublicKey, setSensiletPublicKey] = useState<string | null>()
 
-  const [provider, setProvider] = useState<DefaultProvider>(new DefaultProvider())
+  const [provider, setProvider] = useState<DefaultProvider>(new DefaultProvider({
+    network: bsv.Networks.mainnet
+  }))
   const [signer, setSigner] = useState<SensiletSigner>()
 
   const sensiletAvatar = ''
@@ -47,6 +49,8 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
   useEffect(() => {
 
     if (signer || !provider || !web3Account) { return }
+
+    console.log({ provider })
 
     setSigner(new SensiletSigner(provider))
 
