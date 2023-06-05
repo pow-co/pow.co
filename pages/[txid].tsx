@@ -13,6 +13,9 @@ import { useBitcoin } from "../context/BitcoinContext";
 import ComposerV2 from "../components/ComposerV2";
 import BoostContentCardV2 from "../components/BoostContentCardV2";
 
+import { SuperChat } from '../contracts/super-chat/dist/src/contracts/superChat'
+
+import SuperChatArtifact from "../contracts/super-chat/artifacts/src/contracts/superChat.json"
 
 export default function DetailPage() {
   const { startTimestamp } = useTuning()
@@ -35,6 +38,16 @@ export default function DetailPage() {
       setLoading(false)
     })
   },[query])
+
+  
+  useEffect(() => {
+
+    SuperChat.loadArtifact(SuperChatArtifact)
+
+    //@ts-ignore
+    window.SuperChat = SuperChat
+
+  }, [])
 
   const getData = async () => {
     const [twetchResult, contentResponse, repliesResponse] = await Promise.all([

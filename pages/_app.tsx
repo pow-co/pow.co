@@ -2,6 +2,7 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Script from 'next/script';
+import { SensiletProvider } from '../context/SensiletContext'
 
 import '../styles/globals.css';
 import { ThemeProvider } from 'next-themes';
@@ -44,18 +45,20 @@ export default function App({ Component, pageProps }: AppProps) {
         disableTransitionOnChange
       >
         <RelayProvider>
-          <TwetchProvider>
-            <HandCashProvider>
-              <BitcoinProvider>
-                <TuneProvider>
-                  <Locales>
-                    <Component {...pageProps} />
-                    <Toaster />
-                  </Locales>
-                </TuneProvider>
-              </BitcoinProvider>
-            </HandCashProvider>
-          </TwetchProvider>
+          <SensiletProvider>
+            <TwetchProvider>
+              <HandCashProvider>
+                <BitcoinProvider>
+                  <TuneProvider>
+                    <Locales>
+                      <Component {...pageProps} />
+                      <Toaster />
+                    </Locales>
+                  </TuneProvider>
+                </BitcoinProvider>
+              </HandCashProvider>
+            </TwetchProvider>
+          </SensiletProvider>
         </RelayProvider>
       </ThemeProvider>
     </>

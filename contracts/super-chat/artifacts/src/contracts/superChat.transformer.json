@@ -1,0 +1,7 @@
+{
+  "success": true,
+  "errors": [],
+  "scryptfile": "src/contracts/superChat.scrypt",
+  "sourceMapFile": "src/contracts/superChat.scrypt.map",
+  "ctxMethods": []
+}

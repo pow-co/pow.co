@@ -1,0 +1,55 @@
+
+contract OrderLock {
+
+	// double hash of designated output, i.e. hash256(satoshis + varint + output script)
+	Sha256 hashOutput;
+
+	// trailingPrevouts = concat all inputs (txid1 + vout1 + txid2 + vout2 + ...),
+	// excluding first 2 inputs, i.e. cancel baton input and self input
+	public function unlock(SigHashPreimage preimage, bytes trailingPrevouts, bool isCancel) {
+
+    // c3 = SIGHASH_SINGLE | ANYONECANPAY, checks self input, self output
+		SigHashType sigHashType = SigHashType(b'c3');
+
+		if (isCancel) {
+
+		  // 42 = SIGHASH_NONE, checks all inputs, no outputs
+		  sigHashType = SigHashType(b'42');
+
+		  // token lock input txid + vout, 32 + 4 bytes
+		  bytes selfOutpoint = preimage[68 : 104];
+
+		  // cancel baton input, same locking tx as token lock input, vout must be 0
+		  bytes cancelOutpoint = selfOutpoint[: 32] + b'00000000';
+
+		  // reconstruct full prevouts, double hash, check against preimage hashPrevouts
+		  require(hash256(selfOutpoint + cancelOutpoint + trailingPrevouts) == preimage[4 : 36]);
+
+    } else {
+
+		  // check against preimage hashOutputs, with SIGHASH_SINGLE, only self output is hashed
+		  require(preimage[len(preimage) - 40 : len(preimage) - 8] == this.hashOutput);
+
+    }
+
+    // check preimage
+    require(Tx.checkPreimageAdvanced(
+
+		  preimage,
+
+		  PrivKey(0xeb1c653e7471a63154d06b27f95bb028a5e826b4e73665ed3effe549cc85b2cd),
+
+		  PubKey(b'02dca1e194dd541a47f4c85fea6a4d45bb50f16ed2fddc391bf80b525454f8b409'),
+
+		  0x377d4cbae29bc1e717958cb6b030f71e2e634e1e700991a0ea02181c6ba241f9,
+
+		  0x2cde0b36a3821ef6dbd1cc8d754dcbae97526904b063c2722da89735162d282f,
+
+		  b'2cde0b36a3821ef6dbd1cc8d754dcbae97526904b063c2722da89735162d282f',
+
+		  sigHashType
+
+    ));
+
+  }
+}
