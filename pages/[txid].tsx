@@ -13,6 +13,11 @@ import { useBitcoin } from "../context/BitcoinContext";
 import ComposerV2 from "../components/ComposerV2";
 import BoostContentCardV2 from "../components/BoostContentCardV2";
 
+import { SuperChat } from '../contracts/super-chat/dist/src/contracts/superChat'
+
+import SuperChatArtifact from "../contracts/super-chat/artifacts/src/contracts/superChat.json"
+
+import Web3 from '@sensible-contract/sensible-web3'
 
 export default function DetailPage() {
   const { startTimestamp } = useTuning()
@@ -35,6 +40,27 @@ export default function DetailPage() {
       setLoading(false)
     })
   },[query])
+
+  
+  useEffect(() => {
+
+    //@ts-ignore
+    if (!window.sensilet) { return }
+
+    import('@sensible-contract/sensible-web3').then(Web3 => {
+
+      //@ts-ignore
+      window.Web3 = Web3
+
+    })
+
+    SuperChat.loadArtifact(SuperChatArtifact)
+
+    //@ts-ignore
+    window.SuperChat = SuperChat
+
+    //@ts-ignore
+  }, [])
 
   const getData = async () => {
     const [twetchResult, contentResponse, repliesResponse] = await Promise.all([
