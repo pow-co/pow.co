@@ -45,13 +45,19 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    console.log("SET SIGNER")
-  
+
+    if (signer || !provider || !web3Account) { return }
+
     setSigner(new SensiletSigner(provider))
+
+  }, [provider, web3Account]) 
+
+  useEffect(() => {
+
     //@ts-ignore
     window.signer = signer
 
-  }, [provider]) 
+  }, [signer])
 
   useEffect(() => {
 
