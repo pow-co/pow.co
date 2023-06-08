@@ -1,7 +1,6 @@
 node_modules/
 out/
 **/.env
-**/scrypt.index.json
 .vscode/*
 !.vscode/launch.json
 !.vscode/tasks.json

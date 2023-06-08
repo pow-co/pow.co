@@ -25,7 +25,7 @@
     ],
     "stateProps": [],
     "buildType": "debug",
-    "file": "file:///root/pow.co/contracts/super-chat/artifacts/src/contracts/superChat.scrypt",
+    "file": "file:///home/dagny/Desktop/pow.co/contracts/super-chat/artifacts/src/contracts/superChat.scrypt",
     "hex": "00<message>610079527a75517a75615177",
     "sourceMapFile": ""
 }
