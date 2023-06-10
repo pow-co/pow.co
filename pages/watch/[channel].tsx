@@ -285,9 +285,13 @@ export default function MeetingPage() {
 
     const startLivestream = async () => {
 
+        if (!livestream) { return }
+      
+        const { ingest } = livestream.liveapi_data
+
         jitsi.executeCommand('startRecording', {
             mode: 'stream',
-            rtmpStreamKey: `${livestream?.ingest.server}/${livestream?.ingest.key}`
+            rtmpStreamKey: `${ingest.server}/${ingest.key}`
         })
     }
 

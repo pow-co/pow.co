@@ -285,6 +285,8 @@ export default function MeetingPage() {
 
     const startLivestream = async () => {
 
+      if (!livestream) { return } 
+
       console.log('jitsi.livestream.start', livestream)
 
       const { ingest } = livestream.liveapi_data

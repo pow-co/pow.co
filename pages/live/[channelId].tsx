@@ -71,25 +71,27 @@ const events = [
 ]
 
 export interface Livestream {
-    _id: string;
-    enabled: boolean;
-    ingest: {
-        server: string;
-        key: string;
-    },
-    playback: {
-        embed_url: string;
-        embed_audio_url: string;
-        hls_url: string;
-    },
-    platforms: [],
-    settings: {
-        pulling_mode: {}
-    },
-    user: string;
-    environment: string;
-    organization: string;
-    creation_time: string;
+    liveapi_data: {
+      _id: string;
+      enabled: boolean;
+      ingest: {
+          server: string;
+          key: string;
+      },
+      playback: {
+          embed_url: string;
+          embed_audio_url: string;
+          hls_url: string;
+      },
+      platforms: [],
+      settings: {
+          pulling_mode: {}
+      },
+      user: string;
+      environment: string;
+      organization: string;
+      creation_time: string;
+  }
 }
 
 export default function MeetingPage() {
@@ -116,7 +118,7 @@ export default function MeetingPage() {
             {relayxAuthenticated ? <div className='grid grid-cols-12 w-full h-full'>
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
                     { livestream && (
-                        <LiveStream room={room} hls_url={livestream.playback.hls_url}/>
+                        <LiveStream room={room} hls_url={livestream.liveapi_data.playback.hls_url}/>
                     )}
                     
                     <h2 className='p-5 text-xl text-center font-bold '>#{room} Live Stream</h2>
