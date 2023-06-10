@@ -125,7 +125,7 @@ interface Channels {
 
 export async function getVideo({ _id }: { _id: string }) {
 
-    const { data } = await axios.get(`https://tokenmeet.live/api/v1/videos/${_id}`)
+    const { data } = await axios.get(`https://api.tokenmeet.live/api/v1/videos/${_id}`)
 
     return data.video
 

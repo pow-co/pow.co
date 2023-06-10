@@ -10,14 +10,14 @@ import LocaleSelect from './LocaleSelect';
 import { FormattedMessage } from 'react-intl';
 import { useBitcoin } from '../context/BitcoinContext';
 
-
-
+import { useSubdomain } from '../hooks/subdomain'
 
 const SideBar = () => {
     const { theme, setTheme } = useTheme()
     const { authenticated, authenticate, paymail, avatar, userName } = useBitcoin()
     const [loggedIn, setLoggedIn] = useState(false)
     const [walletPopupOpen, setWalletPopupOpen] = useState(false);
+    const {subdomain} = useSubdomain();
 
     const toggleTheme =  () => {
         if(theme==="dark"){
@@ -32,6 +32,11 @@ const SideBar = () => {
         e.preventDefault();
         authenticate()
     }
+
+  const chatPath = subdomain ? `/chat/${subdomain}` : `/chat/powco`
+  const meetPath = subdomain ? `/meet/${subdomain}` : `/meet/powco`
+  const livePath = subdomain ? `/live/${subdomain}` : `/live/powco`
+  const watchPath = subdomain ? `/watch/${subdomain}` : `/watch/powco`
 
   return (
     <div className='py-6 xl:p-6 items-center bg-primary-200 dark:bg-primary-800/20 w-full h-full flex flex-col'>
@@ -85,7 +90,7 @@ const SideBar = () => {
                     <div className='hidden xl:block text-base leading-4 grow'>Notifications</div>
                 </div>
             </Link> */}
-            <Link href="/chat">
+            <Link href={chatPath}>
                 <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 xl:mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -93,7 +98,7 @@ const SideBar = () => {
                     <div className='hidden xl:block text-base leading-4 grow'>Chat</div>
                 </div>
             </Link>
-            <Link href="/meet/powco-development">
+            <Link href={meetPath}>
                 <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 xl:mr-2.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -102,14 +107,14 @@ const SideBar = () => {
                     <div className='hidden xl:block text-base leading-4 grow'>Meet</div>
                 </div>
             </Link>
-            <Link href="/live/powco-development">
+            <Link href={livePath}>
                 <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 xl:mr-2.5">
                     <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 2c5.514 0 10 4.486 10 10 0 .685-.07 1.354-.201 2h-.973c-.975 0-1.129-.507-1.656-2.461-.381-1.414-1.014-3.551-2.408-3.551-1.42 0-1.969 2.215-2.48 4.006-.278.973-.446 1.561-.695 1.561-.24 0-.353-.588-.635-1.563-.528-1.822-1.132-4.003-2.541-4.003-1.463 0-2.088 2.387-2.507 3.908-.304 1.105-.399 1.659-.669 1.659-.229 0-.303-.449-.566-1.344-.602-2.04-.793-4.208-3.48-4.208h-.35c1.546-3.53 5.068-6.004 9.161-6.004zm0 20c-5.514 0-10-4.486-10-10 0-.685.07-1.354.201-2h1.073c.94 0 1.032.471 1.552 2.435.351 1.328.996 3.551 2.408 3.551 1.43 0 2.033-2.26 2.579-4.132.296-1.015.36-1.436.597-1.436.254 0 .328.467.618 1.491.524 1.851 1.13 4.076 2.558 4.076 1.28 0 1.892-1.836 2.336-3.311.508-1.686.582-2.312.84-2.312.264 0 .312.546.768 2.074.735 2.463 1.204 3.564 3.173 3.564h.456c-1.547 3.527-5.067 6-9.159 6z"/></svg>
                     <div className='hidden xl:block text-base leading-4 grow'>Live</div>
                 </div>
             </Link>
-            <Link href="/watch">
+            <Link href={watchPath}>
                 <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 xl:mr-2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -152,6 +157,7 @@ const SideBar = () => {
                     <div className='hidden xl:block text-base leading-4 grow'>Features</div>
                 </div>
             </Link>  */}
+            {!subdomain && (
             <Link href="/jobs">
                 <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-gray-300 hover:dark:bg-gray-700 h-8 xl:h-[48px]'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 xl:mr-2.5">
@@ -162,6 +168,8 @@ const SideBar = () => {
                     <div className='hidden xl:block text-base leading-4 grow'>Jobs</div>
                 </div>
             </Link>
+            )}		
+            {!subdomain && (
             <Link href="/faq">
                 <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-gray-300 hover:dark:bg-gray-700 h-8 xl:h-[48px]'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 xl:mr-2.5">
@@ -171,6 +179,7 @@ const SideBar = () => {
                     <div className='hidden xl:block text-base leading-4 grow'>F.A.Q.</div>
                 </div>
             </Link>
+            )}		
             <Link href="/settings">
                 <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 xl:mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
