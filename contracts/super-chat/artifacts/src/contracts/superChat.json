@@ -1,0 +1,31 @@
+{
+    "version": 9,
+    "compilerVersion": "1.19.0+commit.72eaeba",
+    "contract": "SuperChat",
+    "md5": "3d9c71dccf57f54dd9b36a4e8e3f7d06",
+    "structs": [],
+    "library": [],
+    "alias": [],
+    "abi": [
+        {
+            "type": "function",
+            "name": "cancel",
+            "index": 0,
+            "params": []
+        },
+        {
+            "type": "constructor",
+            "params": [
+                {
+                    "name": "message",
+                    "type": "bytes"
+                }
+            ]
+        }
+    ],
+    "stateProps": [],
+    "buildType": "debug",
+    "file": "file:///home/dagny/Desktop/pow.co/contracts/super-chat/artifacts/src/contracts/superChat.scrypt",
+    "hex": "00<message>610079527a75517a75615177",
+    "sourceMapFile": ""
+}

@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 
 import { useEffect, useRef, useState } from 'react';
 
-const tokenMeetLiveSocket = io('wss://tokenmeet.live', {
+const tokenMeetLiveSocket = io('wss://api.tokenmeet.live', {
   transports: ['websocket']
 });
 

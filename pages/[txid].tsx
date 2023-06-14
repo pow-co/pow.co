@@ -13,7 +13,6 @@ import { useBitcoin } from "../context/BitcoinContext";
 import ComposerV2 from "../components/ComposerV2";
 import BoostContentCardV2 from "../components/BoostContentCardV2";
 
-
 export default function DetailPage() {
   const { startTimestamp } = useTuning()
   const [loading, setLoading] = useState(false)
@@ -36,6 +35,7 @@ export default function DetailPage() {
     })
   },[query])
 
+  
   const getData = async () => {
     const [twetchResult, contentResponse, repliesResponse] = await Promise.all([
       twetchDetailQuery(query.txid?.toString()).catch((err)=>console.log(err)),

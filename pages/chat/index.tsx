@@ -11,7 +11,7 @@ const Chat = () => {
         const handleResize = () => {
           const isMobile = window.innerWidth < 768 // Adjust this value to your preferred mobile breakpoint
           if (!isMobile) {
-            router.push('/chat/powco-development')
+            router.push('/chat/powco')
           }
         }
         handleResize() // Check initial screen size

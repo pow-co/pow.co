@@ -12,8 +12,6 @@ import { SideChat } from '../../components/SideChat'
 
 
 
-const MINIMUM_POWCO_BALANCE = 0
-
 const events = [
     'cameraError',
     'avatarChanged',
@@ -72,7 +70,7 @@ export default function MeetingPage() {
 
     const router = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
 
     const [jitsiInitialized, setJitsiInitialized] = useState<boolean>()
 
@@ -88,7 +86,7 @@ export default function MeetingPage() {
 
         console.log('USE EFFECT', {nJitsis})
 
-        if (relayxPaymail && tokenBalance && tokenBalance >= MINIMUM_POWCO_BALANCE) {
+        if (relayxPaymail) {
 
             // @ts-ignore
             if (!window.JitsiMeetExternalAPI) {
@@ -108,7 +106,7 @@ export default function MeetingPage() {
             setJitsiInitialized(true)
 
 
-            axios.post('https://tokenmeet.live/api/v1/jaas/auth', {
+            axios.post('https://api.tokenmeet.live/api/v1/jaas/auth', {
                 wallet: 'relay',
                 paymail: relayxPaymail,
                 token: relayAuthToken
@@ -204,7 +202,7 @@ export default function MeetingPage() {
         console.log('--end use effect--', {nJitsis})
 
     // @ts-ignore
-    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT, tokenBalance])
+    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT])
 
     async function handleJitsiEvent(type: string, event: any, socket: Socket) {
 
@@ -229,7 +227,7 @@ export default function MeetingPage() {
 
                 const result: any = await sendMessage({
                     app: 'chat.pow.co',
-                    channel: 'powco-development',
+                    channel: 'powco',
                     message: event.message,
                     paymail: relayxPaymail
                 })
@@ -262,7 +260,7 @@ export default function MeetingPage() {
                 <div className='col-span-12 xl:col-span-4 '>
                     <div className=''>
                         <h3 className='p-3 text-lg font-bold'>Live Chat</h3>
-                        <SideChat room="powco-development" />
+                        <SideChat room="powco" />
                     </div>
                 </div>
             </div>) 

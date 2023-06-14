@@ -1,0 +1,7 @@
+node_modules/
+out/
+**/.env
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json

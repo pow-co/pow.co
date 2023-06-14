@@ -38,7 +38,7 @@ export default function VideoPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
 
     const [video, setVideo] = useState<Video | null>(null)
 
@@ -56,12 +56,11 @@ export default function VideoPage() {
         <PanelLayout>
             {relayxAuthenticated ? <div className='grid grid-cols-12 w-full h-full'>
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
-                    {tokenBalance >= MINIMUM_POWCO_BALANCE && video && (
+                    {video && (
                         <LiveStream room={room} hls_url={video.playback.hls_url}/>
                     )}
                     
                     <h2 className='p-5 text-xl text-center font-bold '>Video {query._id}</h2>
-                    <h6 className='text-center'>{MINIMUM_POWCO_BALANCE} pow.co tokens required to view Live Stream (balance: {tokenBalance})</h6>
                 </div>
                 <div className='col-span-12 xl:col-span-4 '>
                     <div className='center'>
@@ -125,7 +124,7 @@ interface Channels {
 
 export async function getVideo({ _id }: { _id: string }) {
 
-    const { data } = await axios.get(`https://tokenmeet.live/api/v1/videos/${_id}`)
+    const { data } = await axios.get(`https://api.tokenmeet.live/api/v1/videos/${_id}`)
 
     return data.video
 

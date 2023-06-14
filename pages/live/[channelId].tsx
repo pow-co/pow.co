@@ -71,36 +71,38 @@ const events = [
 ]
 
 export interface Livestream {
-    _id: string;
-    enabled: boolean;
-    ingest: {
-        server: string;
-        key: string;
-    },
-    playback: {
-        embed_url: string;
-        embed_audio_url: string;
-        hls_url: string;
-    },
-    platforms: [],
-    settings: {
-        pulling_mode: {}
-    },
-    user: string;
-    environment: string;
-    organization: string;
-    creation_time: string;
+    liveapi_data: {
+      _id: string;
+      enabled: boolean;
+      ingest: {
+          server: string;
+          key: string;
+      },
+      playback: {
+          embed_url: string;
+          embed_audio_url: string;
+          hls_url: string;
+      },
+      platforms: [],
+      settings: {
+          pulling_mode: {}
+      },
+      user: string;
+      environment: string;
+      organization: string;
+      creation_time: string;
+  }
 }
 
 export default function MeetingPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
 
     const [livestream, setLivestream] = useState<Livestream | null>(null)
 
-    const defaultRoom = "powco-development"
+    const defaultRoom = "powco"
     const room: string = query.channelId ? query.channelId.toString() : defaultRoom
 
     const login = (e: any) => {
@@ -116,7 +118,7 @@ export default function MeetingPage() {
             {relayxAuthenticated ? <div className='grid grid-cols-12 w-full h-full'>
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
                     { livestream && (
-                        <LiveStream room={room} hls_url={livestream.playback.hls_url}/>
+                        <LiveStream room={room} hls_url={livestream.liveapi_data.playback.hls_url}/>
                     )}
                     
                     <h2 className='p-5 text-xl text-center font-bold '>#{room} Live Stream</h2>
@@ -183,14 +185,14 @@ interface Channels {
 
 export async function getLivestream({ channel }: { channel: string }) {
 
-    const { data } = await axios.get(`https://tokenmeet.live/api/v1/livestreams/${channel}`)
+    const { data } = await axios.get(`https://api.tokenmeet.live/api/v1/livestreams/${channel}`)
 
-    return data
+    return data.livestream
 
 }
 
 export const channels: Channels = {
-    'powco-development': {
+    'powco': {
         id: '640c9021ac7dd5844a79d6b9',
         hls_url: 'https://live.liveapi.com/63d46a33f1a83789fcb550b3/lv_0a34a0d0c01911edb4658f5d662562f3/index.m3u8',
         injest_url: 'rtmp://ingest.liveapi.com/static/lv_0a34a0d0c01911edb4658f5d662562f3?password=7f0135b6'

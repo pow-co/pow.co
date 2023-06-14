@@ -8,12 +8,22 @@ import FindOrCreate from '../components/FindOrCreate';
 import { useBitcoin } from '../context/BitcoinContext';
 import CardErrorBoundary from '../components/CardErrorBoundary';
 import BoostContentCardV2 from '../components/BoostContentCardV2';
+import { SideChat } from '../components/SideChat';
+import { useSubdomain } from '../hooks/subdomain'
+import PanelLayout from '../components/PanelLayout'
+import { useState } from 'react'
+
+import TokenMeetProfile from '../components/profile/TokenMeetProfile'
 
 export default function Home() {
+
+  const { subdomain } = useSubdomain()
   const { filter } = useTuning();
   const { authenticated } = useBitcoin();
-  //const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
-  const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
+  const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
+  //const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
+
+  const [livestream, setLivestream] = useState()
 
   if (error) {
     return (
@@ -22,6 +32,25 @@ export default function Home() {
       </ThreeColumnLayout>
     );
   }
+
+  if (subdomain) {
+    return (
+        <PanelLayout>
+            <div className='grid grid-cols-12 w-full h-full'>
+                <div className='col-span-12 xl:col-span-8 xl:pr-4'>
+                    <TokenMeetProfile channel={subdomain}/>
+                </div>
+                <div className='col-span-12 xl:col-span-4 '>
+                    <div className=''>
+                        <h3 className='p-3 text-lg font-bold'>Live Chat in {subdomain}</h3>
+                        <SideChat room={subdomain.toString()} />
+                    </div>
+                </div>
+            </div>
+        </PanelLayout>
+    );
+  }
+ 
 
   const { rankings } = data || [];
   const { days } = data || [];

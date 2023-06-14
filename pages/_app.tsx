@@ -2,6 +2,9 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Script from 'next/script';
+import { SensiletProvider } from '../context/SensiletContext'
+
+import { GetServerSideProps } from 'next'
 
 import '../styles/globals.css';
 import { ThemeProvider } from 'next-themes';
@@ -17,7 +20,12 @@ import { BitcoinProvider } from '../context/BitcoinContext';
 import { TwetchProvider } from '../context/TwetchContext';
 import 'react-tooltip/dist/react-tooltip.css';
 
+import { useSubdomain } from '../hooks/subdomain'
+
 export default function App({ Component, pageProps }: AppProps) {
+
+  const { subdomain } = useSubdomain()
+
   useEffect(() => {
     const MATOMO_URL = String(process.env.NEXT_PUBLIC_MATOMO_URL);
 
@@ -44,18 +52,20 @@ export default function App({ Component, pageProps }: AppProps) {
         disableTransitionOnChange
       >
         <RelayProvider>
-          <TwetchProvider>
-            <HandCashProvider>
-              <BitcoinProvider>
-                <TuneProvider>
-                  <Locales>
-                    <Component {...pageProps} />
-                    <Toaster />
-                  </Locales>
-                </TuneProvider>
-              </BitcoinProvider>
-            </HandCashProvider>
-          </TwetchProvider>
+          <SensiletProvider>
+            <TwetchProvider>
+              <HandCashProvider>
+                <BitcoinProvider>
+                  <TuneProvider>
+                    <Locales>
+                      <Component {...pageProps} />
+                      <Toaster />
+                    </Locales>
+                  </TuneProvider>
+                </BitcoinProvider>
+              </HandCashProvider>
+            </TwetchProvider>
+          </SensiletProvider>
         </RelayProvider>
       </ThemeProvider>
     </>

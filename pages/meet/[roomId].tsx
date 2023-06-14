@@ -14,8 +14,6 @@ import { SideChat } from '../../components/SideChat'
 
 
 
-const MINIMUM_POWCO_BALANCE = 1
-
 const events = [
     'cameraError',
     'avatarChanged',
@@ -80,7 +78,7 @@ export default function MeetingPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
 
     const [jitsiInitialized, setJitsiInitialized] = useState<boolean>()
 
@@ -105,7 +103,7 @@ export default function MeetingPage() {
 
         console.log('USE EFFECT', {nJitsis})
 
-        if (relayxPaymail && tokenBalance && tokenBalance >= 0) {
+        if (relayxPaymail) {
 
             // @ts-ignore
             if (!window.JitsiMeetExternalAPI) {
@@ -125,7 +123,7 @@ export default function MeetingPage() {
             setJitsiInitialized(true)
 
 
-            axios.post('https://tokenmeet.live/api/v1/jaas/auth', {
+            axios.post('https://api.tokenmeet.live/api/v1/jaas/auth', {
                 wallet: 'relay',
                 paymail: relayxPaymail,
                 token: relayAuthToken
@@ -172,6 +170,9 @@ export default function MeetingPage() {
                 jitsi.addListener('recordStatusChanged', (event: any) => {
 
                     console.log('--RECORDING STATUS CHANGED--', event)
+
+                    // TODO: Post this to the server for logging and accurate state transmission
+
                 })
 
 
@@ -228,8 +229,7 @@ export default function MeetingPage() {
         console.log('--end use effect--', {nJitsis})
 
     // @ts-ignore
-    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT, tokenBalance])
-
+    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT])
 
     async function handleJitsiEvent(type: string, event: any, socket: Socket) {
 
@@ -255,13 +255,11 @@ export default function MeetingPage() {
 
         if (type === "outgoingMessage") {
 
-            console.log('OUTGOING MESSAGE', event)
-
             try {
 
                 const result: any = await sendMessage({
                     app: 'chat.pow.co',
-                    channel: 'powco-development',
+                    channel: 'powco',
                     message: event.message,
                     paymail: relayxPaymail
                 })
@@ -284,13 +282,32 @@ export default function MeetingPage() {
 
     const startLivestream = async () => {
 
-        jitsi.executeCommand('startRecording', {
+      if (!livestream) { return } 
+
+      console.log('jitsi.livestream.start', livestream)
+
+      const { ingest } = livestream.liveapi_data
+
+      if (ingest?.server && ingest?.key) {
+
+        console.log('jitsi.executeCommand.startRecording', {
             mode: 'stream',
-            rtmpStreamKey: `${livestream?.ingest.server}/${livestream?.ingest.key}`
+            rtmpStreamKey: `${ingest.server}/${ingest.key}`
         })
+
+        const result = jitsi.executeCommand('startRecording', {
+            mode: 'stream',
+            rtmpStreamKey: `${ingest.server}/${ingest.key}`
+        })
+
+        console.log('jitsi.executeCommand.startRecording.result', result)
+
+      }
     }
 
     const stopLivestream = async () => {
+
+        console.log('jitsi.livestream.stop', livestream)
 
         jitsi.executeCommand('stopRecording', {
             mode: 'stream'

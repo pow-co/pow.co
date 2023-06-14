@@ -9,6 +9,12 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "berry2.relayx.com",
+        port: "",
+        pathname: "/**",
+      }
     ],
   },
   eslint: {
@@ -16,6 +22,20 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  webpack: config => {
+
+    config.resolve.fallback = {
+        fs: false,
+        os: false,
+        path: false,
+        module: false,
+        repl: false,
+        console: false,
+    }
+
+    return config
+
+  }
 };
 
 module.exports = nextConfig
