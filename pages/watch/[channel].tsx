@@ -14,9 +14,6 @@ import { SideChat } from '../../components/SideChat'
 
 import TokenMeetProfile from '../../components/profile/TokenMeetProfile'
 
-
-const MINIMUM_POWCO_BALANCE = 1
-
 const events = [
     'cameraError',
     'avatarChanged',
@@ -81,7 +78,7 @@ export default function MeetingPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
 
     const [jitsiInitialized, setJitsiInitialized] = useState<boolean>()
 
@@ -95,7 +92,7 @@ export default function MeetingPage() {
 
     const [livestream, setLivestream] = useState<Livestream | null>()
 
-    const defaultRoom = "pow.co"
+    const defaultRoom = "powco"
     const room = query.channel ? query.channel.toString() : defaultRoom
 
     const roomName = `vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/${room}`
@@ -106,7 +103,7 @@ export default function MeetingPage() {
 
         console.log('USE EFFECT', {nJitsis})
 
-        if (relayxPaymail && tokenBalance && tokenBalance >= 0) {
+        if (relayxPaymail) {
 
             // @ts-ignore
             if (!window.JitsiMeetExternalAPI) {
@@ -229,7 +226,7 @@ export default function MeetingPage() {
         console.log('--end use effect--', {nJitsis})
 
     // @ts-ignore
-    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT, tokenBalance])
+    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT])
 
 
     async function handleJitsiEvent(type: string, event: any, socket: Socket) {
