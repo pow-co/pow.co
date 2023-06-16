@@ -8,20 +8,23 @@ const CircleSketch = () => {
   let mouseY = p5.mouseY;
 
   const setup = (p5, canvasParentRef) => {
-    p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
-    p5.noStroke();
+    if (typeof  window !== 'undefined') {
+      p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
+      p5.noStroke();
 
-    for (let i = 0; i < numSpheres; i++) {
-      const position = p5.createVector(
-        p5.random(-p5.width, p5.width),
-        p5.random(-p5.height, p5.height),
-        p5.random(-p5.width / 2, p5.width / 2)
-      );
-      const radius = p5.random(5, 50);
-      const color = p5.color(p5.random(50), p5.random(250));
-      spheres.push({ position, radius, color });
+      for (let i = 0; i < numSpheres; i++) {
+        const position = p5.createVector(
+          p5.random(-p5.width, p5.width),
+          p5.random(-p5.height, p5.height),
+          p5.random(-p5.width / 2, p5.width / 2)
+        );
+        const radius = p5.random(5, 50);
+        const color = p5.color(p5.random(50), p5.random(250));
+        spheres.push({ position, radius, color });
+      }
     }
   };
+
 
   const draw = (p5) => {
     p5.clear();
