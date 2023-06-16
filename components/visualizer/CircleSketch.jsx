@@ -51,7 +51,7 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
       p5.text(`${sphere.tag}: ${sphere.radius.toFixed(2)}`, sphere.position.x/2 - sphere.radius, sphere.position.y/2);
       p5.pop();
       //p5.translate(p5.windowWidth/2, p5.windowHeight/2);
-      p5.rotate(p5.frameCount * 0.00001);
+      //p5.rotate(p5.frameCount * 0.00001);
       //p5.rotate(p5.frameCount * 0.000001);
     });
   };
