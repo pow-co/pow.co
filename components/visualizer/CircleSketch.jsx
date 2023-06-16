@@ -1,47 +1,52 @@
 import React from 'react';
 import Sketch from 'react-p5';
 
-const CloudSketch = () => {
-  const points = [];
+const CircleSketch = () => {
+  const spheres = [];
+  const numSpheres = 100;
+  let mouseX = p5.mouseX;
+  let mouseY = p5.mouseY;
 
   const setup = (p5, canvasParentRef) => {
-    p5.createCanvas(p5.windowWidth, p5.windowHeight, p5.WEBGL).parent(canvasParentRef);
-    //p5.noFill();
-    //p5.stroke(0);
-    //p5.strokeWeight(0.05);
+    p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
+    p5.noStroke();
+
+    for (let i = 0; i < numSpheres; i++) {
+      const position = p5.createVector(
+        p5.random(-p5.width, p5.width),
+        p5.random(-p5.height, p5.height),
+        p5.random(-p5.width / 2, p5.width / 2)
+      );
+      const radius = p5.random(5, 50);
+      const color = p5.color(p5.random(50), p5.random(250));
+      spheres.push({ position, radius, color });
+    }
   };
 
   const draw = (p5) => {
     p5.clear();
-    const centerX = 0;
-    const centerY = 0;
-    const radius = p5.min(p5.width, p5.height) / 2.8;
-    const angleOffset = p5.frameCount * 0.001;
 
-    p5.rotateX(p5.PI / 3);
-    p5.rotateZ(angleOffset/10);
+    const target = p5.createVector(mouseX, mouseY);
 
-    p5.beginShape(p5.POINTS);
-    //p5.stroke(1);
+    for (let i = 0; i < spheres.length; i++) {
+      const sphere = spheres[i];
 
-    for (let i = 0; i < 720; i+=2) {
-      const noiseVal = p5.noise(i * 0.01, p5.frameCount * 0.0025);
-      const x = p5.cos(p5.radians(i)) * radius + p5.map(noiseVal, 0, 1, -10, 10);
-      const y = p5.sin(p5.radians(i)) * radius + p5.map(noiseVal, 0, 1, -10, 10);
-      const z = p5.map(noiseVal, 0, 1, -radius, radius);
-      p5.fill(i*2);
-      //p5.ellipse(x, y, 10);
-      p5.vertex(x, y, z);
-      p5.vertex(-x, -y, -z);
-      p5.vertex(x/2, y/2, z/2);
-      p5.vertex(-x/2, -y/2, -z/2);
-      //p5.rect(x-100, y-100, 10, 10);
-    }
+      const movement = p5.createVector(
+        (target.x - sphere.position.x) * 0.01,
+        (target.y - sphere.position.y) * 0.01,
+        (target.z - sphere.position.z) * 0.01
+      );
 
-    p5.endShape();
+      // Gradually move the sphere towards the target position
+      sphere.position.lerp(target, 0.00005);
 
-    if (points.length > 1500) {
-      points.splice(0, 20);
+      p5.push();
+      p5.translate(sphere.position.x, sphere.position.y, sphere.position.z);
+      p5.noStroke();
+      p5.fill(sphere.color, 50, 50);
+      p5.ellipse(sphere.radius, sphere.radius, sphere.radius);
+      p5.pop();
+      p5.rotate(p5.frameCount * 0.000001);
     }
   };
 
@@ -49,9 +54,14 @@ const CloudSketch = () => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
   };
 
+  const mouseMoved = (p5) => {
+    mouseX = p5.mouseX;
+    mouseY = p5.mouseY;
+  };
+
   return (
-    <Sketch setup={setup} draw={draw} windowResized={windowResized} />
+    <Sketch setup={setup} draw={draw} windowResized={windowResized} mouseMoved={mouseMoved} />
   );
 };
 
-export default CloudSketch;
+export default CircleSketch;

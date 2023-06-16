@@ -5,6 +5,7 @@ import { useRelay } from "../context/RelayContext";
 import { useTuning } from "../context/TuningContext";
 import TuningPanel from "./TuningPanel";
 import { cleanString, Ranking } from "../pages/topics";
+import CircleSketch from "./visualizer/CircleSketch";
 
 import { FormattedMessage } from "react-intl";
 import { loadingEmoji } from "./Loader";
@@ -54,6 +55,7 @@ const VisualizerPanel = () => {
 
   return (
     <div className="bg-primary-100 dark:bg-primary-600/20 rounded-lg min-h-60 p-4">
+      <CircleSketch />
       <div className="flex items-center justify-between mb-2">
         <p className="text-lg font-bold text-gray-900 dark:text-white">
           {/* <FormattedMessage id="Tuning Panel"/> */}
