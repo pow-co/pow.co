@@ -9,6 +9,12 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "berry2.relayx.com",
+        port: "",
+        pathname: "/**",
+      }
     ],
   },
   eslint: {

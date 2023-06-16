@@ -14,8 +14,6 @@ import { SideChat } from '../../components/SideChat'
 
 
 
-const MINIMUM_POWCO_BALANCE = 1
-
 const events = [
     'cameraError',
     'avatarChanged',
@@ -80,7 +78,7 @@ export default function MeetingPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
 
     const [jitsiInitialized, setJitsiInitialized] = useState<boolean>()
 
@@ -105,7 +103,7 @@ export default function MeetingPage() {
 
         console.log('USE EFFECT', {nJitsis})
 
-        if (relayxPaymail && tokenBalance && tokenBalance >= 0) {
+        if (relayxPaymail) {
 
             // @ts-ignore
             if (!window.JitsiMeetExternalAPI) {
@@ -231,8 +229,7 @@ export default function MeetingPage() {
         console.log('--end use effect--', {nJitsis})
 
     // @ts-ignore
-    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT, tokenBalance])
-
+    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT])
 
     async function handleJitsiEvent(type: string, event: any, socket: Socket) {
 

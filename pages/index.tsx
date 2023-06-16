@@ -20,8 +20,8 @@ export default function Home() {
   const { subdomain } = useSubdomain()
   const { filter } = useTuning();
   const { authenticated } = useBitcoin();
-  //const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
-  const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
+  const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
+  //const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
 
   const [livestream, setLivestream] = useState()
 
