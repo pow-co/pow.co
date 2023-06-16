@@ -49,7 +49,9 @@ const VisualizerPanel = () => {
           .filter((tag: any) => tag.tag != "");
 
         // Set the maximum difficulty
-        const maxDifficulty = Math.max(...tags.map((tag) => tag.difficulty));
+        const maxDifficulty = Math.max(
+          ...tags.map((tag: Ranking) => tag.difficulty)
+        );
 
         setTags(tags);
         setMaxDifficulty(maxDifficulty);
