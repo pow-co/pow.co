@@ -13,8 +13,8 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
 
       tags.forEach((tag) => {
         const position = p5.createVector(
-          p5.random(0, p5.width),
-          p5.random(0, p5.height),
+          p5.random(-p5.width, p5.width),
+          p5.random(-p5.height, p5.height),
           p5.random(-p5.width / 2, p5.width / 2)
         );
         const radius = p5.map(tag.difficulty, 0, maxDifficulty, 5, 50);
@@ -45,11 +45,13 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
       p5.noStroke();
       //p5.fill(sphere.color, 50, 50);
       p5.fill(sphere.radius * 10);
-      p5.ellipse(sphere.position.x, sphere.position.y, sphere.radius * 15);
-      p5.fill(255);  // Use white color for text
+      p5.ellipse(sphere.position.x/2, sphere.position.y/2, sphere.radius * 15);
+      p5.fill(255 / sphere.radius * 2);  // Use white color for text
       p5.textSize(16);
-      p5.text(`${sphere.tag}: ${sphere.radius.toFixed(4)}`, sphere.position.x - sphere.radius, sphere.position.y);
+      p5.text(`${sphere.tag}: ${sphere.radius.toFixed(2)}`, sphere.position.x/2 - sphere.radius, sphere.position.y/2);
       p5.pop();
+      //p5.translate(p5.windowWidth/2, p5.windowHeight/2);
+      p5.rotate(p5.frameCount * 0.00001);
       //p5.rotate(p5.frameCount * 0.000001);
     });
   };
