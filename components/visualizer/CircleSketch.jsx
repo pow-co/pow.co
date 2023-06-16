@@ -41,11 +41,11 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
       sphere.position.lerp(target, 0.00005);
 
       p5.push();
-      p5.translate(sphere.position.x, sphere.position.y, sphere.position.z);
+      p5.translate(sphere.position.x/2, sphere.position.y/2);
       p5.noStroke();
       //p5.fill(sphere.color, 50, 50);
       p5.fill(sphere.radius * 10);
-      p5.ellipse(sphere.position.x/2, sphere.position.y/2, sphere.radius * 15);
+      p5.ellipse(sphere.position.x/2, sphere.position.y/2, sphere.radius * 10);
       p5.fill(255 / sphere.radius * 2);  // Use white color for text
       p5.textSize(16);
       p5.text(`${sphere.tag}: ${sphere.radius.toFixed(2)}`, sphere.position.x/2 - sphere.radius, sphere.position.y/2);
