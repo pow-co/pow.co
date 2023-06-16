@@ -1,39 +1,36 @@
 import React from 'react';
 import Sketch from 'react-p5';
 
-const CircleSketch = () => {
+const CircleSketch = ({ tags, maxDifficulty }) => {
   const spheres = [];
-  const numSpheres = 100;
   let mouseX = p5.mouseX;
   let mouseY = p5.mouseY;
 
   const setup = (p5, canvasParentRef) => {
-    if (typeof  window !== 'undefined') {
+    if (typeof window !== 'undefined') {
       p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
       p5.noStroke();
 
-      for (let i = 0; i < numSpheres; i++) {
+      tags.forEach((tag) => {
         const position = p5.createVector(
-          p5.random(-p5.width, p5.width),
-          p5.random(-p5.height, p5.height),
+          p5.random(0, p5.width),
+          p5.random(0, p5.height),
           p5.random(-p5.width / 2, p5.width / 2)
         );
-        const radius = p5.random(5, 50);
+        const radius = p5.map(tag.difficulty, 0, maxDifficulty, 5, 50);
         const color = p5.color(p5.random(50), p5.random(250));
-        spheres.push({ position, radius, color });
-      }
+        spheres.push({ position, radius, color, tag: tag.tag });
+      });
     }
   };
 
-
   const draw = (p5) => {
-    p5.clear();
+    //p5.clear();
+    p5.background(150, 150, 150);
 
     const target = p5.createVector(mouseX, mouseY);
 
-    for (let i = 0; i < spheres.length; i++) {
-      const sphere = spheres[i];
-
+    spheres.forEach((sphere) => {
       const movement = p5.createVector(
         (target.x - sphere.position.x) * 0.01,
         (target.y - sphere.position.y) * 0.01,
@@ -46,11 +43,15 @@ const CircleSketch = () => {
       p5.push();
       p5.translate(sphere.position.x, sphere.position.y, sphere.position.z);
       p5.noStroke();
-      p5.fill(sphere.color, 50, 50);
-      p5.ellipse(sphere.radius, sphere.radius, sphere.radius);
+      //p5.fill(sphere.color, 50, 50);
+      p5.fill(sphere.radius * 10);
+      p5.ellipse(sphere.position.x, sphere.position.y, sphere.radius * 15);
+      p5.fill(255);  // Use white color for text
+      p5.textSize(16);
+      p5.text(`${sphere.tag}: ${sphere.radius.toFixed(4)}`, sphere.position.x - sphere.radius, sphere.position.y);
       p5.pop();
-      p5.rotate(p5.frameCount * 0.000001);
-    }
+      //p5.rotate(p5.frameCount * 0.000001);
+    });
   };
 
   const windowResized = (p5) => {
