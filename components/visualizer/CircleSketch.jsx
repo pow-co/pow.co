@@ -43,7 +43,7 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
       );
 
       // Gradually move the sphere towards the target position
-      sphere.position.lerp(target, 0.0005);
+      sphere.position.lerp(target, 0.0001);
 
       p5.push();
       p5.translate(sphere.position.x/2, sphere.position.y/2);
