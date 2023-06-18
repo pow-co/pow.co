@@ -1,14 +1,19 @@
 import React from 'react';
 import Sketch from 'react-p5';
+import { useRouter } from 'next/router'
+
 
 const CircleSketch = ({ tags, maxDifficulty }) => {
   const spheres = [];
+  const router = useRouter();
+  const SIZE_FACTOR = 10;
+  // const navigate = useNavigate();
   let mouseX = p5.mouseX;
   let mouseY = p5.mouseY;
 
   const setup = (p5, canvasParentRef) => {
     if (typeof window !== 'undefined') {
-      p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
+      p5.createCanvas(p5.windowWidth * 2, p5.windowHeight * 2).parent(canvasParentRef);
       p5.noStroke();
 
       tags.forEach((tag) => {
@@ -38,18 +43,24 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
       );
 
       // Gradually move the sphere towards the target position
-      sphere.position.lerp(target, 0.00005);
+      sphere.position.lerp(target, 0.0005);
 
       p5.push();
       p5.translate(sphere.position.x/2, sphere.position.y/2);
       p5.noStroke();
       //p5.fill(sphere.color, 50, 50);
+      p5.stroke(0);
+      p5.strokeWeight(sphere.radius/5);
+      //p5.ellipse(sphere.position.x/2 - (sphere.radius/SIZE_FACTOR), sphere.position.y/2, sphere.radius * SIZE_FACTOR);
+      //p5.noStroke();
       p5.fill(sphere.radius * 10);
-      p5.ellipse(sphere.position.x/2, sphere.position.y/2, sphere.radius * 10);
-      p5.fill(255 / sphere.radius * 2);  // Use white color for text
-      p5.textSize(16);
-      p5.text(`${sphere.tag}: ${sphere.radius.toFixed(2)}`, sphere.position.x/2 - sphere.radius, sphere.position.y/2);
+      p5.ellipse(sphere.position.x/2, sphere.position.y/2, sphere.radius * SIZE_FACTOR);
+      p5.fill(250, 50, 50);
+      p5.fill(255 / sphere.radius * 5);  // Use white color for text
+      p5.textSize(sphere.radius * 2);
+      p5.text(`${sphere.tag}`, sphere.position.x/2 - sphere.radius * 2, sphere.position.y/2);
       p5.pop();
+      //p5.text(`${sphere.tag}: ${sphere.radius.toFixed(2)}`, sphere.position.x/2 - sphere.radius, sphere.position.y/2);
       //p5.translate(p5.windowWidth/2, p5.windowHeight/2);
       //p5.rotate(p5.frameCount * 0.00001);
       //p5.rotate(p5.frameCount * 0.000001);
@@ -63,10 +74,30 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
   const mouseMoved = (p5) => {
     mouseX = p5.mouseX;
     mouseY = p5.mouseY;
+    p5.ellipse(p5.mouseX, p5.mouseY, 10);
+  };
+
+  const mouseClicked = (p5) => {
+    p5.fill(250, 50, 50);
+    p5.ellipse(p5.mouseX, p5.mouseY, 10);
+    console.log("Clicked! Mousex: ", p5.mouseX, " Mousey: ", p5.mouseY);
+    p5.noFill();
+    for (let sphere of spheres) {
+      // Check if the mouse click is within the sphere
+      const d = p5.dist(p5.mouseX, p5.mouseY, sphere.position.x, sphere.position.y);
+      if (d < sphere.radius * SIZE_FACTOR) {
+        //p5.fill(250, 50, 50);
+        p5.textSize(32);
+        console.log("Clicked on sphere: ", sphere.tag);
+        // Navigate to the corresponding route
+        router.push(`/topics/${sphere.tag}`);
+        break;
+      }
+    }
   };
 
   return (
-    <Sketch setup={setup} draw={draw} windowResized={windowResized} mouseMoved={mouseMoved} />
+    <Sketch setup={setup} draw={draw} mouseMoved={mouseMoved} mouseClicked={mouseClicked} />
   );
 };
 
