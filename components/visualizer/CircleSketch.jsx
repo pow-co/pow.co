@@ -78,8 +78,8 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
   };
 
   const mouseClicked = (p5) => {
-    p5.fill(250, 50, 50);
-    p5.ellipse(p5.mouseX, p5.mouseY, 10);
+    //p5.fill(250, 50, 50);
+    //p5.ellipse(p5.mouseX, p5.mouseY, 10);
     console.log("Clicked! Mousex: ", p5.mouseX, " Mousey: ", p5.mouseY);
     p5.noFill();
     for (let sphere of spheres) {
@@ -87,10 +87,15 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
       const d = p5.dist(p5.mouseX, p5.mouseY, sphere.position.x, sphere.position.y);
       if (d < sphere.radius * SIZE_FACTOR) {
         //p5.fill(250, 50, 50);
-        p5.textSize(32);
+        //p5.textSize(32);
         console.log("Clicked on sphere: ", sphere.tag);
         // Navigate to the corresponding route
-        router.push(`/topics/${sphere.tag}`);
+        //router.prefetch(`/topics/${sphere.tag}`);
+         const win = window.open(`/topics/${sphere.tag}`, "_blank");
+         if (win) {
+           win.focus();
+         }
+        //router.push(`/topics/${sphere.tag}`);
         break;
       }
     }
