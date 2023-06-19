@@ -62,6 +62,7 @@ const VisualizerPanel = () => {
 
   return (
     <div className="bg-primary-100 dark:bg-primary-600/20 min-h-60">
+      <TuningPanel />
       <CircleSketch tags={tags} maxDifficulty={maxDifficulty} />
     </div>
   );
