@@ -22,7 +22,7 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
           p5.random(-p5.height, p5.height),
           p5.random(-p5.width / 2, p5.width / 2)
         );
-        const radius = p5.map(tag.difficulty, 0, maxDifficulty, 5, 50);
+        const radius = p5.map(tag.difficulty, 0, maxDifficulty, 2.5, 100);
         const color = p5.color(p5.random(50), p5.random(250));
         spheres.push({ position, radius, color, tag: tag.tag });
       });
@@ -85,7 +85,7 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
     for (let sphere of spheres) {
       // Check if the mouse click is within the sphere
       const d = p5.dist(p5.mouseX, p5.mouseY, sphere.position.x, sphere.position.y);
-      if (d < sphere.radius * SIZE_FACTOR) {
+      if (d < sphere.radius * 2) {
         //p5.fill(250, 50, 50);
         //p5.textSize(32);
         console.log("Clicked on sphere: ", sphere.tag);
