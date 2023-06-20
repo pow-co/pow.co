@@ -85,7 +85,7 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
     for (let sphere of spheres) {
       // Check if the mouse click is within the sphere
       const d = p5.dist(p5.mouseX, p5.mouseY, sphere.position.x, sphere.position.y);
-      if (d < sphere.radius * 2) {
+      if (d < sphere.radius * SIZE_FACTOR / 2) {
         //p5.fill(250, 50, 50);
         //p5.textSize(32);
         console.log("Clicked on sphere: ", sphere.tag);
