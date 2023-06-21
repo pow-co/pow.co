@@ -22,7 +22,7 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
           p5.random(-p5.height, p5.height),
           p5.random(-p5.width / 2, p5.width / 2)
         );
-        const radius = p5.map(tag.difficulty, 0, maxDifficulty, 5, 100);
+        const radius = p5.map(tag.difficulty, 0, maxDifficulty, 4, p5.windowHeight/10);
         const color = p5.color(p5.random(50), p5.random(250));
         spheres.push({ position, radius, color, tag: tag.tag });
       });
@@ -31,7 +31,7 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
 
   const draw = (p5) => {
     //p5.clear();
-    p5.background(50, 100, 255);
+    p5.background(50, 100, 155);
 
     const target = p5.createVector(mouseX, mouseY);
 
@@ -50,13 +50,16 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
       p5.noStroke();
       //p5.fill(sphere.color, 50, 50);
       p5.stroke(0);
-      p5.strokeWeight(sphere.radius/5);
+      
       //p5.ellipse(sphere.position.x/2 - (sphere.radius/SIZE_FACTOR), sphere.position.y/2, sphere.radius * SIZE_FACTOR);
       //p5.noStroke();
-      p5.fill(sphere.radius, sphere.radius, sphere.radius * 10);
+      p5.fill(sphere.radius, sphere.radius*4, sphere.radius * 10);
+      p5.noStroke();
       p5.ellipse(sphere.position.x/2, sphere.position.y/2, sphere.radius * SIZE_FACTOR);
-      p5.fill(250, 50, 50);
-      p5.fill(255, 255, 255 / sphere.radius * 5);  // Use white color for text
+      //p5.fill(200, 50, 50);
+      p5.fill(250, 250, 255 / sphere.radius * 5);  // Use white color for text
+      p5.stroke(0);
+      p5.strokeWeight(sphere.radius/5);
       p5.textSize(sphere.radius * 2);
       p5.text(`${sphere.tag}`, sphere.position.x/2 - sphere.radius * 2, sphere.position.y/2);
       p5.pop();

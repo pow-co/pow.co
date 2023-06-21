@@ -62,7 +62,7 @@ const VisualizerPanel = () => {
   if (!data) return <div>Loading...</div>;
 
   return (
-    <div className="bg-primary-100 dark:bg-primary-600/20 min-h-60">
+    <div className="bg-primary-100 dark:bg-primary-600/20">
       <TuningPanel />
       <CircleSketch tags={tags} maxDifficulty={maxDifficulty} />
     </div>
