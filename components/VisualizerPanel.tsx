@@ -7,7 +7,7 @@ import { useTuning } from "../context/TuningContext";
 import TuningPanel from "./TuningPanel";
 import { cleanString, Ranking } from "../pages/topics";
 
-const CircleSketch = dynamic(() => import("./visualizer/CircleSketch"), {
+const GalaxySketch = dynamic(() => import("./visualizer/GalaxySketch"), {
   ssr: false, // Disable server-side rendering
 });
 
@@ -64,7 +64,7 @@ const VisualizerPanel = () => {
   return (
     <div className="bg-primary-100 dark:bg-primary-600/20">
       <TuningPanel />
-      <CircleSketch tags={tags} maxDifficulty={maxDifficulty} />
+      <GalaxySketch tags={tags} maxDifficulty={maxDifficulty} />
     </div>
   );
 };
