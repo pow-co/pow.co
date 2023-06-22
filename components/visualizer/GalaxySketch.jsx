@@ -12,15 +12,47 @@ const GalaxySketch = ({ tags, maxDifficulty }) => {
 
   const setup = (p5, canvasParentRef) => {
     if (typeof window !== 'undefined') {
-      p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
+      let canvasScale = 1;
+
+      const screenWidth = window.innerWidth;
+      console.log("screenWidth Before Switch ", screenWidth);
+
+      switch (true) {
+        case (screenWidth < 576):
+          console.log("screenWidth ", screenWidth);
+          canvasScale = 4;
+          break;
+        case (screenWidth >= 576 && screenWidth < 768):
+          console.log("screenWidth ", screenWidth);
+          canvasScale = 2;
+          break;
+        case (screenWidth >= 768 && screenWidth < 992):
+          console.log("screenWidth ", screenWidth);
+          canvasScale = 2;
+          break;
+        case (screenWidth >= 992 && screenWidth < 1200):
+          console.log("screenWidth ", screenWidth);
+          canvasScale = 1;
+          break;
+        case (screenWidth >= 1200):
+          console.log("screenWidth ", screenWidth);
+          canvasScale = 1;
+          break;
+        default:
+          console.log("screenWidth ", screenWidth);
+          console.log("This is default");
+          canvasScale = 1;
+      }
+      console.log("canvasScale ", canvasScale);
+      p5.createCanvas(p5.windowWidth * canvasScale, p5.windowHeight * canvasScale).parent(canvasParentRef);
       p5.noStroke();
   
       const sortedTags = [...tags].sort((a, b) => b.difficulty - a.difficulty);
   
-      let maxRadiusSoFar = p5.map(sortedTags[0].difficulty, 0, maxDifficulty, 5, 25);
+      let maxRadiusSoFar = p5.map(sortedTags[0].difficulty, 0, maxDifficulty, p5.windowHeight/187.5, p5.windowHeight/54.375);
   
       sortedTags.forEach((tag, index) => {
-        const radius = p5.map(tag.difficulty, 0, maxDifficulty, 5, 20);
+        const radius = p5.map(tag.difficulty, 0, maxDifficulty, p5.windowHeight/187.5, p5.windowHeight/54.375);
         const color = p5.color(p5.random(50), p5.random(250));
   
         const angle = (index / sortedTags.length) * 90 * (p5.PI);
