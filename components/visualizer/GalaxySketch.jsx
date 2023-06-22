@@ -12,7 +12,7 @@ const GalaxySketch = ({ tags, maxDifficulty }) => {
 
   const setup = (p5, canvasParentRef) => {
     if (typeof window !== 'undefined') {
-      p5.createCanvas(p5.windowWidth * 2, p5.windowHeight * 2).parent(canvasParentRef);
+      p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
       p5.noStroke();
   
       const sortedTags = [...tags].sort((a, b) => b.difficulty - a.difficulty);
