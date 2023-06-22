@@ -3,7 +3,7 @@ import Sketch from 'react-p5';
 import { useRouter } from 'next/router'
 
 
-const CircleSketch = ({ tags, maxDifficulty }) => {
+const GalaxySketch = ({ tags, maxDifficulty }) => {
   const spheres = [];
   const router = useRouter();
   const SIZE_FACTOR = 10;
@@ -120,4 +120,4 @@ const CircleSketch = ({ tags, maxDifficulty }) => {
   );
 };
 
-export default CircleSketch;
+export default GalaxySketch;
