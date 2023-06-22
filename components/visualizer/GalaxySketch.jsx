@@ -20,7 +20,7 @@ const GalaxySketch = ({ tags, maxDifficulty }) => {
       switch (true) {
         case (screenWidth < 576):
           console.log("screenWidth ", screenWidth);
-          canvasScale = 4;
+          canvasScale = 2.25;
           break;
         case (screenWidth >= 576 && screenWidth < 768):
           console.log("screenWidth ", screenWidth);
@@ -44,7 +44,7 @@ const GalaxySketch = ({ tags, maxDifficulty }) => {
           canvasScale = 1;
       }
       console.log("canvasScale ", canvasScale);
-      p5.createCanvas(p5.windowWidth * canvasScale, p5.windowHeight * canvasScale).parent(canvasParentRef);
+      p5.createCanvas(p5.windowWidth * canvasScale, p5.windowHeight).parent(canvasParentRef);
       p5.noStroke();
   
       const sortedTags = [...tags].sort((a, b) => b.difficulty - a.difficulty);
