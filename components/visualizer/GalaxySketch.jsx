@@ -107,7 +107,7 @@ const GalaxySketch = ({ tags, maxDifficulty }) => {
       //p5.fill(200, 50, 50);
       p5.fill(250, 250, 255 / sphere.radius * 5);  // Use white color for text
       p5.stroke(0);
-      p5.strokeWeight(sphere.radius/5);
+      p5.strokeWeight(sphere.radius/3);
       p5.textSize(sphere.radius * 2);
       p5.text(`${sphere.tag}`, - sphere.radius * 2, 0);
       p5.pop();
