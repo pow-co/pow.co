@@ -97,7 +97,11 @@ export default function MeetingPage() {
 
     const roomName = `vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/${room}`
 
-    getLivestream({ channel: room }).then(setLivestream)
+    useEffect(() => {
+
+      getLivestream({ channel: room }).then(setLivestream)
+
+    }, [])
 
     useEffect(() => {
 
@@ -166,6 +170,16 @@ export default function MeetingPage() {
                     jitsi.executeCommand(command, params)
 
                 })
+
+                jitsi.addListener('recordingLinkAvailable', (event: any) => {
+
+                    console.log('--RECORDING LINK AVAILABLE--', event)
+
+                    // TODO: Post this to the server for logging and accurate state transmission
+
+                })
+
+
 
                 jitsi.addListener('recordStatusChanged', (event: any) => {
 
@@ -305,6 +319,37 @@ export default function MeetingPage() {
       }
     }
 
+    const startRecording = async () => {
+
+      if (!livestream) { return } 
+
+      console.log('jitsi.recording.start')
+
+      console.log('jitsi.executeCommand.startRecording', {
+          mode: 'file'
+      })
+
+      const result = jitsi.executeCommand('startRecording', {
+          mode: 'file'
+      })
+
+      console.log('jitsi.executeCommand.startRecording.result', result)
+
+      setIsRecording(true)
+
+    }
+
+    const stopRecording = async () => {
+
+        console.log('jitsi.recording.stop', livestream)
+
+        jitsi.executeCommand('stopRecording', {
+            mode: 'file'
+        })
+
+        setIsRecording(false)
+    }
+
     const stopLivestream = async () => {
 
         console.log('jitsi.livestream.stop', livestream)
@@ -321,13 +366,25 @@ export default function MeetingPage() {
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>
                     <div id="tokenmeet-room-container"/>
                     <h2 className='p-5 text-xl font-bold '>Meet {room}</h2>
-                    {livestream && !isRecording && (
+                    {livestream && !isRecording  && (
+                        <button onClick={() => startRecording()}>
+                            Start Recording
+                        </button>
+                    )}
+                    {livestream && !isRecording && false && (
                         <button onClick={() => startLivestream()}>
                             Start Livestream
                         </button>
                     )}
 
-                    {isRecording && (
+                    {isRecording &&  (
+                        <button onClick={() => stopRecording()}>
+                            Stop Recording
+                        </button>
+                    )}
+
+
+                    {isRecording && false && (
                         <button onClick={() => stopLivestream()}>
                             Stop Livestream
                         </button>

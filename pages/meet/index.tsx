@@ -70,6 +70,8 @@ export default function MeetingPage() {
 
     const router = useRouter()
 
+    router.push('/meet/powco')
+
     const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
 
     const [jitsiInitialized, setJitsiInitialized] = useState<boolean>()

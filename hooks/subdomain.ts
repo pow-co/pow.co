@@ -74,6 +74,7 @@ export function useSubdomain(position = 0) {
       if (window?.location?.hostname?.split('.').length == 2) { return null }
 
       if(subdomain === "localhost"){ return null}
+      if(subdomain === "next"){ return null}
 
       return subdomain
 
