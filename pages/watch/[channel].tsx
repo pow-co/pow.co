@@ -97,7 +97,11 @@ export default function MeetingPage() {
 
     const roomName = `vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/${room}`
 
-    getLivestream({ channel: room }).then(setLivestream)
+    useEffect(() => {
+
+      getLivestream({ channel: room }).then(setLivestream)
+
+    }, [])
 
     useEffect(() => {
 

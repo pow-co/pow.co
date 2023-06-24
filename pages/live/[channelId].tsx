@@ -110,7 +110,15 @@ export default function MeetingPage() {
         relayxAuthenticate()
     }
 
-    getLivestream({ channel: room }).then(setLivestream)
+    useEffect(() => {
+
+      if (!livestream) {
+
+        getLivestream({ channel: room }).then(setLivestream)
+
+      }
+
+    }, [])
 
   return (
     <>
