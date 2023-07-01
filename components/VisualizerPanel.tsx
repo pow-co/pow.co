@@ -10,6 +10,9 @@ import { cleanString, Ranking } from "../pages/topics";
 const GalaxySketch = dynamic(() => import("./visualizer/GalaxySketch"), {
   ssr: false, // Disable server-side rendering
 });
+const MapSketch = dynamic(() => import("./visualizer/MapSketch"), {
+  ssr: false, // Disable server-side rendering
+});
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
@@ -64,7 +67,7 @@ const VisualizerPanel = () => {
   return (
     <div className="bg-primary-100 dark:bg-primary-600/20">
       <TuningPanel />
-      <GalaxySketch tags={tags} maxDifficulty={maxDifficulty} />
+      <MapSketch tags={tags} maxDifficulty={maxDifficulty} />
     </div>
   );
 };
