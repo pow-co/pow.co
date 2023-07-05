@@ -48,75 +48,34 @@ interface BoostPopupProps {
 
 const BoostPopup = ({ content, onClose, tagList }: BoostPopupProps) => {
     const [existingTags, setExistingTags] = useState(tagList || [])
+    const [input, setInput] = useState("")
+    const [tags, setTags] = useState<string[]>([])
+    const [tagsWeight, setTagsWeight] = useState<number[]>([])
     const { wallet, exchangeRate } = useBitcoin()
-    const absolute_min_value = 500;
+    const absolute_min_value = useMemo(()=> tags.length > 0 ? tags.length * 500 : 500,[tags]);
     const min_profitability = 1;
     const default_profitability = 500000;
     const max_profitability = 5000000;
     const [difficulty, setDifficulty] = useState(0.0025)
-    const [tag, setTag] = useState('')
-    const [price, setPrice] = useState(0)
-    const [value, setValue] = useState(0)
-    const [devFee, setDevFee] = useState(0)
-    const [minValue, setMinValue] = useState(Math.max(absolute_min_value, difficulty * min_profitability))
-    const [maxValue, setMaxValue] = useState(difficulty * max_profitability)
-    const [factor, setFactor]= useState(maxValue / minValue)
-    const [exponent, setExponent] = useState(Math.log(factor) / Math.log(minValue) + 1)
+    const minValue = useMemo(() =>  Math.max(absolute_min_value, difficulty * min_profitability),[absolute_min_value, difficulty])
+    const maxValue= useMemo(() => difficulty * max_profitability, [difficulty])
+    const factor= useMemo(() => maxValue / minValue, [maxValue, minValue])
+    const exponent = useMemo(() => Math.log(factor) / Math.log(minValue) + 1, [factor, minValue])
     const [position, setPosition] = useState(Math.max(((Math.log(default_profitability * difficulty) / Math.log(minValue) - 1) / (exponent - 1)),0))
+    const value = useMemo(() => Math.round(Math.pow(minValue, position * (exponent - 1) + 1 )),[minValue, position, exponent] )
+    const price = useMemo(() => value * 1e-8 * exchangeRate, [value, exchangeRate])
+    const devFee = useMemo(() => Math.round(value * 0.1), [value])
     const [doSign, setDoSign] = useState(true);
-
-    const [input, setInput] = useState("")
-    const [tags, setTags] = useState<string[]>([])
-    const [tagsWeight, setTagsWeight] = useState<number[]>([])
     const totalAmount = useMemo(()=> devFee + value,[devFee, value])
-
-
 
   const handleCheckboxChange = () => {
     setDoSign(!doSign);
   };
 
-  useEffect(() => {
-    console.log("existing tags", existingTags)
-    console.log("min_value", Math.max(absolute_min_value, difficulty * min_profitability))
-    setMinValue(Math.max(absolute_min_value, difficulty * min_profitability))
-    console.log("max_value",difficulty * max_profitability )
-    setMaxValue(difficulty * max_profitability)
-  },[difficulty])
-
-  useEffect(()=>{
-    console.log("factor", maxValue / minValue)
-    setFactor(maxValue / minValue)
-  },[maxValue, minValue])
-
-  useEffect(() => {
-    setExponent(Math.log(factor) / Math.log(minValue) + 1)
-  },[factor, minValue])
-  
-
-  useEffect(() => {
-    console.log("value", Math.pow(minValue,(position * factor)) )
-    setValue(Math.round(Math.pow(minValue, position * (exponent - 1) + 1 )))
-  },[position, minValue, exponent])
-
-  useEffect(() => {
-    console.log(value,"price",value * 1e-8 * exchangeRate)
-    setPrice(value * 1e-8 * exchangeRate)
-  }, [exchangeRate, value])
-
-  useEffect(() => {
-    setDevFee(Math.round(value * 0.1))
-  },[value])
-
-
   const handleChangeDifficulty = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     setDifficulty(parseFloat(e.target.value))
     setPosition(0.5)
-  }
-  const handleChangeTag = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault()
-    setTag(e.target.value)
   }
 
   const handleChangePosition = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,10 +90,6 @@ const BoostPopup = ({ content, onClose, tagList }: BoostPopupProps) => {
     var jobParams: BoostJobParams = {
       content: contentTxid,
       difficulty
-    }
-
-    if (tag) {
-      jobParams['tag'] = tag
     }
 
     switch (wallet){
@@ -162,17 +117,44 @@ const BoostPopup = ({ content, onClose, tagList }: BoostPopupProps) => {
 
           }
 
-          console.log("powco.boost.scripts.create.params", jobParams)
+          let outputs
+          if (tags.length > 0){
+            const promises = tags.map(async (tag) => {
 
-          const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
+              jobParams['tag'] = tag
+              jobParams['difficulty'] = difficulty / parseFloat(tags.length.toFixed(4))
 
-          console.log("powco.boost.scripts.create.result", data)
+              console.log("powco.boost.scripts.create.params", jobParams)
+              
+              const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
+  
+              console.log("powco.boost.scripts.create.result", data)
+              
+              return {
+                to:data.script.asm,
+                amount: 1e-8 * value / tags.length,
+                currency: 'BSV'
+              }
+            })
 
-          const outputs = [{
-            to: data.script.asm,
-            amount: value * 1e-8,
-            currency: "BSV"
-          }]
+            outputs = await Promise.all(promises)
+          } else {
+            
+            console.log("powco.boost.scripts.create.params", jobParams)
+  
+            const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
+  
+            console.log("powco.boost.scripts.create.result", data)
+  
+            outputs = [{
+              to: data.script.asm,
+              amount: value * 1e-8,
+              currency: "BSV"
+            }]
+
+          }
+
+          
           //@ts-ignore
           outputs.push({
             currency: 'BSV',
@@ -180,7 +162,7 @@ const BoostPopup = ({ content, onClose, tagList }: BoostPopupProps) => {
             to: '1Nw9obzfFbPeERLAmSgN82dtkQ6qssaGnU', // dev revenue address
           })
 
-          console.log(outputs)
+          console.log("relayx.transactions.outputs", outputs)
 
           //@ts-ignore
           const relayResponse = await window.relayone.send({
@@ -247,13 +229,41 @@ const BoostPopup = ({ content, onClose, tagList }: BoostPopupProps) => {
               }
             }`, 'utf-8').toString("hex")
           }
+          
+          let outputs
 
-	  const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
-        
-          const outputs = [{
-            sats: value,
-            script: data.script.asm
-          }];
+          if (tags.length > 0) {
+            const promises = tags.map(async (tag) => {
+
+              jobParams['tag'] = tag
+              jobParams['difficulty'] = difficulty / parseFloat(tags.length.toFixed(4))
+
+              console.log("powco.boost.scripts.create.params", jobParams)
+
+              const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
+
+
+              console.log("powco.boost.scripts.create.result", data)
+
+              return {
+                sats: Math.round(value / tags.length),
+                script: data.script.asm
+              }
+            })
+
+            outputs = await Promise.all(promises)
+          } else {
+            const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
+          
+            console.log("powco.boost.scripts.create.result", data)
+
+            outputs = [{
+              sats: value,
+              script: data.script.asm
+            }];
+
+          }
+
 
           outputs.push({
             sats: devFee,
