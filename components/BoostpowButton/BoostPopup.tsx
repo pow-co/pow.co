@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react'
+import React, { useEffect, useMemo, useState} from 'react'
 import axios, { AxiosResponse } from 'axios';
 import toast from "react-hot-toast"
 import { useBitcoin } from '../../context/BitcoinContext';
@@ -43,10 +43,12 @@ const handleBoostError = () => {
 interface BoostPopupProps {
     content: string;
     onClose: () => void;
+    tagList?: Array<string>;
 }
 
-const BoostPopup = ({ content, onClose }: BoostPopupProps) => {
-    const { wallet } = useBitcoin()
+const BoostPopup = ({ content, onClose, tagList }: BoostPopupProps) => {
+    const [existingTags, setExistingTags] = useState(tagList || [])
+    const { wallet, exchangeRate } = useBitcoin()
     const absolute_min_value = 500;
     const min_profitability = 1;
     const default_profitability = 500000;
@@ -56,7 +58,6 @@ const BoostPopup = ({ content, onClose }: BoostPopupProps) => {
     const [price, setPrice] = useState(0)
     const [value, setValue] = useState(0)
     const [devFee, setDevFee] = useState(0)
-    const [exchangeRate, setExchangeRate] = useState(0)
     const [minValue, setMinValue] = useState(Math.max(absolute_min_value, difficulty * min_profitability))
     const [maxValue, setMaxValue] = useState(difficulty * max_profitability)
     const [factor, setFactor]= useState(maxValue / minValue)
@@ -64,20 +65,19 @@ const BoostPopup = ({ content, onClose }: BoostPopupProps) => {
     const [position, setPosition] = useState(Math.max(((Math.log(default_profitability * difficulty) / Math.log(minValue) - 1) / (exponent - 1)),0))
     const [doSign, setDoSign] = useState(true);
 
+    const [input, setInput] = useState("")
+    const [tags, setTags] = useState<string[]>([])
+    const [tagsWeight, setTagsWeight] = useState<number[]>([])
+    const totalAmount = useMemo(()=> devFee + value,[devFee, value])
+
+
+
   const handleCheckboxChange = () => {
     setDoSign(!doSign);
   };
 
-  
   useEffect(() => {
-    console.log("position",position)
-    axios.get('https://api.whatsonchain.com/v1/bsv/main/exchangerate').then((resp:AxiosResponse) => {
-      setExchangeRate(resp.data.rate.toFixed(2))
-      console.log("exchange rate", resp.data.rate.toFixed(2))
-    })
-  },[])
-
-  useEffect(() => {
+    console.log("existing tags", existingTags)
     console.log("min_value", Math.max(absolute_min_value, difficulty * min_profitability))
     setMinValue(Math.max(absolute_min_value, difficulty * min_profitability))
     console.log("max_value",difficulty * max_profitability )
@@ -313,14 +313,112 @@ const BoostPopup = ({ content, onClose }: BoostPopupProps) => {
     }
   }
 
+  const handleClear = (e:any) => {
+    e.preventDefault()
+    setTags([])
+    tags.forEach(tag => {
+      if (tagList?.includes(tag)){
+        setExistingTags(prev => [...prev, tag]);
+      }
+    })
+  }
+
+  const handleAddExistingTag = (entry:string) => {
+    submitTag(entry)
+    setExistingTags(existingTags.filter(item => item !== entry))
+  }
+
+  const sanitizeString = (input: string): string => {
+    // Trim leading and trailing whitespace
+    const trimmed = input.trim();
+
+    // Trim to a maximum of 20 characters
+    const sanitized = trimmed.slice(0, 20);
+
+    // Convert to lowercase
+    //const lowercase = sanitized.toLowerCase();
+
+    return sanitized;
+  };
+
+  const submitTag = (entry: string) => {
+    //check if entry is not void
+    if(entry.length > 0){
+      // check for duplicates here
+      if (existingTags.includes(entry)){
+        // handle duplicate tag case (e.g. show an error message)
+        setExistingTags(prev => prev.filter(item => item !== entry))
+      } else if (tags.includes(entry)){
+        console.log("duplicate")
+        return
+      }
+      setTags(prev => [...prev, entry])
+    }
+  }
+
+  const handleSubmitTags = (e:any) => {
+    e.preventDefault()
+    let tags = input.split(/[, ]+/);
+    tags.forEach(element => {
+      element = sanitizeString(element)
+      submitTag(element)
+    })
+    setInput("")
+  }
+
+  const handleKeyDown = (e:any) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+
+      // Split the input into tags separated by commas
+      const tags = input.split(/[, ]+/);
+
+      // Process and submit each tag
+      tags.forEach(tag => {
+        const sanitizedTag = sanitizeString(tag.trim());
+        submitTag(sanitizedTag);
+      });
+
+      // Clear the input state
+      setInput("");
+    }
+  }
+
+  const handleChangeInput = (e:any) => {
+    e.preventDefault()
+    setInput(e.target.value)
+  }
+
+  const deleteTag = (index:number) => {
+    // delete Tag at index in the tag array
+    let entry = tags[index]
+    setTags(prev => {
+      const updatedTags = [...prev]
+      updatedTags.splice(index, 1)
+      return updatedTags
+    })
+    if (tagList?.includes(entry)){
+      setExistingTags([...existingTags, entry]);
+    }
+  }
+
+  const handleIncrementDifficulty = (increment: number) => {
+    let newValue = parseFloat((difficulty + increment).toFixed(2))
+    if(newValue > 0) {
+      setDifficulty(newValue)
+    } else {
+      setDifficulty(0)
+    }
+  }
+
   return (
     <div onClick={(e) => e.stopPropagation()} className='fixed inset-0'>
       <div className='flex flex-col h-screen'>
         <div onClick={onClose} className='grow cursor-pointer' />
         <div className='flex'>
           <div onClick={onClose} className='grow cursor-pointer' />
-          <div className='flex flex-col w-[420px] h-[500px] rounded-t-lg bg-gray-100 dark:bg-gray-800'>
-            <div className='flex items-center p-5 border-b border-b-gray-300 dark:border-b-gray-700'>
+          <div className='flex flex-col w-[420px] min-h-[500px] rounded-t-lg bg-gray-100 dark:bg-gray-800'>
+            <div className='flex items-center p-5 border-b-4 border-b-gray-300 dark:border-b-gray-700'>
               <svg
                 className=''
                 width='65'
@@ -348,44 +446,106 @@ const BoostPopup = ({ content, onClose }: BoostPopupProps) => {
               </svg>
               <p className='ml-5 text-2xl font-bold'>Boostpow</p>
             </div>
-            <div className='grow flex flex-col justify-center items-center'>
-              <div className=' text-gray-900 dark:text-white rounded-r-md py-1 pr-2.5'>
-                Tag
+            <div className='grow flex flex-col justify-around items-center'>
+              {/* <div className='flex flex-col w-full justify-center items-center'>
+                <div className='text-gray-900 dark:text-white rounded-r-md py-1 pr-2.5'>
+                  Tags<span className='ml-2 opacity-50'>(max 5)</span>
+                </div>
+                <input
+                  className='border border-gray-300 dark:border-gray-700 rounded-l-md text-gray-900 dark:text-white py-1 pl-2.5 text-base'
+                  type='text'
+                  value={tag}
+                  onChange={handleChangeTag}
+                />
+              </div> */}
+              <div className='flex flex-col w-full justify-center items-center border-b border-b-gray-300 dark:border-b-gray-700 pb-3'>
+                <div className='text-xl mb-2 font-semibold text-gray-900 dark:text-white rounded-r-md py-1 pr-2.5'>
+                  Tags
+                </div>
+                <div className="flex w-full px-5 ">
+                  <button onClick={handleSubmitTags} className="mr-4 rounded-full p-2 bg-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#FFF" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                  </button>
+                  <input onKeyDown={handleKeyDown} value={input} onChange={handleChangeInput} className="w-full py-2 px-4" type="search" placeholder="Enter a list of tags..."/>
+                  {tags.length > 0 && <button onClick={handleClear} className="ml-5 text-blue-500 font-semibold hover:underline">Clear</button>}
+                </div>
+                <div className="justify-around w-full flex flex-wrap p-3 gap-2">
+                  {tags.length > 0 && <>
+                    {tags.map((topic: string, index: number) => (
+                      <div key={topic} className=''>
+                        <div onClick={() => deleteTag(index)} className="group flex justify-around items-center cursor-pointer rounded-full border border-gray-400 dark:border-gray-600 p-5 py-2 bg-blue-500 border-none">
+                          <div className="text-white">
+                            #{topic}
+                          </div>
+                          <div className="hidden group-hover:block  ml-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#FFF" className="w-4 h-4">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </div>
+                        </div>
+  {/*                       {tags.length > 1 && <input
+                          className='mt-2' 
+                          type="range"
+                          min={0}
+                          max={100}
+                          step={5}
+                          value={tagsWeight[index]}
+                        />}
+  */}                    </div>
+                    ))}
+                  </>}
+                  {existingTags.length > 0 && (
+                    <>
+                      {existingTags.map((topic:string) => (
+                        <div key={topic} onClick={() => handleAddExistingTag(topic)} className="flex justify-around items-center cursor-pointer rounded-full border-2 hover:border-blue-500 hover:text-blue-500  p-5 py-2 ">
+                          #{topic}
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
               </div>
-              <input
-                className='border border-gray-300 dark:border-gray-700 rounded-l-md text-gray-900 dark:text-white py-1 pl-2.5 text-base'
-                type='text'
-                value={tag}
-                onChange={handleChangeTag}
-              />
-              <div className=' text-gray-900 dark:text-white rounded-r-md py-1 pr-2.5'>
-                Difficulty
+              <div className='flex flex-col w-full justify-center items-center border-b border-b-gray-300 dark:border-b-gray-700 pb-3'>
+                <div className='text-xl mb-2 font-semibold  text-gray-900 dark:text-white rounded-r-md py-1 pr-2.5'>
+                  Total Difficulty
+                </div>
+                <div className='flex'>
+                  <div onClick={() => handleIncrementDifficulty(-1)} className='w-10 text-center cursor-pointer hover:bg-blue-500/80 hover:text-white border rounded py-1 px-2.5'>--</div>
+                  <div onClick={() => handleIncrementDifficulty(-0.1)} className='mr-2 w-10 text-center cursor-pointer hover:bg-blue-500/80 hover:text-white border rounded py-1 px-2.5'>-</div>
+                  <input
+                    className='border border-gray-300 dark:border-gray-700 rounded-md text-gray-900 dark:text-white py-1 pl-2.5 text-base'
+                    type='number'
+                    autoFocus
+                    min={0.00025}
+                    step={0.0005}
+                    value={difficulty}
+                    onChange={handleChangeDifficulty}
+                  />
+                  <div onClick={() => handleIncrementDifficulty(0.1)} className='ml-2 w-10 text-center cursor-pointer hover:bg-blue-500/80 hover:text-white border rounded py-1 px-2.5'>+</div>
+                  <div onClick={() => handleIncrementDifficulty(1)} className='w-10 text-center cursor-pointer hover:bg-blue-500/80 hover:text-white border rounded py-1 px-2.5'>++</div>
+
+                </div>
               </div>
-              <input
-                className='border border-gray-300 dark:border-gray-700 rounded-l-md text-gray-900 dark:text-white py-1 pl-2.5 text-base'
-                type='number'
-                autoFocus
-                min={0.00025}
-                step={0.0005}
-                value={difficulty}
-                onChange={handleChangeDifficulty}
-              />
-              <div className=' text-gray-900 dark:text-white rounded-r-md py-1 pr-2.5'>
-                satoshis: {value}
+              <div className='flex flex-col w-full justify-center items-center border-b border-b-gray-300 dark:border-b-gray-700 pb-3'>
+                <div className='text-xl mb-2 font-semibold  text-gray-900 dark:text-white rounded-r-md py-1 pr-2.5'>
+                  Bounty Amount: {value} sats
+                </div>
+                <div className='flex items-center px-10 w-full'>
+                  <span className='mr-4 text-xl'>🐢</span>
+                  <input 
+                    type="range" 
+                    min={0} 
+                    max={1} 
+                    step={0.01}
+                    onChange={handleChangePosition} 
+                    value={position} 
+                    className="w-full h-2 bg-gray-200 rounded-lg  cursor-pointer dark:bg-gray-700"/>
+                  <span className='ml-4 text-xl'>🐇</span>
+                </div>
               </div>
-              <div className='flex items-center px-10 w-full'>
-                <span className='mr-4 text-xl'>🐢</span>
-                <input 
-                  type="range" 
-                  min={0} 
-                  max={1} 
-                  step={0.01}
-                  onChange={handleChangePosition} 
-                  value={position} 
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"/>
-                <span className='ml-4 text-xl'>🐇</span>
-              </div>
-              <div className='flex py-1'>
+              <div className='flex py-1 mt-3'>
                 <input className='' type="checkbox" checked={doSign} onChange={handleCheckboxChange} />
                 <p className='ml-2'>Sign with Paymail?</p>
               </div>
@@ -395,7 +555,7 @@ const BoostPopup = ({ content, onClose }: BoostPopupProps) => {
                 onClick={handleBoost}
                 className='text-white bg-gradient-to-tr from-blue-500 to-blue-600 leading-6 py-1 px-10 font-bold border-none rounded cursor-pointer disabled:opacity-50 transition duration-500 transform hover:-translate-y-1'
               >
-                Boost ${price.toFixed(2)}
+                {`Buy Boost for ${totalAmount > 10e4 ? `₿${(totalAmount/10e8).toFixed(4)} `:`${totalAmount} sats`}`}
               </button>
             </div>
           </div>

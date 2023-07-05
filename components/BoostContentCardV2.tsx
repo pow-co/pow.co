@@ -138,6 +138,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const [youtubeId, setYoutubeId] = useState('')
     const [playerURLs, setPlayerURLs] = useState<string[]>([])
     const [jig, setJig] = useState(null)
+    const existingTags = useMemo(() => tags.map((tag:any) => tag.utf8) ,[tags])
 
     useEffect(() => {
         getData().then((res) => {
@@ -467,6 +468,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                             <BoostButton 
                             content={content_txid}
                             difficulty={computedDiff || 0}
+                            existingTags={existingTags}
                             />
                         </div>
                         <Tooltip
