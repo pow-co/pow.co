@@ -6,7 +6,7 @@ import moment from 'moment';
 import { Tooltip } from 'react-tooltip';
 import { useBitcoin } from '../context/BitcoinContext';
 import { toast } from 'react-hot-toast'
-import { BoostButton } from 'boostpow-button';
+import BoostButton from './BoostpowButton/BoostButton';
 import axios from 'axios';
 import { BASE } from '../hooks/useAPI';
 import { useTheme } from 'next-themes';
@@ -465,15 +465,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                         </div>
                         <div className="boost-button-info-text" data-tooltip-offset={20}>
                             <BoostButton 
-                            wallet={wallet}
                             content={content_txid}
                             difficulty={computedDiff || 0}
-                                // @ts-ignore
-                            theme={theme.theme}
-                            showDifficulty
-                            onSending={handleBoostLoading}
-                            onError={handleBoostError}
-                            onSuccess={handleBoostSuccess}
                             />
                         </div>
                         <Tooltip
@@ -513,9 +506,9 @@ const handleBoostLoading = () => {
         color: '#fff',
       },
     });
-  };
+};
 
-  const handleBoostSuccess = () => {
+const handleBoostSuccess = () => {
     toast('Success!', {
       icon: '✅',
       style: {
@@ -524,9 +517,9 @@ const handleBoostLoading = () => {
         color: '#fff',
       },
     });
-  };
+};
 
-  const handleBoostError = () => {
+const handleBoostError = () => {
     toast('Error!', {
       icon: '🐛',
       style: {
@@ -535,6 +528,6 @@ const handleBoostLoading = () => {
         color: '#fff',
       },
     });
-  };
+};
 
 export default BoostContentCardV2

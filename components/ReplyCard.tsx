@@ -4,7 +4,7 @@ import UserIcon from './UserIcon';
 import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import { toast } from 'react-hot-toast';
-import { BoostButton } from 'boostpow-button';
+import BoostButton  from './BoostpowButton/BoostButton';
 import { useBitcoin } from '../context/BitcoinContext';
 import { useRouter } from 'next/router';
 
@@ -112,15 +112,8 @@ const ReplyCard = (props: BMAPData) => {
                             </p>
                         </div>
                         <BoostButton
-                            wallet={wallet}
                             content={tx.h}
                             difficulty={0}
-                            //@ts-ignore
-                            theme={theme.theme}
-                            showDifficulty
-                            onSending={handleBoostLoading}
-                            onError={handleBoostError}
-                            onSuccess={handleBoostSuccess}
                         />
                     </div>
                 </div>

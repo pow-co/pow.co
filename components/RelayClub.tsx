@@ -4,7 +4,7 @@ import moment from 'moment';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import Link from 'next/link';
-import { BoostButton } from 'boostpow-button';
+import BoostButton  from './BoostpowButton/BoostButton';
 const graphqlAPI = "https://graphql.relayx.com";
 
 export const relayDetailQuery = async (txid: string | undefined) => {
@@ -358,15 +358,8 @@ export const RelayClubCard = (props: any) => {
               </p>
             </div>
             <BoostButton
-                wallet={wallet}
                 content={props.txid}
                 difficulty={props.difficulty}
-                //@ts-ignore
-                theme={theme.theme}
-                showDifficulty
-                onSending={handleBoostLoading}
-                onError={handleBoostError}
-                onSuccess={handleBoostSuccess}
             />
           </div>
           <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>

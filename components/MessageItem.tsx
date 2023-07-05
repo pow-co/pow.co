@@ -2,7 +2,7 @@ import { toast } from "react-hot-toast";
 import Link from "next/link";
 import UserIcon from "./UserIcon";
 import PostDescription from "./PostDescription";
-import { BoostButton } from "boostpow-button";
+import BoostButton  from './BoostpowButton/BoostButton';
 import { useBitcoin } from "../context/BitcoinContext";
 import moment from "moment";
 import { useTheme } from "next-themes";
@@ -84,15 +84,9 @@ export const MessageItem = (props:any, isSide: boolean) => {
           <div className='col-span-11'/>
           <div className='col-span-1'>
             <BoostButton
-              wallet={wallet}
               content={bmap.tx.h}
               difficulty={0}
-              //@ts-ignore
-              theme={theme.theme}
               showDifficulty={false}
-              onSending={handleBoostLoading}
-              onError={handleBoostError}
-              onSuccess={handleBoostSuccess}
             />
           </div>
         </div>
