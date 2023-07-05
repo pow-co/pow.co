@@ -34,6 +34,7 @@
     "bops": "^1.0.1",
     "bsocial": "^0.0.1",
     "bsv": "^1.5.6",
+    "dotenv": "^10.0.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "13.1.1",
     "graphql": "^16.6.0",
@@ -43,7 +44,7 @@
     "linkifyjs": "^4.1.0",
     "markdown-it": "^13.0.1",
     "moment": "^2.29.4",
-    "next": "13.1.1",
+    "next": "^13.4.8",
     "next-themes": "^0.2.1",
     "react": "18.2.0",
     "react-code-blocks": "^0.0.9-0",
@@ -61,6 +62,7 @@
     "react-use-websocket": "^4.3.1",
     "react-youtube": "^10.1.0",
     "remirror": "^2.0.31",
+    "scrypt-ts": "^0.2.2-beta.6",
     "simple-data-storage": "^1.0.0",
     "slate": "^0.88.1",
     "slate-react": "^0.88.2",
@@ -68,7 +70,7 @@
     "stag-relayx": "^0.3.0",
     "super-react-gist": "^1.1.0",
     "swr": "^2.0.0",
-    "typescript": "4.9.4",
+    "typescript": "^4.8.4",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
