@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build:contract": "npx scrypt-cli compile",
+    "deploy:contract": "npx ts-node --project tsconfig-scryptTS.json ./scripts/deploy.ts",
+    "verify:contract": "npx scrypt-cli verify $(cat .scriptHash) ./src/contracts/nextPowCo.ts",
+    "genprivkey": "npx ts-node --project tsconfig-scryptTS.json ./scripts/privateKey.ts"
   },
   "dependencies": {
     "@dhaiwat10/react-link-preview": "^1.14.2",
