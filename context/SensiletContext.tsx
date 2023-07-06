@@ -48,7 +48,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
 
   useEffect(() => {
 
-    if (signer || !provider || !web3Account) { return }
+    if (signer || !provider) { return }
 
     console.log({ provider })
 
