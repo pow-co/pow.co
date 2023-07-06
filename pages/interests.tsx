@@ -9,7 +9,7 @@ import { useSensilet } from '../context/SensiletContext'
 
 import { bsv, findSig } from 'scrypt-ts'
 
-import { removeInterest, detectInterestsFromTxid, mintInterest, PersonalInterest } from '../services/personalInterests'
+import { PersonalInterestData, removeInterest, detectInterestsFromTxid, mintInterest, PersonalInterest } from '../services/personalInterests'
 
 function PersonalInterestsPage() {
   const router = useRouter();
@@ -23,8 +23,10 @@ function PersonalInterestsPage() {
   const [interest, setInterest] = useState<PersonalInterest | null>(null)
 
   const [interestRemoved, setInterestRemoved] = useState<boolean>(false)
+  
+  const [interests, setInterests] = useState<PersonalInterestData[]>([])
 
-  console.log({ signer, provider, sensiletPublicKey })
+  const [owner, setOwner] = useState<string | null>()
 
   useEffect(() => {
     if (!router.query?.txid) { return }
@@ -43,6 +45,24 @@ function PersonalInterestsPage() {
     })
 
   }, [router.query.txid])
+
+  useEffect(() => {
+
+    if (!sensiletPublicKey) return;
+
+    const address = new bsv.PublicKey(sensiletPublicKey).toAddress().toString()
+
+    setOwner(address)
+
+    axios.get(`https://pow.co/api/v1/owners/${address}/personal-interests`).then(async (result) => {
+
+      console.log("interests.discovered", result.data)
+
+      setInterests(result.data.personal_interests)
+
+    })
+
+  }, [sensiletPublicKey])
 
   if (!sensiletPublicKey) {
 
@@ -133,7 +153,23 @@ function PersonalInterestsPage() {
     <ThreeColumnLayout>
       <div className="col-span-12 min-h-screen lg:col-span-6">
         <div className="mb-[200px] w-full">
-          <small>sensilet pubkey: {sensiletPublicKey}</small>
+          <p><small>Owner: {owner}</small></p>
+          <ul style={{"listStyle": "none"}}>
+          <h2>My Personal Interests</h2>
+          {interests.map(interest => {
+
+            return (
+
+              <Link href={`/interests/${interest.origin}`}>
+                <li>
+                  <h3 style={{textDecoration: 'underline'}}>{interest.topic} <small>{interest.weight}</small></h3>
+                </li>
+              </Link>
+
+            )
+
+          })}
+          </ul>
           {interest && (
             <>
             <p>Personal Interest Found In {router.query.txid}</p>

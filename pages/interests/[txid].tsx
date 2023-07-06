@@ -9,7 +9,7 @@ import { useSensilet } from '../../context/SensiletContext'
 
 import { bsv, findSig } from 'scrypt-ts'
 
-import { detectInterestsFromTxid, mintInterest, PersonalInterest } from '../../services/personalInterests'
+import { detectInterestsFromTxid, mintInterest, PersonalInterest, PersonalInterestData, getPersonalInterestData } from '../../services/personalInterests'
 
 function PersonalInterestsPage() {
   const router = useRouter();
@@ -22,12 +22,16 @@ function PersonalInterestsPage() {
 
   const [interest, setInterest] = useState<PersonalInterest | null>(null)
 
+  const [interestData, setInterestData] = useState<PersonalInterestData[]>([])
+
   const [interestRemoved, setInterestRemoved] = useState<boolean>(false)
 
   console.log({ signer, provider, sensiletPublicKey })
 
   useEffect(() => {
     if (!router.query?.txid) { return }
+
+    const txid = String(router.query?.txid)
 
     detectInterestsFromTxid(String(router.query?.txid)).then(interests => {
 
@@ -41,6 +45,13 @@ function PersonalInterestsPage() {
       console.error('error detected personal interest for txid', error)
 
     })
+
+    getPersonalInterestData({ txid }).then((interests: PersonalInterestData[]) => {
+
+      setInterestData(interests)
+
+    })
+    .catch(console.error)
 
   }, [router.query.txid])
 
@@ -139,12 +150,14 @@ function PersonalInterestsPage() {
               <b><p style={{color: 'red'}}>REMOVED FROM BLOCKCHAIN</p></b>
             )}
             <ul>
-              <li>owner: {interest.owner}</li>
+              <li>owner: {new bsv.PublicKey(interest.owner).toAddress().toString()}</li>
               <li>topic: {fromHex(interest.topic)}</li>
               <li>weight: {Number(interest.weight)}</li>
+              <li>data from api server: {JSON.stringify(interestData)}</li>
             </ul>
             </>
           )}
+          <button style={{border: '1px solid white', padding: '1em', marginTop: '3em' }} onClick={() => { router.push('/interests') } }>My Interests</button>
           <button style={{border: '1px solid white', padding: '1em', marginTop: '3em' }} onClick={onClickMintInterest}>Mint New Interest</button>
           {interest && !interestRemoved && (
             <button style={{border: '1px solid white', padding: '1em', marginTop: '3em' }} onClick={onClickRemoveInterest}>Remove Interest</button>

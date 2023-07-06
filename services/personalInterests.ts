@@ -1,6 +1,8 @@
 
 import { PersonalInterest } from '../src/contracts/personalInterest'
 
+import axios from 'axios'
+
 const artifact = require('../artifacts/src/contracts/personalInterest')
 
 try {
@@ -62,6 +64,18 @@ export async function mintInterest({ signer, topic, owner, weight, satoshis }: M
 
   console.log("deploy interest result", tx)
 
+  try {
+
+    const { data } = await axios.get(`https://pow.co/api/v1/personal-interests/${txid}`)
+
+    console.log('powco.interest.import.result', data)
+
+  } catch(error) {
+
+    console.error('powco.interest.import.error', error)
+
+  }
+
   return { tx, instance }
 
 }
@@ -117,4 +131,26 @@ export async function removeInterest({ signer, publicKey, instance }: { signer: 
 
 }
 
+export interface PersonalInterestData {
+  id: number;
+  origin: string;
+  location: string;
+  topic: string;
+  owner: string;
+  weight: number;
+  value: number;
+  active: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export async function getPersonalInterestData({ txid }: {txid: string}): Promise<PersonalInterestData[]> {
+
+  const { data } = await axios.get(`https://pow.co/api/v1/personal-interests/${txid}`)
+
+  console.log("powco.interests.fetch.result", { txid, data })
+
+  return data.personal_interests
+
+}
 
