@@ -20,6 +20,7 @@ type SensiletContextValue = {
    sensiletAvatar: string | undefined;
    sensiletPaymail: string | undefined;
    sensiletUserName: string | undefined;
+   sensiletPublicKey: string | undefined | null;
    web3: any;
    web3Account: string | undefined | null;
    ready: boolean;

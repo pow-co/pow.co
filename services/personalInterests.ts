@@ -3,9 +3,17 @@ import { PersonalInterest } from '../src/contracts/personalInterest'
 
 const artifact = require('../artifacts/src/contracts/personalInterest')
 
-PersonalInterest.loadArtifact(artifact)
+try {
 
-import { bsv, Signer, toByteString, PubKey } from 'scrypt-ts'
+  PersonalInterest.loadArtifact(artifact)
+
+} catch(error) {
+
+  console.error('FAILED TO LOAD ARTIFACT', error)
+
+}
+
+import { bsv, Signer, toByteString, PubKey, findSig } from 'scrypt-ts'
 
 const Run = require('run-sdk')
 
@@ -58,29 +66,6 @@ export async function mintInterest({ signer, topic, owner, weight, satoshis }: M
 
 }
 
-export async function main() {
-
-  let [interests, txhex] = await detectInterestsFromTxid(txid)
-
-  const tx = new bsv.Transaction(txhex)
-
-  console.log(interests, 'interests')
-
-  for (let interest of interests) {
-
-    console.log({
-      txid,
-      outputIndex: interest.from.outputIndex,
-      topic: Buffer.from(interest.topic, 'hex').toString('utf8'),
-      owner: new bsv.PublicKey(interest.owner).toAddress().toString(),
-      weight: Number(interest.weight),
-      value: tx.outputs[interest.from.outputIndex].satoshis
-    })
-
-  }
-
-}
-
 export async function detectInterestsFromTxid(txid: string): Promise<[PersonalInterest[], string]> {
 
   const hex = await blockchain.fetch(txid)
@@ -115,3 +100,21 @@ export async function detectInterestsFromTxHex(txhex: string): Promise<PersonalI
   return interests
 
 }
+
+export async function removeInterest({ signer, publicKey, instance }: { signer: Signer, publicKey: string, instance: PersonalInterest }): Promise<bsv.Transaction> {
+
+  await instance.connect(signer)
+
+  console.log('interest.remove', instance)
+
+  const result = await instance.methods.remove((sigResponses: any) => {
+    return findSig(sigResponses, new bsv.PublicKey(publicKey))
+  })
+
+  console.log('interest.remove.result', result)
+
+  return result.tx
+
+}
+
+

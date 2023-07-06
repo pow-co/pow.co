@@ -7,7 +7,7 @@ import ThreeColumnLayout from '../../components/ThreeColumnLayout';
 
 import { useSensilet } from '../../context/SensiletContext'
 
-import { bsv, findSig, PubKey } from 'scrypt-ts'
+import { bsv, findSig } from 'scrypt-ts'
 
 import { detectInterestsFromTxid, mintInterest, PersonalInterest } from '../../services/personalInterests'
 
@@ -27,15 +27,16 @@ function PersonalInterestsPage() {
   console.log({ signer, provider, sensiletPublicKey })
 
   useEffect(() => {
+    if (!router.query?.txid) { return }
 
-    detectInterestsFromTxid(router.query?.txid).then(interests => {
+    detectInterestsFromTxid(String(router.query?.txid)).then(interests => {
 
       console.log('loaded interests for txid', interests)
 
       if (interests[0]) setInterest(interests[0][0])
 
     })
-    .catch(error => {
+    .catch((error: unknown) => {
 
       console.error('error detected personal interest for txid', error)
 
@@ -59,12 +60,14 @@ function PersonalInterestsPage() {
 
     try {
 
+      if (!interest || !signer) { return }
+
       await interest.connect(signer)
 
       console.log('interest.remove', interest)
 
-      const result = await interest.methods.remove((sigResponses) => {
-        return findSig(sigResponses, PubKey(sensiletPublicKey))
+      const result = await interest.methods.remove((sigResponses: any) => {
+        return findSig(sigResponses, new bsv.PublicKey(sensiletPublicKey))
       })
 
       console.log('interest.remove.result', result)
@@ -73,12 +76,9 @@ function PersonalInterestsPage() {
 
     } catch(error) {
 
-      console.error('interest.remove.error', error.message)
-
-      console.error('interest.remove.error', error.name)
-
       console.error('interest.remove.error', error)
 
+      //@ts-ignore
       if (error.message.match('txn-mempool-conflict')) {
 
         setInterestRemoved(true)
@@ -90,15 +90,17 @@ function PersonalInterestsPage() {
 
   async function onClickMintInterest() {
 
+    if (!signer || !sensiletPublicKey) { return }
+
     try {
 
-      const topic = prompt('Topic of Interest:')
-      const weight = prompt('Weight:')
+      const topic = String(prompt('Topic of Interest:'))
+      const weight = Number(prompt('Weight:'))
 
       const { tx, instance } = await mintInterest({
         signer,
         topic,
-        weight: Number(weight),
+        weight,
         owner: sensiletPublicKey,
         satoshis: 100
       })
@@ -117,7 +119,7 @@ function PersonalInterestsPage() {
 
   }
 
-  function fromHex(h) {
+  function fromHex(h: any) {
     var s = ''
     for (var i = 0; i < h.length; i+=2) {
         s += String.fromCharCode(parseInt(h.substr(i, 2), 16))
