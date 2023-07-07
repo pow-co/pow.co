@@ -2,7 +2,7 @@
 import { request } from 'graphql-request'
 import moment from 'moment';
 import { toast } from 'react-hot-toast';
-import { BoostButton } from 'boostpow-button';
+import BoostButton  from './BoostpowButton/BoostButton';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 const graphqlAPI = "https://gw.twetch.app";
@@ -232,15 +232,8 @@ export const TwetchCard = (props:any) => {
           </p>
         </div>
         <BoostButton
-            wallet={wallet}
             content={props.transaction}
             difficulty={props.difficulty}
-            //@ts-ignore
-            theme={theme.theme}
-            showDifficulty
-            onSending={handleBoostLoading}
-            onError={handleBoostError}
-            onSuccess={handleBoostSuccess}
         />
       </div>
       <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>

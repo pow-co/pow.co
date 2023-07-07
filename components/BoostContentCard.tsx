@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { BoostButton } from 'boostpow-button';
+import BoostButton  from './BoostpowButton/BoostButton';
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
@@ -359,15 +359,8 @@ function BoostContentCard({
                         </div>
                         <div className="boost-button-info-text" data-tooltip-offset={20}>
                         <BoostButton 
-                          wallet={wallet}
                           content={content_txid}
                           difficulty={computedDiff || 0}
-                            // @ts-ignore
-                          theme={theme.theme}
-                          showDifficulty
-                          onSending={handleBoostLoading}
-                          onError={handleBoostError}
-                          onSuccess={handleBoostSuccess}
                         />
                         </div>
                         <Tooltip
