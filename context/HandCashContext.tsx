@@ -15,6 +15,7 @@ type HandCashContextValue = {
     tokenBalance: number;
     handCashAuthToken: string | undefined;
     setHandCashAuthToken:(authToken: string | undefined) => void 
+    setProfileFromAuthToken:({authToken: string}) => void 
     handCashSessionToken: string | undefined;
     setHandCashSessionToken:(authToken: string | undefined) => void 
     setHandcashPaymail: (paymail: string | undefined) => void;
@@ -22,7 +23,7 @@ type HandCashContextValue = {
     handcashLogout: () => void;
 };
  
-const HandCashContext = createContext<HandCashContextValue | undefined>(undefined);
+export const HandCashContext = createContext<HandCashContextValue | undefined>(undefined);
 
 export const HandCashProvider = (props: { children: React.ReactNode }) => {
 
@@ -33,12 +34,23 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
     const [runOwner, setRunOwner] = useLocalStorage(runOwnerStorageKey);
     const [tokenBalance, setTokenBalance] = useState(0);
 
-    const handcashAuthenticated = useMemo(() => !!handcashPaymail, [handcashPaymail]);
+    const handcashAuthenticated = useMemo(() => !!handCashAuthToken, [handCashAuthToken]);
 
     const handcashAvatar = useMemo(() => `https://a.relayx.com/u/${handcashPaymail}`, [handcashPaymail])
     const handcashUserName = useMemo(() => handcashPaymail ? handcashPaymail.split('$')[1] : "", [handcashPaymail])
 
     const router = useRouter();
+
+    async function setProfileFromAuthToken({ authToken }) {
+
+      const { data } = await axios.get(`/api/v1/handcash/profile?authToken=${authToken}`)
+
+      setHandCashAuthToken(authToken)
+
+      setHandcashPaymail(data.publicProfile.paymail)
+
+      console.log('handcash.profile', data)
+    }
 
     const handcashAuthenticate = useCallback(async () => {
 
@@ -70,7 +82,8 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
           handcashAuthenticate,
           handcashAvatar,
           handCashSessionToken,
-          setHandCashSessionToken
+          setHandCashSessionToken,
+          setProfileFromAuthToken
         }),
         [
           handCashAuthToken,
@@ -87,7 +100,8 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
           handcashAuthenticate,
           handcashAvatar,
           handCashSessionToken,
-          setHandCashSessionToken
+          setHandCashSessionToken,
+          setProfileFromAuthToken
         ]
       );
     
@@ -105,9 +119,9 @@ export const useHandCash = () => {
 };
   
 
-const tokenStorageKey = `${config.appname}__HandCashProvider_token`
+export const tokenStorageKey = `${config.appname}__HandCashProvider_token`
 
-const sessionStorageKey = `${config.appname}__HandCashProvider_session`
+export const sessionStorageKey = `${config.appname}__HandCashProvider_session`
 
 const paymailStorageKey = `${config.appname}__HandCashProvider_paymail`
 

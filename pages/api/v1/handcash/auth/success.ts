@@ -10,9 +10,13 @@ export default async function handler(
 ) {
   const authToken = String(req.query.authToken);
 
+  console.log("auth token", authToken)
+
   if (!authToken) {
     return res.status(400).json({ message: 'authToken is required' });
   }
+
+  console.log("auth token", authToken)
 
   const { publicProfile } = await new HandCashService(authToken).getProfile();
 
