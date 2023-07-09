@@ -105,7 +105,8 @@ export default function WriteNewArticle() {
             contentType: 'text/markdown',
             metaData: {
               app: 'pow.co',
-              type: 'post'
+              type: 'ord',
+              name: "PoW.co Post"
             }
           })
 
