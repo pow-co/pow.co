@@ -10,7 +10,7 @@ export default async function latest(req: NextApiRequest, res: NextApiResponse) 
   if (!cursor) {
     query = gql`
       query GetLatestFeed {
-        allPosts(first: 16, orderBy: CREATED_AT_DESC) {
+        allPosts(first: 16, orderBy: CREATED_AT_DESC, filter: {bContent: {notStartsWith: "https://twetch."}}) {
           edges {
             node {
               bContent

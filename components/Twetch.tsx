@@ -85,6 +85,7 @@ import PostMedia from './PostMedia';
 import UserIcon from './UserIcon';
 import { useBitcoin } from '../context/BitcoinContext';
 import { useRouter } from 'next/router';
+import LoveOrdButton from './LoveOrdButton';
 
 export default function Twetch({ txid, setIsTwetch, difficulty, tags }: { txid: string, setIsTwetch: Dispatch<SetStateAction<boolean>>, difficulty: number, tags?:[] }) {
     const [loading, setLoading] = useState(false)
@@ -124,6 +125,7 @@ export default function Twetch({ txid, setIsTwetch, difficulty, tags }: { txid: 
             </div>
         )
     }
+
     if(post){
         setIsTwetch(true)
         return (
@@ -213,8 +215,8 @@ export const TwetchCard = (props:any) => {
             <PostMedia files={JSON.parse(props.files)}/>
         </div>
       </div>
-      <div className='flex w-full px-16'>
-        <div className="grow"/>
+      <div className='flex w-full justify-between px-16'>
+        <LoveOrdButton txid={props.transaction} userPaymail={`props.userId@twetch.me`} />
         <div className={`min-w-[111px] justify-center flex group items-center w-fit relative`}>
           <svg
             viewBox="0 0 40 40"
