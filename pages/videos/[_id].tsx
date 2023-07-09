@@ -11,6 +11,7 @@ import useSWR from "swr"
 import { FormattedMessage } from 'react-intl'
 import { useRouter } from 'next/router'
 import { SideChat } from '../../components/SideChat'
+import Meta from '../../components/Meta'
 
 import ReactPlayer from 'react-player'
 
@@ -53,6 +54,7 @@ export default function VideoPage() {
 
   return (
     <>
+        <Meta title='Video | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
         <PanelLayout>
             {relayxAuthenticated ? <div className='grid grid-cols-12 w-full h-full'>
                 <div className='col-span-12 xl:col-span-8 xl:pr-4'>

@@ -14,6 +14,7 @@ import PanelLayout from '../components/PanelLayout'
 import { useState } from 'react'
 
 import TokenMeetProfile from '../components/profile/TokenMeetProfile'
+import Meta from '../components/Meta';
 
 export default function Home() {
 
@@ -58,6 +59,8 @@ export default function Home() {
   // console.log("RANKINGS", rankings)
 
   return (
+    <>
+    <Meta title='The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
       {authenticated && (
       <div className="mt-5 sm:mt-10">
@@ -129,5 +132,6 @@ export default function Home() {
       </Link>
       )}
     </ThreeColumnLayout>
+    </>
   );
 }

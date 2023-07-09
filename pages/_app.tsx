@@ -21,6 +21,7 @@ import { TwetchProvider } from '../context/TwetchContext';
 import 'react-tooltip/dist/react-tooltip.css';
 
 import { useSubdomain } from '../hooks/subdomain'
+import Meta from '../components/Meta';
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -36,12 +37,13 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      <Head>
+      {/* <Meta title='The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' /> */}
+      {/* <Head>
         <title>{config.title}</title>
         <meta name="description" content={config.description} />
         <meta name="keywords" content={config.keywords} />
         <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head>
+      </Head> */}
       <Script
         src="https://one.relayx.io/relayone.js"
         strategy="beforeInteractive"
