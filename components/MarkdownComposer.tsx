@@ -1,5 +1,5 @@
 
-import { useState} from 'react'
+import { useState } from 'react'
 
 import { useRouter } from 'next/router'
 
@@ -14,11 +14,16 @@ import { toast } from 'react-hot-toast';
 import 'react-markdown-editor-lite/lib/index.css';
 
 import {wrapRelayx} from 'stag-relayx'
+
 import TwetchWeb3 from "@twetch/web3"
 
 import BSocial from 'bsocial';
+
 import { signOpReturn } from '../utils/bap';
+
 import { useBitcoin } from '../context/BitcoinContext';
+
+import { buildInscriptionASM } from '../services/inscriptions' 
 
 export const MarkdownLogo = () => {
   return (
@@ -89,9 +94,26 @@ export default function WriteNewArticle() {
       });
       switch (wallet) {
         case "relayx":
+        
+          // Warning: Transferring Or Liquidating Inscriptions Requires Access To Backup Seed Phrase
+          //@ts-ignore
+          const address = await relayone.alpha.run.getOwner();
+
+          const inscriptionOutput = buildInscriptionASM({
+            address,
+            dataB64: Buffer.from(value, 'utf8').toString('base64'),
+            contentType: 'text/markdown',
+            metaData: {
+              app: 'pow.co',
+              type: 'post'
+            }
+          })
+
+          console.log({ inscriptionOutput })
+
           const send = {
-            to: '1AVbmFm55TaioWhgSFSRJHEFqaLtZkT2mJ',
-            amount: 0.00001,
+            to: inscriptionOutput,
+            amount: 1e-6, // Inscribe the contents of your post on a 100 satoshi coin
             currency: 'BSV',
             opReturn
           }
