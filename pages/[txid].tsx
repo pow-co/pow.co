@@ -12,6 +12,7 @@ import CommentComposer from "../components/CommentComposer";
 import { useBitcoin } from "../context/BitcoinContext";
 import ComposerV2 from "../components/ComposerV2";
 import BoostContentCardV2 from "../components/BoostContentCardV2";
+import Meta from "../components/Meta";
 
 export default function DetailPage() {
   const { startTimestamp } = useTuning()
@@ -109,6 +110,7 @@ export default function DetailPage() {
   if (loading){
     return (
       <>
+      <Meta title='Post Detail | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
       <ThreeColumnLayout>
         <div className="mt-5 lg:mt-10">
           <Loader/>

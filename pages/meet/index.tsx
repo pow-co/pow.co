@@ -9,8 +9,7 @@ import Script from 'next/script'
 import { FormattedMessage } from 'react-intl'
 import { useRouter } from 'next/router'
 import { SideChat } from '../../components/SideChat'
-
-
+import Meta from '../../components/Meta'
 
 const events = [
     'cameraError',
@@ -251,6 +250,7 @@ export default function MeetingPage() {
     }
   return (
     <>
+        <Meta title={`Meeting Room | The Proof of Work Cooperative`} description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
         <Script src={'https://8x8.vc/vpaas-magic-cookie-30f799d005ea4007aaa7afbf1a14cdcf/external_api.js'}></Script>
         <PanelLayout>
             {relayxAuthenticated ? 
