@@ -123,7 +123,7 @@ export default function Home() {
                   ))}*/}
                   {days?.slice(0, cursor).map((daysPost: Ranking, index: number) => (
                     <CardErrorBoundary key={daysPost.content_txid}>
-                      <BoostContentCardV2 {...daysPost} />
+                      <BoostContentCardV2 rank={index+1} {...daysPost} />
                     </CardErrorBoundary>
                   ))}
                 </div>
