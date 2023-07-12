@@ -13,6 +13,8 @@ import { useSubdomain } from '../hooks/subdomain'
 import PanelLayout from '../components/PanelLayout'
 import { useState } from 'react'
 
+import InfiniteScroll from 'react-infinite-scroll-component';
+
 import TokenMeetProfile from '../components/profile/TokenMeetProfile'
 import Meta from '../components/Meta';
 
@@ -23,6 +25,10 @@ export default function Home() {
   const { authenticated } = useBitcoin();
   const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
   //const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
+
+  const [cursor, setCursor] = useState<number>(10)
+  const [hasMore, setHasMore] = useState<boolean>(true)
+  const postsPerSlice = 10
 
   const [livestream, setLivestream] = useState()
 
@@ -51,10 +57,24 @@ export default function Home() {
         </PanelLayout>
     );
   }
- 
+
+  async function fetchMore() {
+
+    console.log('FETCH MORE', cursor)
+
+    setCursor(cursor + postsPerSlice) 
+
+  }
 
   const { rankings } = data || [];
-  const { days } = data || [];
+  let { days } = data || [];
+
+  days = [rankings, days].flat()
+
+  if (cursor > days.length && days?.length > 2 && hasMore) {
+    console.log("CURSOR", { cursor, length: days?.length })
+    setHasMore(false)
+  }
 
   // console.log("RANKINGS", rankings)
 
@@ -88,11 +108,27 @@ export default function Home() {
         <div className="mb-[200px] mt-5 lg:mt-10">
           {loading ? <Loader /> : (
             <>
-              {rankings?.map((post: Ranking, index: number) => (
-                <CardErrorBoundary key={post.content_txid}>
-                  <BoostContentCardV2 rank={index + 1} {...post} />
-                </CardErrorBoundary>
-              ))}
+              <InfiniteScroll
+                dataLength={cursor}
+                hasMore={hasMore}
+                next={fetchMore}
+                loader={<div className="mt-5 sm:mt-10"><Loader /></div>}
+              >
+                <div>
+                  {/*{rankings?.slice(0, cursor).map((post: Ranking, index: number) => (
+
+                    <CardErrorBoundary key={post.content_txid}>
+                      <BoostContentCardV2 rank={index + 1} {...post} />
+                    </CardErrorBoundary>
+                  ))}*/}
+                  {days?.slice(0, cursor).map((daysPost: Ranking, index: number) => (
+                    <CardErrorBoundary key={daysPost.content_txid}>
+                      <BoostContentCardV2 {...daysPost} />
+                    </CardErrorBoundary>
+                  ))}
+                </div>
+              </InfiniteScroll>
+              {/*
               {days?.map((daysRankings: Ranking[], index: number) => (
                 <div key={`ranking_days_${index + 1}`}>
                   <div className="flex items-center py-5">
@@ -107,6 +143,7 @@ export default function Home() {
                   ))}
                 </div>
               ))}
+              */}
             </>
           )}
         </div>
