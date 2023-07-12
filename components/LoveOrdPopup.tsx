@@ -10,6 +10,8 @@ interface LoveOrdPopupProps {
     onClose: () => void
 }
 
+export const LoveOrdCollectionTxID = "1a9806fb54eb1cb6dea3bff3721eb90852d505159cb36d7227cc8673835ee62b"
+
 const bitcoinAddressRegex = /^(1|3)[A-HJ-NP-Za-km-z1-9]{25,34}$/;
 
 const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopupProps) => {
@@ -18,7 +20,7 @@ const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopu
     
     const handleChangeOrdinalsAddress = (e:any) => {
         e.preventDefault()
-        setOrdinalsAddress(e.target.default)
+        setOrdinalsAddress(e.target.value)
     }
 
     const handleClose = (e:any) => {
@@ -55,7 +57,7 @@ const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopu
               name: `1LoveOrd_${txid}`,
               subtype: 'collectionItem',
               subTypeData: JSON.stringify({
-                collectionId: ""
+                collectionId: LoveOrdCollectionTxID
               }),
               royalties: JSON.stringify([{
                 type: 'paymail',
@@ -74,22 +76,23 @@ const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopu
           currency: 'BSV',
         })
         outputs.push({
-          to: 'aristotelis@relayx.iio',
+          to: 'aristotelis@relayx.io',
           amount: 0.02,
           currency: 'USD'
         })
   
         try {
-          let resp: any = await relayOne?.send({outputs})
-          toast('Success!', {
-              icon: '✅',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
-            });
-          console.log("1LoveOrd.submit.relayx.response", resp)
+            let resp: any = await relayOne?.send({outputs})
+            console.log("1LoveOrd.submit.relayx.response", resp)
+            onClose()
+            toast('Success!', {
+                icon: '✅',
+                style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+                },
+                });
   
         } catch (error) {
   
