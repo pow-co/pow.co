@@ -19,6 +19,7 @@ import Youtube from "react-youtube"
 import { twetchDetailQuery } from './Twetch';
 import { NFTJig, relayDetailQuery } from './RelayClub';
 import ReactPlayer from 'react-player/lazy';
+import Meta from './Meta';
 
 const Markdown = require('react-remarkable');
 
@@ -340,6 +341,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     };
 
     return (
+        <>
+        {router.pathname !== "/" || router.pathname.startsWith('/topics') && <Meta title='Post Detail | The Proof of Work Cooperative' description={contentText.length > 0 ? contentText : "People Coordinating Using Costly Signals"} image={postMedia.length > 0 ? isTwetch ? `https://dogefiles.twetch.app/${postMedia[0]}`: `data:image/jpeg;base64,${postMedia[0]}` : 'https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557'} />}
         <div onClick={navigate} className='mt-0.5 grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 first:md:rounded-t-lg last:md:rounded-b-lg'>
             <div className='col-span-12 px-4 pt-4'>
                 <p className='text-2xl font-semibold'>
@@ -496,6 +499,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                 })}
             </div>
         </div>
+        </>
     )
 }
 

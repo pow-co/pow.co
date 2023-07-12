@@ -4,6 +4,7 @@ import axios from "axios";
 import PanelLayout from '../components/PanelLayout'
 import NFTCard from "../components/market/NFTCard";
 import ThreeColumnLayout from "../components/ThreeColumnLayout"
+import Meta from "../components/Meta";
 
 export default function Collectibles() {
   console.log("collectibles");
@@ -55,6 +56,8 @@ export default function Collectibles() {
 
 
   return (
+    <>
+    <Meta title='Market | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <PanelLayout>
       <div className="font-bold text-4xl m-4 text-center">
         <h1>The GEIST Catalogue</h1>
@@ -65,6 +68,7 @@ export default function Collectibles() {
         ))}
       </div>
     </PanelLayout>
+    </>
   );
 
 

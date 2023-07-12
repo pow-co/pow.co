@@ -13,7 +13,10 @@ import { useSubdomain } from '../hooks/subdomain'
 import PanelLayout from '../components/PanelLayout'
 import { useState } from 'react'
 
+import InfiniteScroll from 'react-infinite-scroll-component';
+
 import TokenMeetProfile from '../components/profile/TokenMeetProfile'
+import Meta from '../components/Meta';
 
 export default function Home() {
 
@@ -22,6 +25,10 @@ export default function Home() {
   const { authenticated } = useBitcoin();
   const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
   //const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
+
+  const [cursor, setCursor] = useState<number>(10)
+  const [hasMore, setHasMore] = useState<boolean>(true)
+  const postsPerSlice = 10
 
   const [livestream, setLivestream] = useState()
 
@@ -50,14 +57,32 @@ export default function Home() {
         </PanelLayout>
     );
   }
- 
+
+  async function fetchMore() {
+
+    console.log('FETCH MORE', cursor)
+
+    setCursor(cursor + postsPerSlice) 
+
+  }
 
   const { rankings } = data || [];
-  const { days } = data || [];
+  let { days } = data || [];
+
+  let postPerDays = days?.map((rankings: Ranking[]) => rankings.length)
+
+  days = [rankings, days].flat()
+
+  if (cursor > days.length && days?.length > 2 && hasMore) {
+    console.log("CURSOR", { cursor, length: days?.length })
+    setHasMore(false)
+  }
 
   // console.log("RANKINGS", rankings)
 
   return (
+    <>
+    <Meta title='The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
       {authenticated && (
       <div className="mt-5 sm:mt-10">
@@ -85,11 +110,32 @@ export default function Home() {
         <div className="mb-[200px] mt-5 lg:mt-10">
           {loading ? <Loader /> : (
             <>
-              {rankings?.map((post: Ranking, index: number) => (
-                <CardErrorBoundary key={post.content_txid}>
-                  <BoostContentCardV2 rank={index + 1} {...post} />
-                </CardErrorBoundary>
-              ))}
+              <InfiniteScroll
+                dataLength={cursor}
+                hasMore={hasMore}
+                next={fetchMore}
+                loader={<div className="mt-5 sm:mt-10"><Loader /></div>}
+              >
+                <div>
+                  {/*{rankings?.slice(0, cursor).map((post: Ranking, index: number) => (
+
+                    <CardErrorBoundary key={post.content_txid}>
+                      <BoostContentCardV2 rank={index + 1} {...post} />
+                    </CardErrorBoundary>
+                  ))}*/}
+                  {days?.slice(0, cursor).map((daysPost: Ranking, index: number) => (
+                    <CardErrorBoundary key={daysPost.content_txid}>
+                      {(index + 1 > postPerDays[0] && index + 1 === postPerDays[0] + 1) && <div className="flex items-center py-5">
+                        <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
+                        <div className="mx-5 text-lg font-semibold text-gray-600 dark:text-gray-300">{`days before`}</div>
+                        <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
+                      </div>}
+                      <BoostContentCardV2 rank={index+1 <= postPerDays[0] ? index + 1: undefined} {...daysPost} />
+                    </CardErrorBoundary>
+                  ))}
+                </div>
+              </InfiniteScroll>
+              {/*
               {days?.map((daysRankings: Ranking[], index: number) => (
                 <div key={`ranking_days_${index + 1}`}>
                   <div className="flex items-center py-5">
@@ -104,6 +150,7 @@ export default function Home() {
                   ))}
                 </div>
               ))}
+              */}
             </>
           )}
         </div>
@@ -129,5 +176,6 @@ export default function Home() {
       </Link>
       )}
     </ThreeColumnLayout>
+    </>
   );
 }
