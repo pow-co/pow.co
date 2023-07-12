@@ -69,6 +69,8 @@ export default function Home() {
   const { rankings } = data || [];
   let { days } = data || [];
 
+  let postPerDays = days?.map((rankings: Ranking[]) => rankings.length)
+
   days = [rankings, days].flat()
 
   if (cursor > days.length && days?.length > 2 && hasMore) {
@@ -123,7 +125,12 @@ export default function Home() {
                   ))}*/}
                   {days?.slice(0, cursor).map((daysPost: Ranking, index: number) => (
                     <CardErrorBoundary key={daysPost.content_txid}>
-                      <BoostContentCardV2 rank={index+1} {...daysPost} />
+                      {(index + 1 > postPerDays[0] && index + 1 === postPerDays[0] + 1) && <div className="flex items-center py-5">
+                        <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
+                        <div className="mx-5 text-lg font-semibold text-gray-600 dark:text-gray-300">{`days before`}</div>
+                        <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
+                      </div>}
+                      <BoostContentCardV2 rank={index+1 <= postPerDays[0] ? index + 1: undefined} {...daysPost} />
                     </CardErrorBoundary>
                   ))}
                 </div>
