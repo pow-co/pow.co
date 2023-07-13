@@ -24,7 +24,7 @@ function NFTCard({ nft }: { nft: NFT }) {
       />
 
       <div className="p-6">
-        <div className="mb-2 text-xl font-bold text-gray-700 hover:text-blue-300">
+        <div className="mb-2 text-xl font-bold text-gray-700 hover:text-primary-300">
           <a
             href={`https://relayx.com/market/${nft.origin}`}
             target="_blank"
@@ -35,7 +35,7 @@ function NFTCard({ nft }: { nft: NFT }) {
             </h1>
           </a>
         </div>
-        <p className="text-base text-blue-700">{nft.description}</p>
+        <p className="text-base text-primary-700">{nft.description}</p>
       </div>
       <div className="sticky top-[100vh] px-6 py-2">
         <span className="mb-2 mr-2 inline-block rounded-full bg-gray-300 px-3 py-1 text-sm font-semibold text-gray-700">
@@ -44,7 +44,7 @@ function NFTCard({ nft }: { nft: NFT }) {
           {' '}
           {nft.total === undefined ? 'Not issued' : nft.total}
         </span>
-        <span className="mb-2 mr-2 inline-block rounded-full bg-gray-300 px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-blue-300">
+        <span className="mb-2 mr-2 inline-block rounded-full bg-gray-300 px-3 py-1 text-sm font-semibold text-gray-700 hover:bg-primary-300">
           <a href={`https://relayx.com/token/${nft.origin}/owners`} target="_blank" rel="noopener noreferrer">
             Owners:
             {' '}

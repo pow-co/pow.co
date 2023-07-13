@@ -7,7 +7,7 @@ const LogoTitle = () => {
   const { theme } = useTheme()
 
   const { subdomain, settings } = useSubdomain()
-  return <div className='flex items-center'>
+  return <div className='flex justify-center items-center'>
   {/* {theme === "light" ? <img className='w-[180px]' src="/icons/askbitcoin_logo_without_margins_or_background.png" /> : <img className='w-[180px]' src="/icons/askbitcoin_logo_inverted_without_margins_or_background.png"/>} */}
   <Stag size={46} theme={theme || "light"}/>
   {subdomain ? (

@@ -61,7 +61,7 @@ function DefinitionItem(props: any) {
             <p>{definition}</p>
           </div>
         </div>
-        <button type="button" className="col-span-12 font-bold text-primary-500 hover:underline" onClick={() => setExpand(!expand)} onKeyDown={() => setExpand(!expand)}>
+        <button type="button" className="col-span-12 font-bold text-primary-600 dark:text-primary-400 hover:underline" onClick={() => setExpand(!expand)} onKeyDown={() => setExpand(!expand)}>
           Show
           {!expand ? 'More' : 'Less'}
         </button>
@@ -141,7 +141,7 @@ function SearchPage() {
                 target="_blank"
                 rel="noreferrer"
                 href="https://slictionary.com/createword/@/@/@"
-                className="mb-6 mt-12 cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-blue-400 to-blue-500 px-5 py-2 text-center text-sm font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1"
+                className="mb-6 mt-12 cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-primary-400 to-primary-500 px-5 py-2 text-center text-sm font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1"
               >
                 Mint a definition on SLictionary.com
                 <span className="ml-1 font-extrabold">now</span>

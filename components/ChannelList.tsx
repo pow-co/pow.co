@@ -13,7 +13,11 @@ interface Channel {
   last_message_timestamp: Date;
 }
 
-const ChannelList = () => {
+interface ChannelListProps {
+  currentChannel?: string;
+}
+
+const ChannelList = ({ currentChannel }: ChannelListProps) => {
     const router = useRouter()
 
     const [channels, setChannels] = useState<Channel[]>([])
@@ -31,6 +35,7 @@ const ChannelList = () => {
     useEffect(() => {
 
       refreshChannels()
+      console.log(channels)
 
     }, [])
 
@@ -44,7 +49,7 @@ const ChannelList = () => {
           return <></>
         } else {
           return (
-              <div onClick={navigate} className={`cursor-pointer grid grid-cols-12 items-center py-1 ${props.selected ? "bg-blue-100" : "bg-primary-100"} ${props.selected ? "dark:bg-blue-600/20" : "dark:bg-primary-600/20"} hover:bg-primary-200 hover:dark:bg-primary-900/20`}>
+              <div onClick={navigate} className={`cursor-pointer grid grid-cols-12 items-center py-1 ${props.selected ? "bg-primary-200" : "bg-primary-100"} ${props.selected ? "dark:bg-primary-600/50" : "dark:bg-primary-600/20"} hover:bg-primary-200 hover:dark:bg-primary-900/20`}>
                   <div className='col-span-2 flex justify-center'>
                       {/* <UserIcon src={`https://a.relayx.com/u/${props.creator}`} size={36}/> */}
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -118,7 +123,7 @@ const ChannelList = () => {
         </div>
         <div id="scrollable" className='relative overflow-y-auto' style={{height:"calc(100vh - 128px)"}}>
             {channels.map((channel: any)=> {
-                return <ChannelItem key={channel.channel} {...channel} selected={query.channelId === channel.channel}/>
+                return <ChannelItem key={channel.channel} {...channel} selected={currentChannel === channel.channel}/>
             })}
         </div>
     </div>

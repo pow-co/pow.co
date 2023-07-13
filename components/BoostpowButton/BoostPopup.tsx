@@ -527,7 +527,6 @@ const BoostPopup = ({ content, onClose, tagList }: BoostPopupProps) => {
                   <input
                     className='border border-gray-300 dark:border-gray-700 rounded-md text-gray-900 dark:text-white py-1 pl-2.5 text-base'
                     type='number'
-                    autoFocus
                     min={0.00025}
                     step={0.0005}
                     value={difficulty}

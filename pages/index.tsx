@@ -117,20 +117,20 @@ export default function Home() {
                 loader={<div className="mt-5 sm:mt-10"><Loader /></div>}
               >
                 <div>
-                  {/*{rankings?.slice(0, cursor).map((post: Ranking, index: number) => (
+                  {filter !== "last-day" && rankings?.slice(0, cursor).map((post: Ranking, index: number) => (
 
                     <CardErrorBoundary key={post.content_txid}>
                       <BoostContentCardV2 rank={index + 1} {...post} />
                     </CardErrorBoundary>
-                  ))}*/}
-                  {days?.slice(0, cursor).map((daysPost: Ranking, index: number) => (
+                  ))}
+                  {filter === "last-day" && days?.slice(0, cursor).map((daysPost: Ranking, index: number) => (
                     <CardErrorBoundary key={daysPost.content_txid}>
                       {(index + 1 > postPerDays[0] && index + 1 === postPerDays[0] + 1) && <div className="flex items-center py-5">
                         <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
                         <div className="mx-5 text-lg font-semibold text-gray-600 dark:text-gray-300">{`days before`}</div>
                         <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
                       </div>}
-                      <BoostContentCardV2 rank={index+1 <= postPerDays[0] ? index + 1: undefined} {...daysPost} />
+                      <BoostContentCardV2 rank={(index+1 <= postPerDays[0] ? index + 1: undefined)} {...daysPost} />
                     </CardErrorBoundary>
                   ))}
                 </div>
@@ -157,7 +157,7 @@ export default function Home() {
       </div>
       {authenticated && (
       <Link href="/compose">
-        <div className=" fixed bottom-[73px] right-[14px] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-500 lg:hidden">
+        <div className=" fixed bottom-[73px] right-[14px] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-primary-400 to-primary-500 lg:hidden">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6 text-white"

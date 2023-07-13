@@ -360,7 +360,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
     const { getMarkdown } = useHelpers()
     const handleClick = useCallback(()=> submitPost(getMarkdown()), [getMarkdown])
     return (
-      <button onClick={handleClick} className='flex text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-blue-400 to-blue-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>
+      <button onClick={handleClick} className='flex text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>
         Post $0.00
       </button>
     )

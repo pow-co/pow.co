@@ -26,6 +26,8 @@ const Markdown = require('react-remarkable');
 const RemarkableOptions = {
     breaks: true,
     html: true,
+    linkify: true,
+    linkTarget: "_blank",
     typographer: true,
     /* highlight: function (str: any, lang: any) {
         if (lang && hljs.getLanguage(lang)) {
@@ -45,6 +47,23 @@ const RemarkableOptions = {
 export const BFILE_REGEX = /b:\/\/([a-fA-F0-9]{64})/g;
 
 const youtubeLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+
+function parseURLsFromMarkdown(urls:string[]) {
+    const regex = /(.*?)\]\((.*?)\)/; // Regular expression to match the Markdown link syntax
+    const parsedUrls: string[] = []
+    for (const url of urls){
+        const match = regex.exec(url);
+      
+        if (match && match.length >= 3) {
+          parsedUrls.push(match[2]);
+        } else {
+            parsedUrls.push(url)
+        }
+      
+        
+    }
+    return parsedUrls
+  }
 
 function extractUrls(text: string) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -139,7 +158,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const [youtubeId, setYoutubeId] = useState('')
     const [playerURLs, setPlayerURLs] = useState<string[]>([])
     const [jig, setJig] = useState(null)
-    const existingTags = useMemo(() => tags.map((tag:any) => tag.utf8) ,[tags])
+    const existingTags = useMemo(() => tags?.map((tag:any) => tag.utf8) ,[tags])
 
     useEffect(() => {
         getData().then((res) => {
@@ -154,23 +173,28 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     },[])
     const playerKeys = ["youtube", "youtu", "soundcloud", "facebook", "vimeo", "wistia", "mixcloud", "dailymotion", "twitch"]
     useEffect(() => {
-        let urls : string[] = extractUrls(contentText) || [];
-        urls = normalizeUrls(urls)
-        urls.forEach(url => {
-          if (playerKeys.some(key => url.includes(key))) {
-            setPlayerURLs(prev => [...prev, url]);
-          } else if (url.includes("twitter")) {
-            setTweetId(url.split('/').pop() || '');
-          } else {
-            fetchPreview(url).then((res) => {
-              setLinkUnfurls((prev: any) => [...prev, res]);
+        if (contentText){
+            let urls : string[] = extractUrls(contentText) || [];
+            urls = parseURLsFromMarkdown(urls)
+            urls = normalizeUrls(urls)
+            const urlSet = [...new Set(urls)]
+            urlSet.forEach(url => {
+              if (playerKeys.some(key => url.includes(key))) {
+                setPlayerURLs(prev => [...prev, url]);
+              } else if (url.includes("twitter")) {
+                setTweetId(url.split('/').pop() || '');
+              } else {
+                fetchPreview(url).then((res) => {
+                  setLinkUnfurls((prev: any) => [...prev, res]);
+                });
+              }
             });
-          }
-        });
+
+        }
       }, [contentText]);
 
     const parseContent = async (content: any) => {
-        //console.log(content)
+        console.log(content)
         
         if (content.bmap){
             if (content.bmap.B && content.bmap.MAP){
@@ -238,6 +262,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                 }
 
                 if (content.bmap.ORD){
+                    console.log("HERE", content)
+                    setTimestamp(moment(content.createdAt).unix())
                     content.bmap.ORD.map((ordi: any) => {
                         //console.log(ordi)
                         if (ordi.contentType.includes("image")){
@@ -275,8 +301,12 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                     });
                     break;
                 case content.content_type?.includes("text"):
-                    setContentText(content.content_text)
-                    break;
+                    if(!content.content_text){
+                        break
+                    } else {
+                        setContentText(content.content_text)
+                        break;
+                    }
                 case content.content_type?.includes("image"):
                     setPostMedia((prev: any) => {
                         if (!prev.includes(content.content_text)) {
@@ -352,8 +382,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                     <span className="ml-1">⛏️</span>
                 </p>
             </div>
-            {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-500 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
-            {channel.length > 0 && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in channel <span className="text-primary-500 hover:underline"><Link href={`/chat/${channel}`}>{channel}</Link></span></p>}
+            {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-600 dark:text-primary-400 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
+            {channel.length > 0 && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in channel <span className="text-primary-600 dark:text-primary-400 hover:underline"><Link href={`/chat/${channel}`}>{channel}</Link></span></p>}
             <div className='col-span-12 max-w-screen mb-0.5 grid cursor-pointer grid-cols-12 items-start px-4 pt-4'>
                 <div className='col-span-1 flex h-full w-full flex-col justify-center'>
                     {paymail && (
@@ -407,12 +437,12 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                             </a>
                         </Tooltip>
                     </div>
-                    <article className='prose break-words dark:prose-invert prose-a:text-blue-600'>
+                    {contentText && <article onClick={(e:any) => e.stopPropagation()} className='prose break-words dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-pirmary-400'>
                         <Markdown 
                             options={RemarkableOptions} 
                             source={contentText.replace(BFILE_REGEX, 'https://dogefiles.twetch.app/$1')} 
                         />
-                    </article>
+                    </article>}
                     {postMedia.length > 0 && <div className='grid grid-gap-0.5 gap-0.5 mt-2 rounded-xl select-none overflow-hidden' style={{  gridTemplateColumns: `repeat(${postMedia.length > 1 ? "2": "1"}, 1fr)`}}>
                         {postMedia.map((media: any, index: number) => (
                             <div id={`media_${content_txid}_${index.toString()}`} className='relative rounded-xl overflow-hidden'>
