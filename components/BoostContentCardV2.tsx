@@ -46,6 +46,23 @@ export const BFILE_REGEX = /b:\/\/([a-fA-F0-9]{64})/g;
 
 const youtubeLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
 
+function parseURLsFromMarkdown(urls:string[]) {
+    const regex = /(.*?)\]\((.*?)\)/; // Regular expression to match the Markdown link syntax
+    const parsedUrls: string[] = []
+    for (const url of urls){
+        const match = regex.exec(url);
+      
+        if (match && match.length >= 3) {
+          parsedUrls.push(match[2]);
+        } else {
+            parsedUrls.push(url)
+        }
+      
+        
+    }
+    return parsedUrls
+  }
+
 function extractUrls(text: string) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.match(urlRegex);
@@ -155,6 +172,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const playerKeys = ["youtube", "youtu", "soundcloud", "facebook", "vimeo", "wistia", "mixcloud", "dailymotion", "twitch"]
     useEffect(() => {
         let urls : string[] = extractUrls(contentText) || [];
+        urls = parseURLsFromMarkdown(urls)
+        console.log("parsed URLS", urls)
         urls = normalizeUrls(urls)
         urls.forEach(url => {
           if (playerKeys.some(key => url.includes(key))) {
