@@ -177,7 +177,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
         urls = parseURLsFromMarkdown(urls)
         console.log("parsed URLS", urls)
         urls = normalizeUrls(urls)
-        urls.forEach(url => {
+        const urlSet = [...new Set(urls)]
+        urlSet.forEach(url => {
           if (playerKeys.some(key => url.includes(key))) {
             setPlayerURLs(prev => [...prev, url]);
           } else if (url.includes("twitter")) {
