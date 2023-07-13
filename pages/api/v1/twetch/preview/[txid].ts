@@ -20,7 +20,7 @@ export default async function handler(
     const data = response.data;
     //const binaryData = Buffer.from(data, 'binary')
     //const base64Data = binaryData.toString("base64")
-    res.status(200).json(dataUrl);
+    res.status(200).json(base64data);
     
   } catch (error) {
     // Handle any other errors that may occur

@@ -69,10 +69,11 @@ const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopu
         })
   
         console.log({ inscriptionOutput })
+
         let outputs = []
         outputs.push({
           to: inscriptionOutput,
-          amount: 1e-6, // Inscribe the contents of your post on a 100 satoshi coin
+          amount: 1e-8, 
           currency: 'BSV',
         })
         outputs.push({
@@ -130,7 +131,7 @@ const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopu
                         </p>
                     </div>  
                     <div className='flex flex-col w-full justify-center'>
-                        <img className='rounded-lg' src={twetchPreview} alt="Twetch Preview"/>
+                        <img className='rounded-lg' src={`data:image/png;base64,${twetchPreview}`} alt="Twetch Preview"/>
                         <div className='p-3 flex flex-col w-full justify-center'>
                             <input
                                 className='px-3 py-1 rounded focus:outline-primary-500' 
@@ -140,7 +141,7 @@ const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopu
                                 placeholder="Paste your 1SatOrdinals address here" 
                             />
                             <p className='mt-1 text-center text-xs'>* If you leave this blank, the inscription will be minted to your RelayX Run address. (RelayX Ordinals Wallet interface 🔜)</p>
-                            <button onClick={handleMintLoveOrd} className='mx-auto mt-3 flex text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>Mint $0.02</button>
+                            <button onClick={handleMintLoveOrd} className='mx-auto mt-3 flex text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>Mint $0.05</button>
                         </div>
                     </div>  
                 </div>
