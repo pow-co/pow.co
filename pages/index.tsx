@@ -117,20 +117,20 @@ export default function Home() {
                 loader={<div className="mt-5 sm:mt-10"><Loader /></div>}
               >
                 <div>
-                  {/*{rankings?.slice(0, cursor).map((post: Ranking, index: number) => (
+                  {filter !== "last-day" && rankings?.slice(0, cursor).map((post: Ranking, index: number) => (
 
                     <CardErrorBoundary key={post.content_txid}>
                       <BoostContentCardV2 rank={index + 1} {...post} />
                     </CardErrorBoundary>
-                  ))}*/}
-                  {days?.slice(0, cursor).map((daysPost: Ranking, index: number) => (
+                  ))}
+                  {filter === "last-day" && days?.slice(0, cursor).map((daysPost: Ranking, index: number) => (
                     <CardErrorBoundary key={daysPost.content_txid}>
                       {(index + 1 > postPerDays[0] && index + 1 === postPerDays[0] + 1) && <div className="flex items-center py-5">
                         <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
                         <div className="mx-5 text-lg font-semibold text-gray-600 dark:text-gray-300">{`days before`}</div>
                         <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
                       </div>}
-                      <BoostContentCardV2 rank={index+1 <= postPerDays[0] ? index + 1: undefined} {...daysPost} />
+                      <BoostContentCardV2 rank={(index+1 <= postPerDays[0] ? index + 1: undefined)} {...daysPost} />
                     </CardErrorBoundary>
                   ))}
                 </div>

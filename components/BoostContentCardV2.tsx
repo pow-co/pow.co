@@ -158,7 +158,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const [youtubeId, setYoutubeId] = useState('')
     const [playerURLs, setPlayerURLs] = useState<string[]>([])
     const [jig, setJig] = useState(null)
-    const existingTags = useMemo(() => tags.map((tag:any) => tag.utf8) ,[tags])
+    const existingTags = useMemo(() => tags?.map((tag:any) => tag.utf8) ,[tags])
 
     useEffect(() => {
         getData().then((res) => {
