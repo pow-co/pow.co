@@ -26,6 +26,8 @@ const Markdown = require('react-remarkable');
 const RemarkableOptions = {
     breaks: true,
     html: true,
+    linkify: true,
+    linkTarget: "_blank",
     typographer: true,
     /* highlight: function (str: any, lang: any) {
         if (lang && hljs.getLanguage(lang)) {
@@ -426,7 +428,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                             </a>
                         </Tooltip>
                     </div>
-                    <article className='prose break-words dark:prose-invert prose-a:text-blue-600'>
+                    <article onClick={(e:any) => e.stopPropagation()} className='prose break-words dark:prose-invert prose-a:text-blue-600'>
                         <Markdown 
                             options={RemarkableOptions} 
                             source={contentText.replace(BFILE_REGEX, 'https://dogefiles.twetch.app/$1')} 
