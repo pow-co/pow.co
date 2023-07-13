@@ -69,7 +69,7 @@ const SidebarTopics = () => {
           {/* <FormattedMessage id="Tuning Panel"/> */}
           Trending Topics
         </p>
-        <Link href="/topics" className='text-blue-600 font-semibold text-sm hover:underline'>View All</Link>
+        <Link href="/topics" className='text-primary-600 dark:text-primary-400 font-semibold text-sm hover:underline'>View All</Link>
       </div>
       <div className='flex flex-col'>
         {loading ? 

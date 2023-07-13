@@ -83,7 +83,7 @@ const Dashboard = ({
           </div>
         )}
         <div className="mt-4">
-          <button className='flex text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-blue-400 to-blue-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>
+          <button className='flex text-sm leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>
             <a
               href={`https://relayx.com/market/${episode.token_origin}`}
               rel="noreferrer"

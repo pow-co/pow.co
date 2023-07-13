@@ -332,7 +332,7 @@ export const RelayClubCard = (props: any) => {
                     {props.jig.order.status === "sold" ? (
                       <div className="px-5 py-2 bg-red-600 rounded-2xl text-white">Sold</div>
                     ):(
-                      <div onClick={handleBuy} className="px-5 py-2 bg-blue-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
+                      <div onClick={handleBuy} className="px-5 py-2 bg-primary-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
                     )}
                   </div>}
                 </div>
@@ -475,7 +475,7 @@ export const NFTJig = (props: any) => {
           {props.jig.order.status === "sold" ? (
             <div className="px-5 py-2 bg-red-600 rounded-2xl text-white">Sold</div>
           ):(
-            <div onClick={handleBuy} className="px-5 py-2 bg-blue-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
+            <div onClick={handleBuy} className="px-5 py-2 bg-primary-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
           )}
         </div>}
       </div>

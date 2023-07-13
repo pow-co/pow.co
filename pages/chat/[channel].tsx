@@ -108,7 +108,7 @@ const Chat = () => {
       </div>
       <div className='grid grid-cols-12 h-full overflow-hidden'>
         <div className={`${query.channel ? "hidden sm:block sm:col-span-4" : "col-span-12"}  bg-primary-100 dark:bg-primary-900/20`}>
-          <ChannelList/>
+          <ChannelList currentChannel={query.channel?.toString()}/>
         </div>
         <div className={`${query.channel ? "col-span-12 sm:col-span-8" : "hidden"} bg-primary-300 dark:bg-primary-700/20`} >
           <div className='sticky w-full  items-center flex h-16 z-10 p-4 bg-primary-300 dark:bg-primary-800/20'>

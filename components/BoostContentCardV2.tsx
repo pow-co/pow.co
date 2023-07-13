@@ -175,7 +175,6 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     useEffect(() => {
         let urls : string[] = extractUrls(contentText) || [];
         urls = parseURLsFromMarkdown(urls)
-        console.log("parsed URLS", urls)
         urls = normalizeUrls(urls)
         const urlSet = [...new Set(urls)]
         urlSet.forEach(url => {
@@ -374,8 +373,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                     <span className="ml-1">⛏️</span>
                 </p>
             </div>
-            {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-500 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
-            {channel.length > 0 && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in channel <span className="text-primary-500 hover:underline"><Link href={`/chat/${channel}`}>{channel}</Link></span></p>}
+            {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-600 dark:text-primary-400 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
+            {channel.length > 0 && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in channel <span className="text-primary-600 dark:text-primary-400 hover:underline"><Link href={`/chat/${channel}`}>{channel}</Link></span></p>}
             <div className='col-span-12 max-w-screen mb-0.5 grid cursor-pointer grid-cols-12 items-start px-4 pt-4'>
                 <div className='col-span-1 flex h-full w-full flex-col justify-center'>
                     {paymail && (
@@ -429,7 +428,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                             </a>
                         </Tooltip>
                     </div>
-                    <article onClick={(e:any) => e.stopPropagation()} className='prose break-words dark:prose-invert prose-a:text-blue-600'>
+                    <article onClick={(e:any) => e.stopPropagation()} className='prose break-words dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-pirmary-400'>
                         <Markdown 
                             options={RemarkableOptions} 
                             source={contentText.replace(BFILE_REGEX, 'https://dogefiles.twetch.app/$1')} 
