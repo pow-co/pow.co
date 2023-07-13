@@ -259,6 +259,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                 }
 
                 if (content.bmap.ORD){
+                    console.log("HERE", content)
+                    setTimestamp(moment(content.createdAt).unix())
                     content.bmap.ORD.map((ordi: any) => {
                         //console.log(ordi)
                         if (ordi.contentType.includes("image")){
