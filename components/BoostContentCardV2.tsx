@@ -173,25 +173,28 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     },[])
     const playerKeys = ["youtube", "youtu", "soundcloud", "facebook", "vimeo", "wistia", "mixcloud", "dailymotion", "twitch"]
     useEffect(() => {
-        let urls : string[] = extractUrls(contentText) || [];
-        urls = parseURLsFromMarkdown(urls)
-        urls = normalizeUrls(urls)
-        const urlSet = [...new Set(urls)]
-        urlSet.forEach(url => {
-          if (playerKeys.some(key => url.includes(key))) {
-            setPlayerURLs(prev => [...prev, url]);
-          } else if (url.includes("twitter")) {
-            setTweetId(url.split('/').pop() || '');
-          } else {
-            fetchPreview(url).then((res) => {
-              setLinkUnfurls((prev: any) => [...prev, res]);
+        if (contentText){
+            let urls : string[] = extractUrls(contentText) || [];
+            urls = parseURLsFromMarkdown(urls)
+            urls = normalizeUrls(urls)
+            const urlSet = [...new Set(urls)]
+            urlSet.forEach(url => {
+              if (playerKeys.some(key => url.includes(key))) {
+                setPlayerURLs(prev => [...prev, url]);
+              } else if (url.includes("twitter")) {
+                setTweetId(url.split('/').pop() || '');
+              } else {
+                fetchPreview(url).then((res) => {
+                  setLinkUnfurls((prev: any) => [...prev, res]);
+                });
+              }
             });
-          }
-        });
+
+        }
       }, [contentText]);
 
     const parseContent = async (content: any) => {
-        //console.log(content)
+        console.log(content)
         
         if (content.bmap){
             if (content.bmap.B && content.bmap.MAP){
@@ -298,8 +301,12 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                     });
                     break;
                 case content.content_type?.includes("text"):
-                    setContentText(content.content_text)
-                    break;
+                    if(!content.content_text){
+                        break
+                    } else {
+                        setContentText(content.content_text)
+                        break;
+                    }
                 case content.content_type?.includes("image"):
                     setPostMedia((prev: any) => {
                         if (!prev.includes(content.content_text)) {
@@ -430,12 +437,12 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                             </a>
                         </Tooltip>
                     </div>
-                    <article onClick={(e:any) => e.stopPropagation()} className='prose break-words dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-pirmary-400'>
+                    {contentText && <article onClick={(e:any) => e.stopPropagation()} className='prose break-words dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-pirmary-400'>
                         <Markdown 
                             options={RemarkableOptions} 
                             source={contentText.replace(BFILE_REGEX, 'https://dogefiles.twetch.app/$1')} 
                         />
-                    </article>
+                    </article>}
                     {postMedia.length > 0 && <div className='grid grid-gap-0.5 gap-0.5 mt-2 rounded-xl select-none overflow-hidden' style={{  gridTemplateColumns: `repeat(${postMedia.length > 1 ? "2": "1"}, 1fr)`}}>
                         {postMedia.map((media: any, index: number) => (
                             <div id={`media_${content_txid}_${index.toString()}`} className='relative rounded-xl overflow-hidden'>
