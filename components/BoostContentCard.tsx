@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { BoostButton } from 'boostpow-button';
+import BoostButton  from './BoostpowButton/BoostButton';
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
@@ -242,10 +242,10 @@ function BoostContentCard({
               content.content_text ? <img src={`data:image/jpeg;base64,${content.content_text}`} className="h-full w-full rounded-lg" /> : <PostMedia files={[content.txid]} />
             )}
             {content.content_type?.match('text/plain') && (
-                <div className="mt-1 whitespace-pre-line break-words text-base leading-6 text-gray-900 dark:text-white"><Linkify options={{ target: '_blank', className: 'linkify-hover text-blue-500 hover:underline' }}>{content_text}</Linkify></div>
+                <div className="mt-1 whitespace-pre-line break-words text-base leading-6 text-gray-900 dark:text-white"><Linkify options={{ target: '_blank', className: 'linkify-hover text-primary-600 dark:text-primary-400 hover:underline' }}>{content_text}</Linkify></div>
             )}
             {content.content_type?.match('markdown') && (
-                <article className="prose break-words dark:prose-invert prose-a:text-blue-600">
+                <article className="prose break-words dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-primary-400">
                     <Markdown options={RemarkableOptions} source={content.content_text!.replace(BFILE_REGEX, 'https://dogefiles.twetch.app/$1')} />
                 </article>
             )}
@@ -279,7 +279,7 @@ function BoostContentCard({
           <span className="ml-1">⛏️</span>
         </p>
       </div>
-        {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-500 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
+        {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-600 dark:text-primary-400 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
         <Twetch setIsTwetch={setIsTwetch} txid={content.txid} difficulty={difficulty || 0} tags={tags} />
         <RelayClub setIsClub={setIsClub} txid={content.txid} difficulty={difficulty || 0} tags={tags} />
         {!(isTwetch || isClub) && (
@@ -359,15 +359,8 @@ function BoostContentCard({
                         </div>
                         <div className="boost-button-info-text" data-tooltip-offset={20}>
                         <BoostButton 
-                          wallet={wallet}
                           content={content_txid}
                           difficulty={computedDiff || 0}
-                            // @ts-ignore
-                          theme={theme.theme}
-                          showDifficulty
-                          onSending={handleBoostLoading}
-                          onError={handleBoostError}
-                          onSuccess={handleBoostSuccess}
                         />
                         </div>
                         <Tooltip

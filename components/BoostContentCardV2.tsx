@@ -6,7 +6,7 @@ import moment from 'moment';
 import { Tooltip } from 'react-tooltip';
 import { useBitcoin } from '../context/BitcoinContext';
 import { toast } from 'react-hot-toast'
-import { BoostButton } from 'boostpow-button';
+import BoostButton from './BoostpowButton/BoostButton';
 import axios from 'axios';
 import { BASE } from '../hooks/useAPI';
 import { useTheme } from 'next-themes';
@@ -19,12 +19,15 @@ import Youtube from "react-youtube"
 import { twetchDetailQuery } from './Twetch';
 import { NFTJig, relayDetailQuery } from './RelayClub';
 import ReactPlayer from 'react-player/lazy';
+import Meta from './Meta';
 
 const Markdown = require('react-remarkable');
 
 const RemarkableOptions = {
     breaks: true,
     html: true,
+    linkify: true,
+    linkTarget: "_blank",
     typographer: true,
     /* highlight: function (str: any, lang: any) {
         if (lang && hljs.getLanguage(lang)) {
@@ -44,6 +47,23 @@ const RemarkableOptions = {
 export const BFILE_REGEX = /b:\/\/([a-fA-F0-9]{64})/g;
 
 const youtubeLinkRegex = /^(?:https?:\/\/)?(?:www\.)?(?:m\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+
+function parseURLsFromMarkdown(urls:string[]) {
+    const regex = /(.*?)\]\((.*?)\)/; // Regular expression to match the Markdown link syntax
+    const parsedUrls: string[] = []
+    for (const url of urls){
+        const match = regex.exec(url);
+      
+        if (match && match.length >= 3) {
+          parsedUrls.push(match[2]);
+        } else {
+            parsedUrls.push(url)
+        }
+      
+        
+    }
+    return parsedUrls
+  }
 
 function extractUrls(text: string) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -85,9 +105,10 @@ export interface Ranking {
     difficulty?: number;
     createdAt?: Date;
     rank?: number;
+    defaultTag?: string;
   }
 
-const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
+const BoostContentCardV2 = ({ content_txid, difficulty, rank, defaultTag }: Ranking) => {
     const router = useRouter()
     const { wallet } = useBitcoin()
     const theme = useTheme()
@@ -138,6 +159,11 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const [youtubeId, setYoutubeId] = useState('')
     const [playerURLs, setPlayerURLs] = useState<string[]>([])
     const [jig, setJig] = useState(null)
+    const existingTags = useMemo(() => tags?.map((tag:any) => {
+        if (tag.hex !== "0000000000000000000000000000000000000000" && tag.utf8.length) {
+            return tag.utf8
+        }
+    }).filter(tag => tag !== undefined) ,[tags])
 
     useEffect(() => {
         getData().then((res) => {
@@ -152,23 +178,28 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     },[])
     const playerKeys = ["youtube", "youtu", "soundcloud", "facebook", "vimeo", "wistia", "mixcloud", "dailymotion", "twitch"]
     useEffect(() => {
-        let urls : string[] = extractUrls(contentText) || [];
-        urls = normalizeUrls(urls)
-        urls.forEach(url => {
-          if (playerKeys.some(key => url.includes(key))) {
-            setPlayerURLs(prev => [...prev, url]);
-          } else if (url.includes("twitter")) {
-            setTweetId(url.split('/').pop() || '');
-          } else {
-            fetchPreview(url).then((res) => {
-              setLinkUnfurls((prev: any) => [...prev, res]);
+        if (contentText){
+            let urls : string[] = extractUrls(contentText) || [];
+            urls = parseURLsFromMarkdown(urls)
+            urls = normalizeUrls(urls)
+            const urlSet = [...new Set(urls)]
+            urlSet.forEach(url => {
+              if (playerKeys.some(key => url.includes(key))) {
+                setPlayerURLs(prev => [...prev, url]);
+              } else if (url.includes("twitter")) {
+                setTweetId(url.split('/').pop() || '');
+              } else {
+                fetchPreview(url).then((res) => {
+                  setLinkUnfurls((prev: any) => [...prev, res]);
+                });
+              }
             });
-          }
-        });
+
+        }
       }, [contentText]);
 
     const parseContent = async (content: any) => {
-        //console.log(content)
+        console.log(content)
         
         if (content.bmap){
             if (content.bmap.B && content.bmap.MAP){
@@ -236,6 +267,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                 }
 
                 if (content.bmap.ORD){
+                    console.log("HERE", content)
+                    setTimestamp(moment(content.createdAt).unix())
                     content.bmap.ORD.map((ordi: any) => {
                         //console.log(ordi)
                         if (ordi.contentType.includes("image")){
@@ -273,8 +306,12 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                     });
                     break;
                 case content.content_type?.includes("text"):
-                    setContentText(content.content_text)
-                    break;
+                    if(!content.content_text){
+                        break
+                    } else {
+                        setContentText(content.content_text)
+                        break;
+                    }
                 case content.content_type?.includes("image"):
                     setPostMedia((prev: any) => {
                         if (!prev.includes(content.content_text)) {
@@ -339,6 +376,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     };
 
     return (
+        <>
+        {router.pathname !== "/" || router.pathname.startsWith('/topics') && <Meta title='Post Detail | The Proof of Work Cooperative' description={contentText.length > 0 ? contentText : "People Coordinating Using Costly Signals"} image={postMedia.length > 0 ? isTwetch ? `https://dogefiles.twetch.app/${postMedia[0]}`: `data:image/jpeg;base64,${postMedia[0]}` : 'https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557'} />}
         <div onClick={navigate} className='mt-0.5 grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 first:md:rounded-t-lg last:md:rounded-b-lg'>
             <div className='col-span-12 px-4 pt-4'>
                 <p className='text-2xl font-semibold'>
@@ -348,8 +387,8 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                     <span className="ml-1">⛏️</span>
                 </p>
             </div>
-            {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-500 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
-            {channel.length > 0 && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in channel <span className="text-primary-500 hover:underline"><Link href={`/chat/${channel}`}>{channel}</Link></span></p>}
+            {inReplyTo.length > 0 && router.pathname === '/' && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in reply to <span className="text-xs text-primary-600 dark:text-primary-400 hover:underline"><Link href={`/${inReplyTo}`}>{inReplyTo}</Link></span></p>}
+            {channel.length > 0 && <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">in channel <span className="text-primary-600 dark:text-primary-400 hover:underline"><Link href={`/chat/${channel}`}>{channel}</Link></span></p>}
             <div className='col-span-12 max-w-screen mb-0.5 grid cursor-pointer grid-cols-12 items-start px-4 pt-4'>
                 <div className='col-span-1 flex h-full w-full flex-col justify-center'>
                     {paymail && (
@@ -403,12 +442,12 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                             </a>
                         </Tooltip>
                     </div>
-                    <article className='prose break-words dark:prose-invert prose-a:text-blue-600'>
+                    {contentText && <article onClick={(e:any) => e.stopPropagation()} className='prose break-words dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-pirmary-400'>
                         <Markdown 
                             options={RemarkableOptions} 
                             source={contentText.replace(BFILE_REGEX, 'https://dogefiles.twetch.app/$1')} 
                         />
-                    </article>
+                    </article>}
                     {postMedia.length > 0 && <div className='grid grid-gap-0.5 gap-0.5 mt-2 rounded-xl select-none overflow-hidden' style={{  gridTemplateColumns: `repeat(${postMedia.length > 1 ? "2": "1"}, 1fr)`}}>
                         {postMedia.map((media: any, index: number) => (
                             <div id={`media_${content_txid}_${index.toString()}`} className='relative rounded-xl overflow-hidden'>
@@ -465,15 +504,10 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                         </div>
                         <div className="boost-button-info-text" data-tooltip-offset={20}>
                             <BoostButton 
-                            wallet={wallet}
                             content={content_txid}
                             difficulty={computedDiff || 0}
-                                // @ts-ignore
-                            theme={theme.theme}
-                            showDifficulty
-                            onSending={handleBoostLoading}
-                            onError={handleBoostError}
-                            onSuccess={handleBoostSuccess}
+                            existingTags={existingTags}
+                            defaultTag={defaultTag}
                             />
                         </div>
                         <Tooltip
@@ -491,7 +525,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
             </div>
             <div className="col-span-12 flex w-full flex-wrap overflow-hidden px-4 pb-4">
                 {tags?.map((tag:any, index: number) => {
-                if (tag.utf8.length > 0) {
+                if (tag.hex !== "0000000000000000000000000000000000000000" && tag.utf8.length > 0) {
                     return (
                         <Link key={`tag_${content_txid}_${index}`} onClick={(e:any) => e.stopPropagation()} href={`/topics/${tag.utf8}`}>
                             <div className="mr-2 mt-2 flex items-center rounded-full bg-primary-500 p-2 text-sm font-bold text-white">{tag.utf8} <span className="ml-2">⛏️ {Math.round(tag.difficulty)}</span></div>
@@ -501,6 +535,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                 })}
             </div>
         </div>
+        </>
     )
 }
 
@@ -513,9 +548,9 @@ const handleBoostLoading = () => {
         color: '#fff',
       },
     });
-  };
+};
 
-  const handleBoostSuccess = () => {
+const handleBoostSuccess = () => {
     toast('Success!', {
       icon: '✅',
       style: {
@@ -524,9 +559,9 @@ const handleBoostLoading = () => {
         color: '#fff',
       },
     });
-  };
+};
 
-  const handleBoostError = () => {
+const handleBoostError = () => {
     toast('Error!', {
       icon: '🐛',
       style: {
@@ -535,6 +570,6 @@ const handleBoostLoading = () => {
         color: '#fff',
       },
     });
-  };
+};
 
 export default BoostContentCardV2

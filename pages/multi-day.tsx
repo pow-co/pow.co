@@ -8,6 +8,7 @@ import FindOrCreate from '../components/FindOrCreate';
 import { useBitcoin } from '../context/BitcoinContext';
 import CardErrorBoundary from '../components/CardErrorBoundary';
 import BoostContentCardV2 from '../components/BoostContentCardV2';
+import Meta from '../components/Meta';
 
 export default function Home() {
   const { filter } = useTuning();
@@ -29,6 +30,8 @@ export default function Home() {
   // console.log("RANKINGS", rankings)
 
   return (
+    <>
+    <Meta title='Multi-day Feed | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
       {authenticated && (
       <div className="mt-5 sm:mt-10">
@@ -81,7 +84,7 @@ export default function Home() {
       </div>
       {authenticated && (
       <Link href="/compose">
-        <div className=" fixed bottom-[73px] right-[14px] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-500 lg:hidden">
+        <div className=" fixed bottom-[73px] right-[14px] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-primary-400 to-primary-500 lg:hidden">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6 text-white"
@@ -100,5 +103,6 @@ export default function Home() {
       </Link>
       )}
     </ThreeColumnLayout>
+    </>
   );
 }

@@ -4,7 +4,7 @@ import moment from 'moment';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import Link from 'next/link';
-import { BoostButton } from 'boostpow-button';
+import BoostButton  from './BoostpowButton/BoostButton';
 const graphqlAPI = "https://graphql.relayx.com";
 
 export const relayDetailQuery = async (txid: string | undefined) => {
@@ -332,7 +332,7 @@ export const RelayClubCard = (props: any) => {
                     {props.jig.order.status === "sold" ? (
                       <div className="px-5 py-2 bg-red-600 rounded-2xl text-white">Sold</div>
                     ):(
-                      <div onClick={handleBuy} className="px-5 py-2 bg-blue-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
+                      <div onClick={handleBuy} className="px-5 py-2 bg-primary-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
                     )}
                   </div>}
                 </div>
@@ -358,15 +358,8 @@ export const RelayClubCard = (props: any) => {
               </p>
             </div>
             <BoostButton
-                wallet={wallet}
                 content={props.txid}
                 difficulty={props.difficulty}
-                //@ts-ignore
-                theme={theme.theme}
-                showDifficulty
-                onSending={handleBoostLoading}
-                onError={handleBoostError}
-                onSuccess={handleBoostSuccess}
             />
           </div>
           <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>
@@ -482,7 +475,7 @@ export const NFTJig = (props: any) => {
           {props.jig.order.status === "sold" ? (
             <div className="px-5 py-2 bg-red-600 rounded-2xl text-white">Sold</div>
           ):(
-            <div onClick={handleBuy} className="px-5 py-2 bg-blue-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
+            <div onClick={handleBuy} className="px-5 py-2 bg-primary-600 rounded-2xl text-white text-center cursor-pointer">Buy {props.jig.order.satoshis * 1e-8}₿</div>
           )}
         </div>}
       </div>

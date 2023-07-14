@@ -12,6 +12,7 @@ import { GetServerSideProps } from 'next'
 import { UserProfileCardProps } from '../../../components/UserProfileCard'
 import axios from 'axios'
 import request from 'graphql-request'
+import Meta from '../../../components/Meta'
 
 const graphqlAPI = "https://graphql.relayx.com";
 
@@ -169,6 +170,8 @@ const ProfilePage = (props: ProfileCardProps ) => {
         }
       };
   return (
+    <>
+    <Meta title={`${props.userCard.userName}'s Profile | The Proof of Work Cooperative`} description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
         <div className="col-span-12 lg:col-span-6 min-h-screen mb-[200px]">
             <div className='mt-5 sm:mt-10'>
@@ -194,6 +197,7 @@ const ProfilePage = (props: ProfileCardProps ) => {
             </div>
         </div>
     </ThreeColumnLayout>
+    </>
   )
 }
 

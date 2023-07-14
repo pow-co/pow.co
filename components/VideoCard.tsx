@@ -12,7 +12,7 @@ import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import YouTube from 'react-youtube';
 import { ReactNode } from 'react';
-import { BoostButton } from 'boostpow-button';
+import BoostButton  from './BoostpowButton/BoostButton';
 import { useRouter } from 'next/router';
 import { useBitcoin } from '../context/BitcoinContext';
 
@@ -89,15 +89,8 @@ export default function VideoCard({ txid, difficulty }: {txid: string, difficult
             </p>
           </div>
           <BoostButton
-            wallet={wallet}
             content={txid}
             difficulty={difficulty}
-            //@ts-ignore
-            theme={theme.theme}
-            showDifficulty
-            onSending={handleBoostLoading}
-            onError={handleBoostError}
-            onSuccess={handleBoostSuccess}
           />
         </div>
       </div>)

@@ -64,7 +64,7 @@ const SideBar = () => {
                 <div
                     //onClick={()=>setWalletPopupOpen(true)}
                     onClick={login}
-                    className='hidden xl:flex ml-4 p-5 transition duration-500 transform hover:-translate-y-1 h-8 text-base leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-blue-500 to-blue-600  justify-center items-center cursor-pointer relative'>
+                    className='hidden xl:flex ml-4 p-5 transition duration-500 transform hover:-translate-y-1 h-8 text-base leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-500 to-primary-600  justify-center items-center cursor-pointer relative'>
                     <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
                     <path d="M2.16197 13.2675H13.838C15.2698 13.2675 16 12.5445 16 11.1271V2.86576C16 1.45546 15.2698 0.732422 13.838 0.732422H2.16197C0.730201 0.732422 0 1.44831 0 2.86576V11.1271C0 12.5445 0.730201 13.2675 2.16197 13.2675ZM1.18121 2.9445C1.18121 2.25725 1.54631 1.91363 2.20492 1.91363H13.7951C14.4465 1.91363 14.8188 2.25725 14.8188 2.9445V3.9539H1.18121V2.9445ZM2.20492 12.0863C1.54631 12.0863 1.18121 11.7356 1.18121 11.0483V5.50737H14.8188V11.0483C14.8188 11.7356 14.4465 12.0863 13.7951 12.0863H2.20492Z" fill="white">
                     </path>
@@ -124,21 +124,12 @@ const SideBar = () => {
                     <div className='hidden xl:block text-base leading-4 grow'>Watch</div>
                 </div>
             </Link>
-            <Link href={marketPath}>
-                <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 xl:mr-2.5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
-                    </svg>
-                    <div className='hidden xl:block text-base leading-4 grow'>Market</div>
-                </div>
-            </Link>
-            {/* <Link href="/market">
+            {/* <Link href={marketPath}>
                 <div className='mt-4 flex items-center cursor-pointer xl:px-5 rounded-md xl:rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 xl:mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    <div className='hidden xl:block text-base leading-4 grow'><FormattedMessage id="Market"/></div>
+                    <div className='hidden xl:block text-base leading-4 grow'>Market</div>
                 </div>
             </Link> */}
             {/* <Link href="/discover">
@@ -202,7 +193,7 @@ const SideBar = () => {
         </div>
         {authenticated && <Link href="/compose">
             <button 
-                className=' w-full hidden xl:flex text-sm leading-4 text-white font-semibold mt-12 mb-6 border-none rounded-md bg-gradient-to-tr from-blue-400 to-blue-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'
+                className=' w-full hidden xl:flex text-sm leading-4 text-white font-semibold mt-12 mb-6 border-none rounded-md bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'
             >
                 {/* <FormattedMessage id="Ask Bitcoin"/> */}
                 Create Post
@@ -210,7 +201,7 @@ const SideBar = () => {
         </Link>}
         <div className='grow'/>
         <div className='initial xl:hidden mb-6'>
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary-500 dark:text-primary-500/20 hover:text-primary-700  hover:dark:text-primary-300/20 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary-600 dark:text-primary-400 hover:text-primary-700  hover:dark:text-primary-300/20 cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
         </div>
@@ -234,7 +225,7 @@ const SideBar = () => {
             {/* <Link href="/invite">
                 <div className='cursor-pointer flex items-center rounded-md bg-gray-300 dark:bg-gray-900 py-2 pl-0.5 pr-1 w-fit max-w-full'>
                     <p className='text-xs text-gray-900 dark:text-white leading-4 mr-2.5'>{me.referralLinkByReferralLinkId.shortLinkUrl}</p>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
                 </div>

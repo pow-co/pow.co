@@ -8,7 +8,6 @@ import UserIcon from '../../components/UserIcon'
 import Link from 'next/link'
 import moment from 'moment'
 import PostDescription from '../../components/PostDescription'
-import { BoostButton } from 'boostpow-button'
 import { useBitcoin } from '../../context/BitcoinContext'
 import { useTheme } from 'next-themes'
 import { toast } from 'react-hot-toast'
@@ -17,8 +16,13 @@ import { MessageItem } from '../../components/MessageItem'
 import useWebSocket from 'react-use-websocket'
 
 import axios from 'axios'
+import Meta from '../../components/Meta'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+function capitalizeFirstChar(str: string) {
+  return str.replace(/^\w/, char => char.toUpperCase());
+}
 
 interface Channel {
   channel: string;
@@ -95,6 +99,8 @@ const Chat = () => {
 
 
   return (
+    <>
+    <Meta title={`${capitalizeFirstChar(query.channel?.toString() || "")} Channel | The Proof of Work Cooperative`} description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <div className='bg-primary-300 dark:bg-primary-700/20 overflow-hidden h-screen'>
       <div className={`${query.channel && "hidden sm:block"}`}>
         <Header/>
@@ -102,7 +108,7 @@ const Chat = () => {
       </div>
       <div className='grid grid-cols-12 h-full overflow-hidden'>
         <div className={`${query.channel ? "hidden sm:block sm:col-span-4" : "col-span-12"}  bg-primary-100 dark:bg-primary-900/20`}>
-          <ChannelList/>
+          <ChannelList currentChannel={query.channel?.toString()}/>
         </div>
         <div className={`${query.channel ? "col-span-12 sm:col-span-8" : "hidden"} bg-primary-300 dark:bg-primary-700/20`} >
           <div className='sticky w-full  items-center flex h-16 z-10 p-4 bg-primary-300 dark:bg-primary-800/20'>
@@ -146,6 +152,7 @@ const Chat = () => {
         </div> */}
       </div>
     </div>
+    </>
   )
 }
 
