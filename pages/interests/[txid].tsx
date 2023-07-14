@@ -9,7 +9,87 @@ import { useSensilet } from '../../context/SensiletContext'
 
 import { bsv, findSig } from 'scrypt-ts'
 
-import { detectInterestsFromTxid, mintInterest, PersonalInterest, PersonalInterestData, getPersonalInterestData } from '../../services/personalInterests'
+//const Run = require('run-sdk')
+
+//const blockchain = new Run.plugins.WhatsOnChain({ network: 'main' })
+
+//import { detectInterestsFromTxid, mintInterest, PersonalInterest, PersonalInterestData, getPersonalInterestData } from '../../services/personalInterests'
+
+const { PersonalInterest } = require('../../src/contracts/personalInterest')
+
+const artifact = require('../../artifacts/src/contracts/personalInterest')
+
+PersonalInterest.loadArtifact(artifact)
+
+export interface PersonalInterestData {
+  id: number;
+  origin: string;
+  location: string;
+  topic: string;
+  owner: string;
+  weight: number;
+  value: number;
+  active: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+
+async function fetchTransaction({ txid }: {txid: string}): Promise<string> {
+
+  const { data } = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/${txid}/hex`)
+
+  return data
+
+}
+
+export async function getPersonalInterestData({ txid }: {txid: string}): Promise<PersonalInterestData[]> {
+
+  const { data } = await axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}`)
+  //const { data } = await axios.get(`http://wyatthash.com:8000/api/v1/personal-interests/${txid}`)
+  //const { data } = await axios.get(`https://pow.co/api/v1/personal-interests/${txid}`)
+
+  console.log("powco.interests.fetch.result", { txid, data })
+
+  return data.personal_interests
+
+}
+
+export async function detectInterestsFromTxid(txid: string): Promise<[any[], string]> {
+
+  const hex = await fetchTransaction({ txid })
+
+  const interests = await detectInterestsFromTxHex(hex)
+
+  return [interests, hex]
+
+}
+
+export async function detectInterestsFromTxHex(txhex: string): Promise<any[]> {
+
+  const interests = []
+
+  const tx = new bsv.Transaction(txhex)
+
+  for (let i=0; i < tx.outputs.length; i++) {
+
+    try {
+
+      //@ts-ignore
+      const interest = PersonalInterest.fromTx(tx, i)
+
+      interests.push(interest)
+
+    } catch(error) {
+
+    }
+
+  }
+
+  return interests
+
+}
+
+
 
 function PersonalInterestsPage() {
   const router = useRouter();
@@ -20,7 +100,7 @@ function PersonalInterestsPage() {
 
   const [mintedTx, setMintedTx] = useState<bsv.Transaction | null>(null)
 
-  const [interest, setInterest] = useState<PersonalInterest | null>(null)
+  const [interest, setInterest] = useState<any>(null)
 
   const [interestData, setInterestData] = useState<PersonalInterestData[]>([])
 
@@ -28,12 +108,34 @@ function PersonalInterestsPage() {
 
   console.log({ signer, provider, sensiletPublicKey })
 
+  const location = String(router.query?.txid)
+
+  const [txid, vout] = location.split('_')
+
+  useEffect(() => {
+
+    // check for removals on page load
+
+    axios.get(`https://develop.pow.co/api/v1/personal-interests/${location}/removals`).then(async ({ data }) => {
+    //axios.get(`http://wyatthash.com:8000/api/v1/personal-interests/${location}/removals`).then(async ({ data }) => {
+
+      if (data.personal_interest.removal_location) {
+        setInterestRemoved(true)
+      }
+
+    })
+    .catch(error => {
+
+      console.error('interest.removal.get.error', error)
+
+    })
+
+  }, [])
+
   useEffect(() => {
     if (!router.query?.txid) { return }
 
-    const txid = String(router.query?.txid)
-
-    detectInterestsFromTxid(String(router.query?.txid)).then(interests => {
+    detectInterestsFromTxid(txid).then(interests => {
 
       console.log('loaded interests for txid', interests)
 
@@ -46,7 +148,7 @@ function PersonalInterestsPage() {
 
     })
 
-    getPersonalInterestData({ txid }).then((interests: PersonalInterestData[]) => {
+    getPersonalInterestData({ txid: location  }).then((interests: PersonalInterestData[]) => {
 
       setInterestData(interests)
 
@@ -85,6 +187,9 @@ function PersonalInterestsPage() {
 
       setInterestRemoved(true)
 
+      await axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}_${vout}/removals`)
+      //await axios.get(`http://wyatthash.com:8000/api/v1/personal-interests/${txid}_${vout}/removals`)
+
     } catch(error) {
 
       console.error('interest.remove.error', error)
@@ -107,6 +212,7 @@ function PersonalInterestsPage() {
 
       const topic = String(prompt('Topic of Interest:'))
       const weight = Number(prompt('Weight:'))
+      /*
 
       const { tx, instance } = await mintInterest({
         signer,
@@ -121,6 +227,7 @@ function PersonalInterestsPage() {
       setInterestRemoved(false)
       setIsMinting(false)
       router.push(`/interests/${tx.id}`)
+      */
 
     } catch(error) {
 

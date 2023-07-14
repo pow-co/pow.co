@@ -1,5 +1,7 @@
 
-import { PersonalInterest } from '../src/contracts/personalInterest'
+//import { PersonalInterest } from '../src/contracts/personalInterest'
+
+const { PersonalInterest } = require('../src/contracts/personalInterest')
 
 import axios from 'axios'
 
@@ -36,7 +38,7 @@ interface MintInterest extends CreateInterest {
   signer: Signer;
 }
 
-async function buildInterest({ topic, owner, weight }: CreateInterest): Promise<PersonalInterest> {
+export async function buildInterest({ topic, owner, weight }: CreateInterest): Promise<any> {
 
   const instance = new PersonalInterest(
     toByteString(topic, true),
@@ -48,7 +50,7 @@ async function buildInterest({ topic, owner, weight }: CreateInterest): Promise<
 
 }
 
-export async function mintInterest({ signer, topic, owner, weight, satoshis }: MintInterest): Promise<{tx: bsv.Transaction, instance: PersonalInterest}> {
+export async function mintInterest({ signer, topic, owner, weight, satoshis }: MintInterest): Promise<{tx: bsv.Transaction, instance: any}> {
 
   console.log("mint interest", { signer, topic, owner, weight, satoshis })
 
@@ -80,7 +82,7 @@ export async function mintInterest({ signer, topic, owner, weight, satoshis }: M
 
 }
 
-export async function detectInterestsFromTxid(txid: string): Promise<[PersonalInterest[], string]> {
+export async function detectInterestsFromTxid(txid: string): Promise<[any[], string]> {
 
   const hex = await blockchain.fetch(txid)
 
@@ -90,7 +92,7 @@ export async function detectInterestsFromTxid(txid: string): Promise<[PersonalIn
 
 }
 
-export async function detectInterestsFromTxHex(txhex: string): Promise<PersonalInterest[]> {
+export async function detectInterestsFromTxHex(txhex: string): Promise<any[]> {
 
   const interests = []
 
@@ -115,7 +117,7 @@ export async function detectInterestsFromTxHex(txhex: string): Promise<PersonalI
 
 }
 
-export async function removeInterest({ signer, publicKey, instance }: { signer: Signer, publicKey: string, instance: PersonalInterest }): Promise<bsv.Transaction> {
+export async function removeInterest({ signer, publicKey, instance }: { signer: Signer, publicKey: string, instance: any }): Promise<bsv.Transaction> {
 
   await instance.connect(signer)
 

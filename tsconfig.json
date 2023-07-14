@@ -30,5 +30,12 @@
   "exclude": [
     "node_modules",
     "contracts"
+  ],
+  "plugins": [
+    {
+      "transform": "scrypt-ts/dist/transformation/transformer",
+      "outDir": "./artifacts",
+      "transformProgram": true
+    }
   ]
 }

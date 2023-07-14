@@ -3,13 +3,43 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import moment from 'moment';
-import ThreeColumnLayout from '../components/ThreeColumnLayout';
+import ThreeColumnLayout from '..//components/ThreeColumnLayout';
 
 import { useSensilet } from '../context/SensiletContext'
 
-import { bsv, findSig } from 'scrypt-ts'
+import { bsv, findSig, toByteString, PubKey } from 'scrypt-ts'
 
-import { PersonalInterestData, removeInterest, detectInterestsFromTxid, mintInterest, PersonalInterest } from '../services/personalInterests'
+//import { detectInterestsFromTxid, mintInterest, PersonalInterest, PersonalInterestData, getPersonalInterestData } from '../services/personalInterests'
+
+const { mintInterest, PersonalInterest } = require('../src/contracts/personalInterest')
+
+const artifact = require('../artifacts/src/contracts/personalInterest')
+
+PersonalInterest.loadArtifact(artifact)
+
+export interface PersonalInterestData {
+  id: number;
+  origin: string;
+  location: string;
+  topic: string;
+  owner: string;
+  weight: number;
+  value: number;
+  active: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export async function getPersonalInterestData({ txid }: {txid: string}): Promise<PersonalInterestData[]> {
+
+  const { data } = await axios.get(`https://pow.co/api/v1/personal-interests/${txid}`)
+
+  console.log("powco.interests.fetch.result", { txid, data })
+
+  return data.personal_interests
+
+}
+
 
 function PersonalInterestsPage() {
   const router = useRouter();
@@ -20,16 +50,23 @@ function PersonalInterestsPage() {
 
   const [mintedTx, setMintedTx] = useState<bsv.Transaction | null>(null)
 
-  const [interest, setInterest] = useState<PersonalInterest | null>(null)
+  const [interest, setInterest] = useState<any>(null)
+
+  const [interestData, setInterestData] = useState<PersonalInterestData[]>([])
+
+  const [interests, setInterests] = useState<PersonalInterestData[]>([])
 
   const [interestRemoved, setInterestRemoved] = useState<boolean>(false)
-  
-  const [interests, setInterests] = useState<PersonalInterestData[]>([])
 
   const [owner, setOwner] = useState<string | null>()
 
+  console.log({ signer, provider, sensiletPublicKey })
+
+  /*
   useEffect(() => {
     if (!router.query?.txid) { return }
+
+    const txid = String(router.query?.txid)
 
     detectInterestsFromTxid(String(router.query?.txid)).then(interests => {
 
@@ -44,9 +81,19 @@ function PersonalInterestsPage() {
 
     })
 
+    getPersonalInterestData({ txid }).then((interests: PersonalInterestData[]) => {
+
+      setInterestData(interests)
+
+    })
+    .catch(console.error)
+
   }, [router.query.txid])
+  */
 
   useEffect(() => {
+
+    console.log({ sensiletPublicKey })
 
     if (!sensiletPublicKey) return;
 
@@ -64,6 +111,7 @@ function PersonalInterestsPage() {
 
   }, [sensiletPublicKey])
 
+
   if (!sensiletPublicKey) {
 
     <ThreeColumnLayout>
@@ -77,19 +125,18 @@ function PersonalInterestsPage() {
   }
 
   async function onClickRemoveInterest() {
+    /*
 
     try {
 
-      if (!interest || !signer || !sensiletPublicKey) { return }
+      if (!interest || !signer) { return }
 
       await interest.connect(signer)
 
       console.log('interest.remove', interest)
 
-      const result = await removeInterest({
-        instance: interest,
-        signer,
-        publicKey: String(sensiletPublicKey)
+      const result = await interest.methods.remove((sigResponses: any) => {
+        return findSig(sigResponses, new bsv.PublicKey(sensiletPublicKey))
       })
 
       console.log('interest.remove.result', result)
@@ -107,6 +154,7 @@ function PersonalInterestsPage() {
       }
 
     }
+    */
 
   }
 
@@ -118,6 +166,27 @@ function PersonalInterestsPage() {
 
       const topic = String(prompt('Topic of Interest:'))
       const weight = Number(prompt('Weight:'))
+
+      const instance = new PersonalInterest(
+        toByteString(topic, true),
+        PubKey(sensiletPublicKey),
+        BigInt(weight)
+      ) 
+
+      //@ts-ignore
+      window.instance = instance
+      console.log('instance', instance)
+      instance.connect(signer)
+
+      const result = await instance.deploy()
+
+      console.log('instance.deploy.result', result)
+
+      const txid = result.id
+
+      router.push(`/interests/${txid}_0`)
+
+      /*
 
       const { tx, instance } = await mintInterest({
         signer,
@@ -132,6 +201,7 @@ function PersonalInterestsPage() {
       setInterestRemoved(false)
       setIsMinting(false)
       router.push(`/interests/${tx.id}`)
+      */
 
     } catch(error) {
 
@@ -153,6 +223,7 @@ function PersonalInterestsPage() {
     <ThreeColumnLayout>
       <div className="col-span-12 min-h-screen lg:col-span-6">
         <div className="mb-[200px] w-full">
+          <small>sensilet pubkey: {sensiletPublicKey}</small>
           <p><small>Owner: {owner}</small></p>
           <ul style={{"listStyle": "none"}}>
           <h2>My Personal Interests</h2>
@@ -177,12 +248,14 @@ function PersonalInterestsPage() {
               <b><p style={{color: 'red'}}>REMOVED FROM BLOCKCHAIN</p></b>
             )}
             <ul>
-              <li>owner: {interest.owner}</li>
+              <li>owner: {new bsv.PublicKey(interest.owner).toAddress().toString()}</li>
               <li>topic: {fromHex(interest.topic)}</li>
               <li>weight: {Number(interest.weight)}</li>
+              <li>data from api server: {JSON.stringify(interestData)}</li>
             </ul>
             </>
           )}
+          <button style={{border: '1px solid white', padding: '1em', marginTop: '3em' }} onClick={() => { router.push('/interests') } }>My Interests</button>
           <button style={{border: '1px solid white', padding: '1em', marginTop: '3em' }} onClick={onClickMintInterest}>Mint New Interest</button>
           {interest && !interestRemoved && (
             <button style={{border: '1px solid white', padding: '1em', marginTop: '3em' }} onClick={onClickRemoveInterest}>Remove Interest</button>
