@@ -105,9 +105,10 @@ export interface Ranking {
     difficulty?: number;
     createdAt?: Date;
     rank?: number;
+    defaultTag?: string;
   }
 
-const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
+const BoostContentCardV2 = ({ content_txid, difficulty, rank, defaultTag }: Ranking) => {
     const router = useRouter()
     const { wallet } = useBitcoin()
     const theme = useTheme()
@@ -158,7 +159,11 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const [youtubeId, setYoutubeId] = useState('')
     const [playerURLs, setPlayerURLs] = useState<string[]>([])
     const [jig, setJig] = useState(null)
-    const existingTags = useMemo(() => tags?.map((tag:any) => tag.utf8) ,[tags])
+    const existingTags = useMemo(() => tags?.map((tag:any) => {
+        if (tag.hex !== "0000000000000000000000000000000000000000" && tag.utf8.length) {
+            return tag.utf8
+        }
+    }).filter(tag => tag !== undefined) ,[tags])
 
     useEffect(() => {
         getData().then((res) => {
@@ -502,6 +507,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                             content={content_txid}
                             difficulty={computedDiff || 0}
                             existingTags={existingTags}
+                            defaultTag={defaultTag}
                             />
                         </div>
                         <Tooltip
@@ -519,7 +525,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
             </div>
             <div className="col-span-12 flex w-full flex-wrap overflow-hidden px-4 pb-4">
                 {tags?.map((tag:any, index: number) => {
-                if (tag.utf8.length > 0) {
+                if (tag.hex !== "0000000000000000000000000000000000000000" && tag.utf8.length > 0) {
                     return (
                         <Link key={`tag_${content_txid}_${index}`} onClick={(e:any) => e.stopPropagation()} href={`/topics/${tag.utf8}`}>
                             <div className="mr-2 mt-2 flex items-center rounded-full bg-primary-500 p-2 text-sm font-bold text-white">{tag.utf8} <span className="ml-2">⛏️ {Math.round(tag.difficulty)}</span></div>

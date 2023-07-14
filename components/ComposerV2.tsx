@@ -28,9 +28,10 @@ const SAMPLE_DOC = {
 
 interface ComposerV2Props {
   inReplyTo?: string;
+  defaultTag?: string;
 }
 
-const ComposerV2: React.FC<ComposerV2Props> = ({  inReplyTo }) => {
+const ComposerV2: React.FC<ComposerV2Props> = ({  inReplyTo, defaultTag }) => {
   const { manager, state } = useRemirror({
     extensions: () => [
       new BoldExtension(),
@@ -44,7 +45,7 @@ const ComposerV2: React.FC<ComposerV2Props> = ({  inReplyTo }) => {
   });
 
   return (
-    <SocialEditor inReplyTo={inReplyTo} users={ALL_USERS} tags={TAGS} placeholder={inReplyTo ? 'Write a comment...' : 'What\'s the latest?'} />
+    <SocialEditor inReplyTo={inReplyTo} defaultTag={defaultTag} users={ALL_USERS} tags={TAGS} placeholder={inReplyTo ? 'Write a comment...' : 'What\'s the latest?'} />
   );
 };
 

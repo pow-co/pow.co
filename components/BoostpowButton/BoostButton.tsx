@@ -7,9 +7,10 @@ interface BoostButtonProps {
     difficulty: number;
     showDifficulty?: boolean;
     existingTags?: Array<string>;
+    defaultTag?: string
 }
 
-const BoostButton = ({ content, difficulty, showDifficulty = true, existingTags }: BoostButtonProps) => {
+const BoostButton = ({ content, difficulty, showDifficulty = true, existingTags, defaultTag }: BoostButtonProps) => {
     const [boostPopupOpen, setBoostPopupOpen] = useState(false)
 
     const handleBoost = (e:any) => {
@@ -39,7 +40,7 @@ const BoostButton = ({ content, difficulty, showDifficulty = true, existingTags 
         isOpen={boostPopupOpen}
         onClose={() => setBoostPopupOpen(false)}
         >
-        <BoostPopup content={content} tagList={existingTags} onClose={() => setBoostPopupOpen(false)}/>
+        <BoostPopup content={content} tagList={existingTags} defaultTag={defaultTag} onClose={() => setBoostPopupOpen(false)}/>
         </Drawer>
     </>
   )
