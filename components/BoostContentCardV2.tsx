@@ -20,6 +20,8 @@ import { twetchDetailQuery } from './Twetch';
 import { NFTJig, relayDetailQuery } from './RelayClub';
 import ReactPlayer from 'react-player/lazy';
 import Meta from './Meta';
+import LoveOrdButton from './LoveOrdButton';
+import { useRelay } from '../context/RelayContext';
 
 const Markdown = require('react-remarkable');
 
@@ -65,12 +67,12 @@ function parseURLsFromMarkdown(urls:string[]) {
     return parsedUrls
   }
 
-function extractUrls(text: string) {
+export function extractUrls(text: string) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.match(urlRegex);
 }
 
-function normalizeUrls(urls: string[]): string[] {
+export function normalizeUrls(urls: string[]): string[] {
     const normalizedUrls: string[] = [];
   
     for (const url of urls) {
@@ -85,7 +87,7 @@ function normalizeUrls(urls: string[]): string[] {
     return normalizedUrls;
   }
 
-const fetchPreview = async (url: string) => {
+export const fetchPreview = async (url: string) => {
     let metadata = {url: url}
     try {
         let response = await axios.get(`https://link-preview-proxy.pow.co/v2?url=${url}`);
@@ -97,6 +99,8 @@ const fetchPreview = async (url: string) => {
     return metadata;
 };
 
+export const playerKeys = ["youtube", "youtu", "soundcloud", "facebook", "vimeo", "wistia", "mixcloud", "dailymotion", "twitch"]
+
 export interface Ranking {
     content_txid: string;
     content_text?: string;
@@ -105,11 +109,13 @@ export interface Ranking {
     difficulty?: number;
     createdAt?: Date;
     rank?: number;
+    defaultTag?: string;
   }
 
-const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
+const BoostContentCardV2 = ({ content_txid, difficulty, rank, defaultTag }: Ranking) => {
     const router = useRouter()
     const { wallet } = useBitcoin()
+    const { hasTwetchPrivilege } = useRelay()
     const theme = useTheme()
     const { filter } = useTuning()
     const [loading, setLoading] = useState<boolean>(true)
@@ -158,7 +164,11 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
     const [youtubeId, setYoutubeId] = useState('')
     const [playerURLs, setPlayerURLs] = useState<string[]>([])
     const [jig, setJig] = useState(null)
-    const existingTags = useMemo(() => tags?.map((tag:any) => tag.utf8) ,[tags])
+    const existingTags = useMemo(() => tags?.map((tag:any) => {
+        if (tag.hex !== "0000000000000000000000000000000000000000" && tag.utf8.length) {
+            return tag.utf8
+        }
+    }).filter(tag => tag !== undefined) ,[tags])
 
     useEffect(() => {
         getData().then((res) => {
@@ -171,7 +181,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
             setLoading(false)
         })
     },[])
-    const playerKeys = ["youtube", "youtu", "soundcloud", "facebook", "vimeo", "wistia", "mixcloud", "dailymotion", "twitch"]
+    
     useEffect(() => {
         if (contentText){
             let urls : string[] = extractUrls(contentText) || [];
@@ -191,7 +201,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
             });
 
         }
-      }, [contentText]);
+    }, [contentText]);
 
     const parseContent = async (content: any) => {
         console.log(content)
@@ -244,7 +254,6 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                 //console.log("BMAP without B nor MAP", content)
                 if (content.bmap.twetch){
                     twetchDetailQuery(content_txid).then((res) => {
-                        console.log(res)
                         setContentText(res.bContent || "")
                         setPaymail(`${res.userId}@twetch.me`)
                         setUserName(res.userByUserId.name)
@@ -372,7 +381,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
 
     return (
         <>
-        {router.pathname !== "/" || router.pathname.startsWith('/topics') && <Meta title='Post Detail | The Proof of Work Cooperative' description={contentText.length > 0 ? contentText : "People Coordinating Using Costly Signals"} image={postMedia.length > 0 ? isTwetch ? `https://dogefiles.twetch.app/${postMedia[0]}`: `data:image/jpeg;base64,${postMedia[0]}` : 'https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557'} />}
+        {(router.pathname !== "/" || router.pathname.startsWith('/topics')) && <Meta title='Post Detail | The Proof of Work Cooperative' description={contentText.length > 0 ? contentText : "People Coordinating Using Costly Signals"} image={postMedia.length > 0 ? isTwetch ? `https://dogefiles.twetch.app/${postMedia[0]}`: `data:image/jpeg;base64,${postMedia[0]}` : 'https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557'} />}
         <div onClick={navigate} className='mt-0.5 grid grid-cols-12 bg-primary-100 dark:bg-primary-600/20 hover:sm:bg-primary-200 hover:dark:sm:bg-primary-500/20 first:md:rounded-t-lg last:md:rounded-b-lg'>
             <div className='col-span-12 px-4 pt-4'>
                 <p className='text-2xl font-semibold'>
@@ -479,47 +488,49 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank }: Ranking) => {
                         <ReactPlayer key={`${content_txid}_player_index`} controls={true} url={url} style={{ maxWidth:"100%" }}/>
                     ))}
                     {tweetId.length > 0 && <TwitterTweetEmbed tweetId={tweetId}/>}
-                    <div className="flex w-full px-16">
-                        <div className="grow" />
-                        <div className="group relative flex w-fit min-w-[111px] items-center justify-center">
-                            <svg
-                            viewBox="0 0 40 40"
-                            fill="none"
-                            className="h-[40px] w-[40px] fill-gray-500 group-hover:fill-green-500 dark:fill-gray-300"
-                            >
-                                <path
-                                fillRule="evenodd"
-                                clipRule="evenodd"
-                                d="M16.7698 26.04L16.7796 26.0214C16.8013 25.98 16.8245 25.9351 16.8491 25.8873C17.03 25.5371 17.2911 25.0314 17.6274 24.6275C18.0608 24.1068 18.7281 23.6137 19.6907 23.6137C22.7525 23.6137 24.8033 23.173 26.0492 22.4503C27.1805 21.794 27.7035 20.8819 27.7035 19.5258C27.7035 16.3261 24.3811 13.2965 19.6907 13.2965C15.2771 13.2965 12.2965 16.1275 12.2965 19.5258C12.2965 20.3629 12.6319 22.2529 13.4911 23.5026L13.4978 23.5125L13.4978 23.5125C14.3586 24.7897 15.3301 25.7902 16.4883 26.5864C16.5026 26.5622 16.5179 26.5356 16.5341 26.5064C16.6042 26.3801 16.6748 26.2365 16.7606 26.059L16.7698 26.04ZM17.9278 26.6233C17.9537 26.574 17.9795 26.5244 18.0053 26.4748C18.4108 25.6944 18.8183 24.9101 19.6907 24.9101C25.9691 24.9101 29 23.1358 29 19.5258C29 15.3652 24.8247 12 19.6907 12C14.7423 12 11 15.2428 11 19.5258C11 20.5354 11.3711 22.7075 12.4227 24.2371C13.4124 25.7055 14.5567 26.8681 15.9485 27.7858C16.1649 27.9388 16.3814 28 16.5979 28C17.2474 28 17.5876 27.327 17.9278 26.6233Z"
-                                />
-                            </svg>
-                            <p className="text-gray-500 group-hover:text-green-500 dark:text-gray-300">
-                                {commentCount}
-                            </p>
-                        </div>
-                        <div className="boost-button-info-text" data-tooltip-offset={20}>
-                            <BoostButton 
-                            content={content_txid}
-                            difficulty={computedDiff || 0}
-                            existingTags={existingTags}
-                            />
-                        </div>
-                        <Tooltip
-                        anchorSelect=".boost-button-info-text"
-                        place="right"
-                        className="italic text-white dark:bg-gray-100 dark:text-black"
-                        style={{ width: 'fit-content', borderRadius: '10px' }}
-                        >   
-                            <p>
-                                Boost this post to the top <br />of the rankings!
-                            </p>
-                        </Tooltip>
-                    </div>
                 </div>
+            </div>
+            <div className={`col-span-12 flex ${isTwetch && "justify-between"}  w-full px-16`}>
+
+                {isTwetch  ? <LoveOrdButton txid={content_txid} userPaymail={paymail}/> : <div className='grow'/>}
+                <div className="group relative flex w-fit min-w-[111px] items-center justify-center">
+                    <svg
+                    viewBox="0 0 40 40"
+                    fill="none"
+                    className="h-[40px] w-[40px] fill-gray-500 group-hover:fill-green-500 dark:fill-gray-300"
+                    >
+                        <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M16.7698 26.04L16.7796 26.0214C16.8013 25.98 16.8245 25.9351 16.8491 25.8873C17.03 25.5371 17.2911 25.0314 17.6274 24.6275C18.0608 24.1068 18.7281 23.6137 19.6907 23.6137C22.7525 23.6137 24.8033 23.173 26.0492 22.4503C27.1805 21.794 27.7035 20.8819 27.7035 19.5258C27.7035 16.3261 24.3811 13.2965 19.6907 13.2965C15.2771 13.2965 12.2965 16.1275 12.2965 19.5258C12.2965 20.3629 12.6319 22.2529 13.4911 23.5026L13.4978 23.5125L13.4978 23.5125C14.3586 24.7897 15.3301 25.7902 16.4883 26.5864C16.5026 26.5622 16.5179 26.5356 16.5341 26.5064C16.6042 26.3801 16.6748 26.2365 16.7606 26.059L16.7698 26.04ZM17.9278 26.6233C17.9537 26.574 17.9795 26.5244 18.0053 26.4748C18.4108 25.6944 18.8183 24.9101 19.6907 24.9101C25.9691 24.9101 29 23.1358 29 19.5258C29 15.3652 24.8247 12 19.6907 12C14.7423 12 11 15.2428 11 19.5258C11 20.5354 11.3711 22.7075 12.4227 24.2371C13.4124 25.7055 14.5567 26.8681 15.9485 27.7858C16.1649 27.9388 16.3814 28 16.5979 28C17.2474 28 17.5876 27.327 17.9278 26.6233Z"
+                        />
+                    </svg>
+                    <p className="text-gray-500 group-hover:text-green-500 dark:text-gray-300">
+                        {commentCount}
+                    </p>
+                </div>
+                <div className="boost-button-info-text" data-tooltip-offset={20}>
+                    <BoostButton 
+                    content={content_txid}
+                    difficulty={computedDiff || 0}
+                    existingTags={existingTags}
+                            defaultTag={defaultTag}
+                    />
+                </div>
+                <Tooltip
+                anchorSelect=".boost-button-info-text"
+                place="right"
+                className="italic text-white dark:bg-gray-100 dark:text-black"
+                style={{ width: 'fit-content', borderRadius: '10px' }}
+                >   
+                    <p>
+                        Boost this post to the top <br />of the rankings!
+                    </p>
+                </Tooltip>
             </div>
             <div className="col-span-12 flex w-full flex-wrap overflow-hidden px-4 pb-4">
                 {tags?.map((tag:any, index: number) => {
-                if (tag.utf8.length > 0) {
+                if (tag.hex !== "0000000000000000000000000000000000000000" && tag.utf8.length > 0) {
                     return (
                         <Link key={`tag_${content_txid}_${index}`} onClick={(e:any) => e.stopPropagation()} href={`/topics/${tag.utf8}`}>
                             <div className="mr-2 mt-2 flex items-center rounded-full bg-primary-500 p-2 text-sm font-bold text-white">{tag.utf8} <span className="ml-2">⛏️ {Math.round(tag.difficulty)}</span></div>

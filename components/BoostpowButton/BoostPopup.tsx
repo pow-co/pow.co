@@ -44,12 +44,13 @@ interface BoostPopupProps {
     content: string;
     onClose: () => void;
     tagList?: Array<string>;
+    defaultTag?: string;
 }
 
-const BoostPopup = ({ content, onClose, tagList }: BoostPopupProps) => {
+const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) => {
     const [existingTags, setExistingTags] = useState(tagList || [])
     const [input, setInput] = useState("")
-    const [tags, setTags] = useState<string[]>([])
+    const [tags, setTags] = useState<string[]>(defaultTag ? [defaultTag] : [])
     const [tagsWeight, setTagsWeight] = useState<number[]>([])
     const { wallet, exchangeRate } = useBitcoin()
     const absolute_min_value = useMemo(()=> tags.length > 0 ? tags.length * 500 : 500,[tags]);

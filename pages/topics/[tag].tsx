@@ -1,16 +1,19 @@
+import Link from "next/link"
 import ThreeColumnLayout from "../../components/ThreeColumnLayout"
 import Loader from "../../components/Loader"
 import { useTuning } from "../../context/TuningContext"
 import { useAPI } from "../../hooks/useAPI"
-import BoostContentCard from "../../components/BoostContentCard";
 import { Ranking } from "../../components/BoostContentCard";
 import { useRouter } from "next/router";
 import BoostContentCardV2 from "../../components/BoostContentCardV2";
 import Meta from "../../components/Meta";
+import ComposerV2 from "../../components/ComposerV2";
+import { useBitcoin } from "../../context/BitcoinContext";
 
 
 export default function TopicPage() {
   const { startTimestamp } = useTuning()
+  const { authenticated } = useBitcoin()
   const router = useRouter()
   const query = router.query
   let tag='';
@@ -53,13 +56,36 @@ export default function TopicPage() {
     <>
     <Meta title={`${tag} Page | The Proof of Work Cooperative`} description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
-    <div className="col-span-12 lg:col-span-6 min-h-screen">
+    <div className="flex flex-col col-span-12 lg:col-span-6 min-h-screen">
+      {authenticated && <div className="hidden sm:block mt-5 lg:mt-10">
+        <ComposerV2 defaultTag={tag} />
+      </div>}
       <div className="mt-5 lg:mt-10 mb-[200px]">
         {rankings?.map((post: Ranking) => {
-          return <BoostContentCardV2 key={post.content_txid} {...post}/>
+          return <BoostContentCardV2 key={post.content_txid} defaultTag={tag} {...post}/>
         } )}
       </div>
     </div>
+    {authenticated && (
+      <Link href={`/compose?t=${tag}`}>
+        <div className=" fixed bottom-[73px] right-[14px] flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r from-primary-400 to-primary-500 lg:hidden">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        </div>
+      </Link>
+    )}
     </ThreeColumnLayout>
     </>
   )

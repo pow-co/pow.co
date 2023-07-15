@@ -35,6 +35,7 @@ export interface SocialEditorProps
   extends Partial<ReactEditorProps>,
   Pick<MentionComponentProps, 'users' | 'tags'> {
     inReplyTo?: string;
+    defaultTag?: string;
   }
 
 interface MentionComponentProps<
@@ -75,6 +76,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   users,
   tags,
   inReplyTo,
+  defaultTag,
   ...rest
 }) => {
   const { paymail, wallet } = useBitcoin()
@@ -172,6 +174,10 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
 
     if (signWithPaymail){
       post.addMapData('paymail', paymail)
+    }
+
+    if (defaultTag){
+      post.addMapData('channel', defaultTag)
     }
 
     const hexArrayOps = post.getOps('hex')
@@ -408,6 +414,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
               onChange={handleFileInputChange}
               className='hidden'
             />
+            {defaultTag && <div className='ml-5 text-white px-3 py-1 rounded-full bg-primary-500'>#{defaultTag}</div>}
             <div className='grow'/>
             <div id="sign-option" onClick={()=>setSignWithPaymail(!signWithPaymail)} className='mr-2 cursor-pointer'>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 ${signWithPaymail ? "stroke-primary-500": "stroke-gray-600 dark:stroke-gray-400"}`}>

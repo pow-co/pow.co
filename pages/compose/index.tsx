@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import ThreeColumnLayout from "../../components/ThreeColumnLayout";
 import Composer from "../../components/Composer";
@@ -8,6 +8,9 @@ import Meta from "../../components/Meta";
 
 export default function Compose() {
   const router = useRouter();
+  const query = router.query
+
+  useEffect(() => console.log(query.t),[])
   
   return (
     <>
@@ -30,7 +33,7 @@ export default function Compose() {
           />
         </svg>
         <div className="mt-3 lg:mt-8 mb-[200px] lg:rounded-xl pt-4 pb-3">
-            <ComposerV2/>
+            <ComposerV2 defaultTag={query.t?.toString()}/>
         </div>
       </div>
     </ThreeColumnLayout>

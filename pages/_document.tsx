@@ -9,6 +9,7 @@ export default function Document() {
         <div id="drawerControler" />
         <div id="tuningProviderPopupControler" />
         <div id="boostPopupControler" />
+        <div id="loveOrdPopupControler"/>
         <NextScript />
       </body>
     </Html>
