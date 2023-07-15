@@ -2,8 +2,12 @@
   "compilerOptions": {
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2020",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -15,8 +19,23 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true,
+    "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/faq.js"],
-  "exclude": ["node_modules", "contracts"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/faq.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "contracts"
+  ],
+  "plugins": [
+    {
+      "transform": "scrypt-ts/dist/transformation/transformer",
+      "outDir": "./artifacts",
+      "transformProgram": true
+    }
+  ]
 }

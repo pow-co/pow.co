@@ -20,6 +20,7 @@ type SensiletContextValue = {
    sensiletAvatar: string | undefined;
    sensiletPaymail: string | undefined;
    sensiletUserName: string | undefined;
+   sensiletPublicKey: string | undefined | null;
    web3: any;
    web3Account: string | undefined | null;
    ready: boolean;
@@ -48,7 +49,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
 
   useEffect(() => {
 
-    if (signer || !provider || !web3Account) { return }
+    if (signer || !provider) { return }
 
     console.log({ provider })
 
