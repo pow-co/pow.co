@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "errors": [],
+  "scryptfile": "src/contracts/nextPowCo.scrypt",
+  "sourceMapFile": "src/contracts/nextPowCo.scrypt.map",
+  "ctxMethods": [
+    "increment"
+  ]
+}

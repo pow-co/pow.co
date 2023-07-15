@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "errors": [],
+  "scryptfile": "src/contracts/calendarEvent.scrypt",
+  "sourceMapFile": "src/contracts/calendarEvent.scrypt.map",
+  "ctxMethods": [
+    "increment"
+  ]
+}
