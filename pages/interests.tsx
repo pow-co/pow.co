@@ -26,6 +26,8 @@ export interface PersonalInterestData {
   weight: number;
   value: number;
   active: boolean;
+  removal_location?: string;
+  script_hash?: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -228,6 +230,8 @@ function PersonalInterestsPage() {
           <ul style={{"listStyle": "none"}}>
           <h2>My Personal Interests</h2>
           {interests.map(interest => {
+
+            if (interest.removal_location) { return <></> }
 
             return (
 
