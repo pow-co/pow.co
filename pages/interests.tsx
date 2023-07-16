@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import moment from 'moment';
 import ThreeColumnLayout from '..//components/ThreeColumnLayout';
+import { FormattedMessage } from "react-intl";
 
 import { useSensilet } from '../context/SensiletContext'
 
@@ -12,6 +13,7 @@ import { bsv, findSig, toByteString, PubKey } from 'scrypt-ts'
 //import { detectInterestsFromTxid, mintInterest, PersonalInterest, PersonalInterestData, getPersonalInterestData } from '../services/personalInterests'
 
 const { mintInterest, PersonalInterest } = require('../src/contracts/personalInterest')
+
 
 const artifact = require('../artifacts/src/contracts/personalInterest')
 
@@ -26,6 +28,8 @@ export interface PersonalInterestData {
   weight: number;
   value: number;
   active: boolean;
+  removal_location?: string;
+  script_hash?: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -44,7 +48,9 @@ export async function getPersonalInterestData({ txid }: {txid: string}): Promise
 function PersonalInterestsPage() {
   const router = useRouter();
 
-  const { signer, provider, sensiletPublicKey } = useSensilet()
+  const { signer, provider, sensiletPublicKey, sensiletAuthenticate } = useSensilet()
+
+  const [sensiletChecked, setSensiletChecked] = useState<boolean>(false)
 
   const [isMinting, setIsMinting] = useState<boolean>(false)
 
@@ -60,7 +66,21 @@ function PersonalInterestsPage() {
 
   const [owner, setOwner] = useState<string | null>()
 
-  console.log({ signer, provider, sensiletPublicKey })
+  async function connectSensilet() {
+
+    await sensiletAuthenticate()
+
+    router.reload()
+
+  }
+
+  useEffect(() => {
+
+    setSensiletChecked(!!sensiletPublicKey)
+
+  }, [sensiletPublicKey])
+
+
 
   /*
   useEffect(() => {
@@ -93,8 +113,6 @@ function PersonalInterestsPage() {
 
   useEffect(() => {
 
-    console.log({ sensiletPublicKey })
-
     if (!sensiletPublicKey) return;
 
     const address = new bsv.PublicKey(sensiletPublicKey).toAddress().toString()
@@ -111,16 +129,38 @@ function PersonalInterestsPage() {
 
   }, [sensiletPublicKey])
 
-
   if (!sensiletPublicKey) {
 
-    <ThreeColumnLayout>
-      <div className="col-span-12 min-h-screen lg:col-span-6">
-        <div className="mb-[200px] w-full">
-          <p>Please Sign In With Sensilet Under /settings</p>
+    return (
+
+      <ThreeColumnLayout>
+        <div className="col-span-12 min-h-screen lg:col-span-6">
+          <div className="mb-[200px] w-full">
+
+           <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                  <FormattedMessage id="Sensilet Wallet" />
+                </p>
+                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                  <FormattedMessage id={`Experimental Feature - Connect Sensilet Wallet`} />
+                </p>
+              </div>
+              <div className="grow" />
+              <div className="relative">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                    <button onClick={connectSensilet}>Connect Sensilet</button>
+                  </div>
+                </label>
+              </div>
+            </div>
+          
+          </div>
         </div>
-      </div>
-    </ThreeColumnLayout>
+      </ThreeColumnLayout>
+
+    )
 
   }
 
@@ -228,6 +268,8 @@ function PersonalInterestsPage() {
           <ul style={{"listStyle": "none"}}>
           <h2>My Personal Interests</h2>
           {interests.map(interest => {
+
+            if (interest.removal_location) { return <></> }
 
             return (
 
