@@ -133,7 +133,10 @@ function PersonalInterestsPage() {
   }, [])
 
   useEffect(() => {
+
     if (!router.query?.txid) { return }
+
+    const [txid, vout] = String(router.query.txid).split('_') 
 
     detectInterestsFromTxid(txid).then(interests => {
 
@@ -154,6 +157,8 @@ function PersonalInterestsPage() {
 
     })
     .catch(console.error)
+
+    axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}_${vout}/removals`).catch(console.error)
 
   }, [router.query.txid])
 
@@ -187,7 +192,20 @@ function PersonalInterestsPage() {
 
       setInterestRemoved(true)
 
-      await axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}_${vout}/removals`)
+      try {
+
+        await axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}_${vout}/removals`)
+
+      } catch(error) {
+  
+        setTimeout(() => {
+          // in case a race-condition caused whatsonchain to not yet see the transaction, wait 3 seconds and try again
+
+          axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}_${vout}/removals`)
+
+        }, 3000)
+
+      }
       //await axios.get(`http://wyatthash.com:8000/api/v1/personal-interests/${txid}_${vout}/removals`)
 
     } catch(error) {
