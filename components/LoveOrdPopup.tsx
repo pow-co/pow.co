@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { toast } from 'react-hot-toast';
 import { useRelay } from '../context/RelayContext';
 import { buildInscriptionASM } from '../services/inscriptions';
+import { useRouter } from 'next/router';
 
 interface LoveOrdPopupProps {
     txid: string;
@@ -17,6 +18,7 @@ const bitcoinAddressRegex = /^(1|3)[A-HJ-NP-Za-km-z1-9]{25,34}$/;
 const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopupProps) => {
     const [ordinalsAddress, setOrdinalsAddress] = useState("")
     const { relayOne } = useRelay()
+    const router = useRouter()
     
     const handleChangeOrdinalsAddress = (e:any) => {
         e.preventDefault()
@@ -70,6 +72,7 @@ const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopu
   
         console.log({ inscriptionOutput })
 
+        console.log(userPaymail)
         let outputs = []
         outputs.push({
           to: inscriptionOutput,
@@ -81,15 +84,17 @@ const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopu
           amount: 0.02,
           currency: 'USD'
         })
+        /*
         outputs.push({
             to: userPaymail,
             amount: 0.03,
             currency: "USD"
-        })
+        }) */
   
         try {
             let resp: any = await relayOne?.send({outputs})
             console.log("1LoveOrd.submit.relayx.response", resp)
+            router.replace(`/${resp.txid}`)
             onClose()
             toast('Success!', {
                 icon: '✅',
