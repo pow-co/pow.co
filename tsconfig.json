@@ -10,14 +10,25 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
+    "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "plugins": [
+      {
+        "transform": "scrypt-ts/dist/transformation/transformer",
+        "outDir": "./artifacts",
+        "transformProgram": true
+      }
+    ],
+    "strict": true,
+    "module": "esnext",
     "jsx": "preserve",
     "incremental": true
   },
@@ -25,10 +36,12 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "pages/faq.js"
+    "pages/faq.js",
+    "src/contracts/**.ts"
   ],
   "exclude": [
     "node_modules",
     "contracts"
   ]
 }
+
