@@ -118,7 +118,6 @@ export default function Home() {
               >
                 <div>
                   {filter !== "last-day" && rankings?.slice(0, cursor).map((post: Ranking, index: number) => (
-
                     <CardErrorBoundary key={post.content_txid}>
                       <BoostContentCardV2 rank={index + 1} {...post} />
                     </CardErrorBoundary>

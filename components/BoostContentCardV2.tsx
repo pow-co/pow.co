@@ -176,9 +176,7 @@ const BoostContentCardV2 = ({ content_txid, difficulty, rank, defaultTag }: Rank
             setTags(res.tags)
             if (!difficulty && res.tags) {
                 setComputedDiff(res.tags.reduce((acc: number, curr: any) => acc + curr.difficulty, 0));
-            } else {
-                setComputedDiff(0)
-            }
+            } 
             setCommentCount(res.replies.length)
             setLoading(false)
         })
