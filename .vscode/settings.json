@@ -1,5 +1,10 @@
 {
   "i18n-ally.localesPaths": [
     "utils/locales"
+  ],
+  "cSpell.words": [
+    "bmap",
+    "ordi",
+    "Paymail"
   ]
 }
