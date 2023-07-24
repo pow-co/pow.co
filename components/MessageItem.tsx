@@ -2,7 +2,7 @@ import { toast } from "react-hot-toast";
 import Link from "next/link";
 import UserIcon from "./UserIcon";
 import PostDescription from "./PostDescription";
-import { BoostButton } from "boostpow-button";
+import BoostButton  from './BoostpowButton/BoostButton';
 import { useBitcoin } from "../context/BitcoinContext";
 import moment from "moment";
 import { useTheme } from "next-themes";
@@ -72,27 +72,21 @@ export const MessageItem = (props:any, isSide: boolean) => {
         <div className="col-span-10 px-2 sm:col-span-11 flex flex-col justify-center w-full">
           <div className='flex justify-between pr-5'>
             <Link href={`/profile/${bmap.MAP[0].paymail}`}>
-              <p className='ml-2cursor-pointer text-lg text-blue-600 font-semibold hover:underline'>{bmap.MAP[0].paymail}</p>
+              <p className='ml-2cursor-pointer text-lg text-primary-600 dark:text-primary-400 font-semibold hover:underline'>{bmap.MAP[0].paymail}</p>
             </Link>
             <a href={`https://whatsonchain.com/tx/${bmap.tx.h}`} target="_blank" rel="noreferrer">
               <span className='text-xs text-gray-500 font-semibold'>{moment(createdAt).fromNow()}</span>
             </a>
           </div>
-          <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover text-primary-500 hover:underline'}}>{bmap.B[0].content}</Linkify></div>
+          <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover text-primary-600 dark:text-primary-400 hover:underline'}}>{bmap.B[0].content}</Linkify></div>
         </div>
         <div className='hidden col-span-12 group-hover:grid grid-col-12 justify-end'>
           <div className='col-span-11'/>
           <div className='col-span-1'>
             <BoostButton
-              wallet={wallet}
               content={bmap.tx.h}
               difficulty={0}
-              //@ts-ignore
-              theme={theme.theme}
               showDifficulty={false}
-              onSending={handleBoostLoading}
-              onError={handleBoostError}
-              onSuccess={handleBoostSuccess}
             />
           </div>
         </div>

@@ -165,7 +165,7 @@ export default function OnchainEvent({ txid }: {txid: string}) {
         return <>
         <LinkPreview  url={url} fetcher={customFetcher}  showLoader showPlaceholderIfNoImage
         fallback={<>
-          <a onClick={(e:any) => e.stopPropagation()} target='_blank' rel='noreferrer' href={url} className='cursor-pointer text-ellipsis break-words text-blue-500 hover:underline'>{url}</a>
+          <a onClick={(e:any) => e.stopPropagation()} target='_blank' rel='noreferrer' href={url} className='cursor-pointer text-ellipsis break-words text-primary-600 dark:text-primary-400 hover:underline'>{url}</a>
         </>}
          />
 

@@ -5,6 +5,7 @@ import { useRelay } from "./RelayContext";
 import { useTwetch } from "./TwetchContext";
 import { useHandCash } from "./HandCashContext";
 import { useSensilet } from "./SensiletContext";
+import axios, { AxiosResponse } from "axios";
 
 type BitcoinContextValue = {
     wallet: 'relayx' | 'twetch' | 'handcash';
@@ -15,15 +16,24 @@ type BitcoinContextValue = {
     authenticate: () => Promise<void>;
     authenticated: boolean;
     logout: () => void;
+    exchangeRate: number;
 }
 
 const BitcoinContext = createContext<BitcoinContextValue | undefined>(undefined)
 const BitcoinProvider = (props: { children: React.ReactNode }) => {
     const [wallet, setWallet] = useLocalStorage(walletStorageKey, "relayx")
+    const [exchangeRate, setExchangeRate] = useState(0)
     const { relayxAuthenticate, relayOne, relayxAuthenticated, relayxLogout, relayxAvatar, relayxPaymail, relayxUserName } = useRelay()
     const { twetchAuthenticate, twetchAuthenticated, twetchLogout, twetchAvatar, twetchPaymail, twetchUserName } = useTwetch()
     const { handcashAuthenticate, handcashAuthenticated, handcashLogout, handcashAvatar, handcashPaymail, handcashUserName} = useHandCash()
     const { sensiletAuthenticate, sensiletAuthenticated, sensiletLogout, sensiletAvatar, sensiletPaymail, sensiletUserName} = useSensilet()
+
+    useEffect(() => {
+        axios.get('https://api.whatsonchain.com/v1/bsv/main/exchangerate').then((resp:AxiosResponse) => {
+            setExchangeRate(resp.data.rate.toFixed(2))
+            console.log("exchange rate", resp.data.rate.toFixed(2))
+        })
+    },[])
 
     const authenticate = useCallback(async () => {
         switch (wallet){
@@ -107,7 +117,8 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
             setWallet,
             authenticate,
             authenticated,
-            logout
+            logout, 
+            exchangeRate
         }),
         [
             avatar,
@@ -117,7 +128,8 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
             setWallet,
             authenticate,
             authenticated,
-            logout
+            logout,
+            exchangeRate
         ]
     )
 

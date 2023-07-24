@@ -289,7 +289,7 @@ export default function MyDropzone() {
             <span className="text-sm font-medium text-gray-900 dark:text-gray-300">Sign with paymail?</span>
           </label>
         </div>
-        <button type="submit" className="items-center justify-end rounded-lg bg-blue-600 px-4 py-2.5 text-center text-xs font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900">
+        <button type="submit" className="items-center justify-end rounded-lg bg-primary-600 px-4 py-2.5 text-center text-xs font-medium text-white hover:bg-primary-800 focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900">
           Post Image
         </button>
       </div>

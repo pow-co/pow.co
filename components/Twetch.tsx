@@ -2,7 +2,7 @@
 import { request } from 'graphql-request'
 import moment from 'moment';
 import { toast } from 'react-hot-toast';
-import { BoostButton } from 'boostpow-button';
+import BoostButton  from './BoostpowButton/BoostButton';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 const graphqlAPI = "https://gw.twetch.app";
@@ -85,6 +85,7 @@ import PostMedia from './PostMedia';
 import UserIcon from './UserIcon';
 import { useBitcoin } from '../context/BitcoinContext';
 import { useRouter } from 'next/router';
+import LoveOrdButton from './LoveOrdButton';
 
 export default function Twetch({ txid, setIsTwetch, difficulty, tags }: { txid: string, setIsTwetch: Dispatch<SetStateAction<boolean>>, difficulty: number, tags?:[] }) {
     const [loading, setLoading] = useState(false)
@@ -124,6 +125,7 @@ export default function Twetch({ txid, setIsTwetch, difficulty, tags }: { txid: 
             </div>
         )
     }
+
     if(post){
         setIsTwetch(true)
         return (
@@ -213,8 +215,8 @@ export const TwetchCard = (props:any) => {
             <PostMedia files={JSON.parse(props.files)}/>
         </div>
       </div>
-      <div className='flex w-full px-16'>
-        <div className="grow"/>
+      <div className='flex w-full justify-between px-16'>
+        <LoveOrdButton txid={props.transaction} userPaymail={`props.userId@twetch.me`} />
         <div className={`min-w-[111px] justify-center flex group items-center w-fit relative`}>
           <svg
             viewBox="0 0 40 40"
@@ -232,15 +234,8 @@ export const TwetchCard = (props:any) => {
           </p>
         </div>
         <BoostButton
-            wallet={wallet}
             content={props.transaction}
             difficulty={props.difficulty}
-            //@ts-ignore
-            theme={theme.theme}
-            showDifficulty
-            onSending={handleBoostLoading}
-            onError={handleBoostError}
-            onSuccess={handleBoostSuccess}
         />
       </div>
       <div className='flex flex-wrap overflow-hidden w-full px-4 pb-4'>

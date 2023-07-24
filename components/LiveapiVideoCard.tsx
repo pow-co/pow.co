@@ -12,7 +12,7 @@ import PostDescription from './PostDescription';
 import { useTheme } from 'next-themes';
 import YouTube from 'react-youtube';
 import { ReactNode } from 'react';
-import { BoostButton } from 'boostpow-button';
+import BoostButton  from './BoostpowButton/BoostButton';
 import { useRouter } from 'next/router';
 import { useBitcoin } from '../context/BitcoinContext';
 import { LiveStream } from '../pages/live/[channelId]';
@@ -99,15 +99,8 @@ export default function VideoCard({ video }: {video: LiveapiVideo}) {
             </p>
           </div>
           <BoostButton
-            wallet={wallet}
             content={video._id}
             difficulty={1}
-            //@ts-ignore
-            theme={theme.theme}
-            showDifficulty
-            onSending={handleBoostLoading}
-            onError={handleBoostError}
-            onSuccess={handleBoostSuccess}
           />
         </div>
       </div>)

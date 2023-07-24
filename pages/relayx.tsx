@@ -14,9 +14,7 @@ import { useBitcoin } from "../context/BitcoinContext"
 import { relayFeedQuery } from "./profile/[paymail]"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { RelayClubCard } from "../components/RelayClub"
-
-
-
+import Meta from "../components/Meta"
 
 export default function RelayXFeed() {
   const [posts, setPosts] = useState([]);
@@ -36,6 +34,7 @@ export default function RelayXFeed() {
   
   return (
     <>
+    <Meta title='Relay Club | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
       {authenticated && <div className="mt-5 sm:mt-10">
         <FindOrCreate/>
@@ -87,7 +86,7 @@ export default function RelayXFeed() {
       </div>
       {authenticated && (
             <Link href="/compose">
-              <div className=" lg:hidden fixed bottom-[73px] right-[14px] h-14 w-14 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 flex items-center justify-center cursor-pointer">
+              <div className=" lg:hidden fixed bottom-[73px] right-[14px] h-14 w-14 rounded-full bg-gradient-to-r from-primary-400 to-primary-500 flex items-center justify-center cursor-pointer">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6 text-white"

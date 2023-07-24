@@ -72,7 +72,7 @@ const UserProfileCard = (props: UserProfileCardProps) => {
                     target="_blank"
                     rel="noreferrer"
                     href={url}
-                    className="mx-1 text-ellipsis overflow-hidden text-blue-500 inline-block text-base font-normal leading-5	tracking-normal	 text-left hover:underline"
+                    className="mx-1 text-ellipsis overflow-hidden text-primary-600 dark:text-primary-400 inline-block text-base font-normal leading-5	tracking-normal	 text-left hover:underline"
                     >
                     {url}
                     </a>

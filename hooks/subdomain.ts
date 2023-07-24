@@ -49,8 +49,7 @@ const domains: Domains = {
   'spacedisco.com': 'spacedisco',
   'geist.live': 'geist',
   'bethebroadcast.club': 'bethebroadcast',
-  'scrypt.live': 'scrypt',
-  'pow.co': 'powco'
+  'scrypt.live': 'scrypt'
 }
 
 export function useSubdomain(position = 0) {
