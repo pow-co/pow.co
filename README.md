@@ -1,4 +1,4 @@
-## POW.co FAQ
+## POW.co 
 
 POW.co is a website from The Proof-of-Work Cooperative that enables users to upvote content using Bitcoin's proof-of-work function.
 
