@@ -582,6 +582,7 @@ const BoostContentCardV2 = ({
             )}
             {linkUnfurls.map((linkUnfurl: any) => (
               <a
+                onClick={(e:any) => e.stopPropagation()}
                 href={linkUnfurl.url}
                 target="_blank"
                 rel="noreferrer"
