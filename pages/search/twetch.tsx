@@ -10,10 +10,12 @@ import Meta from '../../components/Meta';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { TwetchCard } from '../../components/Twetch';
 import Loader from '../../components/Loader';
+import { useRelay } from '../../context/RelayContext';
 
 const userRegex = /from:\s*(\d+)/i;
 
 function SearchPage() {
+    const { hasTwetchPrivilege } = useRelay()
   const router = useRouter();
   const { query } = router;
   const value = useMemo(() => query.v?.toString(), [query]);
@@ -51,12 +53,16 @@ function SearchPage() {
     setCursor(null)
     setResults([])
     setHasMore(true)
-    value && value.length > 0 && fetchData().then((data) => {
-        console.log(data)
-        setResults(data.edges.map((post: any) => post.node))
-        setHasMore(data.pageInfo.hasNextPage)
-        setCursor(data.pageInfo.endCursor)
-    })
+    if (value && value.length > 0){
+        fetchData().then((data) => {
+            console.log(data)
+            setResults(data.edges.map((post: any) => post.node))
+            setHasMore(data.pageInfo.hasNextPage)
+            setCursor(data.pageInfo.endCursor)
+        })
+    } else {
+        setHasMore(false)
+    }
   },[searchTerm, orderBy, from])
 
   const refresh = async () => {
@@ -100,7 +106,7 @@ function SearchPage() {
           <div className="mt-8">
             <div className="relative mb-4 flex">
               <SearchBar path="/twetch" />
-              <select onChange={handleChangeOrder}>
+              <select className="ml-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:ring-primary-500 focus:border-primary-500 block grow p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" onChange={handleChangeOrder}>
                 <option value={'CREATED_AT_DESC'}>Latest</option>
                 <option value={'CREATED_AT_ASC'}>Oldest</option>
                 <option value={'NUM_LIKES_DESC'}>Likes</option>
@@ -118,14 +124,14 @@ function SearchPage() {
                 Twetch
                 </div>
             </Link>
-            <Link href="/search/slictionary">
+            {/* <Link href="/search/slictionary">
                 <div className="mr-2 cursor-pointer whitespace-nowrap rounded-md px-3 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">
                 Definitions
                 </div>
-            </Link>
+            </Link> */}
           </div>
           <div className='mt-5 w-full'>
-            <div className='relative'>
+            {hasTwetchPrivilege ? (<div className='relative'>
                 <InfiniteScroll
                     dataLength={results.length}
                     hasMore={hasMore}
@@ -141,7 +147,13 @@ function SearchPage() {
                         ))}
                     </div>
                 </InfiniteScroll>
-            </div>
+            </div>) : (
+                <div className='mt-5 flex flex-col justify-center text-center'>
+                    <p className='text-5xl mb-3'>😔</p>
+                    <p className='text-lg italic opacity-80 px-10'>You need to own the Twetch Boost Privilege NFT to access this feature before everyone else.</p>
+                    <a className='mt-5 mx-auto text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1' href="https://relayx.com/market/011a97bdc1868fc53342cb9bffdc3e42782a9c258fbb6597cd20effa3a4d6077_o2" target="_blank" rel="noreferrer">Buy it here</a>
+                </div>
+            )}
 
           </div>
           

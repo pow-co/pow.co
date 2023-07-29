@@ -42,7 +42,7 @@ function Header() {
               )}
           </button>
           <div className='ml-4 h-8 w-8'/>
-          {/* <Link href="/search" className="h-8">
+          <Link href="/search" className="h-8">
             <div className="relative ml-4 flex h-8 w-8 cursor-pointer items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +59,7 @@ function Header() {
                 />
               </svg>
             </div>
-          </Link> */}
+          </Link>
         </div>
         <div className="flex w-full items-center justify-center sm:justify-start">
           <Link href="/">
@@ -71,7 +71,7 @@ function Header() {
           <SideBarDrawer />
         </Drawer>
         <div className="hidden grow items-center justify-end lg:flex">
-          {/* <Link href="/search">
+          <Link href="/search">
             <div className="relative ml-4 flex h-8 w-8 cursor-pointer items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +88,7 @@ function Header() {
                 />
               </svg>
             </div>
-          </Link> */}
+          </Link>
           <Link href="/chat">
             <div className="relative ml-4 flex h-8 w-8 cursor-pointer items-center justify-center">
               <svg

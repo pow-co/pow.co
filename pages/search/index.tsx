@@ -39,11 +39,11 @@ function SearchPage() {
                 Twetch
                 </div>
             </Link>
-            <Link href="/search/slictionary">
+            {/* <Link href="/search/slictionary">
                 <div className="mr-2 cursor-pointer whitespace-nowrap rounded-md px-3 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">
                 Definitions
                 </div>
-            </Link>
+            </Link> */}
           </div>
           <div className='mt-5 flex flex-col justify-center text-center'>
             <p className='text-5xl mb-3'>🚧</p>
