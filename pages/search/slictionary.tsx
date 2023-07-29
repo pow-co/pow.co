@@ -3,10 +3,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import moment from 'moment';
-import ThreeColumnLayout from '../components/ThreeColumnLayout';
-import SearchBar from '../components/SearchBar';
-import UserIcon from '../components/UserIcon';
-import Meta from '../components/Meta';
+import ThreeColumnLayout from '../../components/ThreeColumnLayout';
+import SearchBar from '../../components/SearchBar';
+import UserIcon from '../../components/UserIcon';
+import Meta from '../../components/Meta';
 
 function DefinitionItem(props: any) {
   const {
@@ -94,7 +94,7 @@ function SearchPage() {
   const { query } = router;
   const [definitions, setDefinitions] = useState([]);
   const [notFound, setNotFound] = useState(false);
-  const searchTerm = useMemo(() => query.q, [query]);
+  const searchTerm = useMemo(() => query.v, [query]);
 
   useEffect(() => {
     setDefinitions([]);
@@ -118,16 +118,25 @@ function SearchPage() {
         <div className="mb-[200px] w-full">
           <div className="mt-8">
             <div className="relative mb-4 flex flex-col">
-              <SearchBar />
+              <SearchBar path="/slictionary" />
             </div>
           </div>
           <div className="mx-0 mt-5 flex px-4">
-            <div className="mr-2 cursor-pointer whitespace-nowrap rounded-md px-3 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">
-              Boosted Content
-            </div>
-            <div className="mr-2 cursor-pointer whitespace-nowrap rounded-md bg-primary-100 px-3 py-2 text-sm font-medium leading-4 text-gray-900 dark:bg-primary-600/20 dark:text-white">
-              Definitions
-            </div>
+            <Link href="/search">
+                <div className="mr-2 cursor-pointer whitespace-nowrap rounded-md px-3 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">
+                Boosted Content
+                </div>
+            </Link>
+            <Link href="/search/twetch">
+                <div className="mr-2 cursor-pointer whitespace-nowrap rounded-md px-3 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">
+                Twetch
+                </div>
+            </Link>
+            <Link href="/search/slictionary">
+                <div className="mr-2 cursor-pointer whitespace-nowrap rounded-md bg-primary-100 px-3 py-2 text-sm font-medium leading-4 text-gray-900 dark:bg-primary-600/20 dark:text-white">
+                Definitions
+                </div>
+            </Link>
           </div>
           <div className="mt-5">
             {definitions.map((defItem: any) => (
