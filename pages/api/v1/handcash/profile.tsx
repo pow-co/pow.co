@@ -35,7 +35,7 @@ export default async function handler(
 
     return res.json(publicProfile)
 
-  } catch(error) {
+  } catch(error: any) {
 
     return res.status(400).json({ message: error.message });
 

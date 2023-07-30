@@ -5,6 +5,10 @@ import { config } from "../template_config"
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 
+const handcashAppId = process.env.handcash_app_id || '63a825594c80646cee9dca84'
+
+import axios from 'axios'
+
 type HandCashContextValue = {
     handcashAvatar: string;
     handcashUserName: string;
@@ -15,7 +19,7 @@ type HandCashContextValue = {
     tokenBalance: number;
     handCashAuthToken: string | undefined;
     setHandCashAuthToken:(authToken: string | undefined) => void 
-    setProfileFromAuthToken:({authToken: string}) => void 
+    setProfileFromAuthToken:({authToken}: {authToken: string}) => Promise<void>
     handCashSessionToken: string | undefined;
     setHandCashSessionToken:(authToken: string | undefined) => void 
     setHandcashPaymail: (paymail: string | undefined) => void;
@@ -41,22 +45,28 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
 
     const router = useRouter();
 
-    async function setProfileFromAuthToken({ authToken }) {
+    async function setProfileFromAuthToken({ authToken }: { authToken: string}): Promise<void> {
 
-      const { data } = await axios.get(`/api/v1/handcash/profile?authToken=${authToken}`)
+      try {
 
-      setHandCashAuthToken(authToken)
+        const { data } = await axios.get(`/api/v1/handcash/profile?authToken=${authToken}`)
 
-      setHandcashPaymail(data.publicProfile.paymail)
+        setHandCashAuthToken(authToken)
 
-      console.log('handcash.profile', data)
+        setHandcashPaymail(data.paymail)
+
+        console.log('handcash.profile', data)
+
+      } catch(error) {
+
+        console.error('handcash.profile.error', error)
+
+      }
     }
 
     const handcashAuthenticate = useCallback(async () => {
 
-        // TODO: Implement HandCash authentication
-
-        window.location.href = `https://app.handcash.io/#/authorizeApp?appId=63a825594c80646cee9dca84`;
+        window.location.href = `https://app.handcash.io/#/authorizeApp?appId=${handcashAppId}`;
 
     }, [setHandcashPaymail]);
 

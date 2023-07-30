@@ -25,7 +25,7 @@ export default function Settings() {
   const [walletPopupOpen, setWalletPopupOpen] = useState(false);
   const [sensiletChecked, setSensiletChecked] = useState(!!web3Account)
 
-  const { handcashAuthenticated, handcashAuthenticate } = useHandCash()
+  const { handcashAuthenticated, handcashAuthenticate, handcashPaymail, handcashLogout } = useHandCash()
 
   useEffect(() => {
     if (theme === "dark") {
@@ -175,7 +175,7 @@ export default function Settings() {
                   <FormattedMessage id="Handcash Wallet" />
                 </p>
                 <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
-                  <FormattedMessage id={`Handcash wallet connected ${handcashAccount}`} />
+                  <FormattedMessage id={`Handcash wallet connected ${handcashPaymail}`} />
                 </p>
               </div>
               <div className="grow" />
