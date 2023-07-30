@@ -6,6 +6,7 @@ import PanelLayout from "../components/PanelLayout";
 import WalletProviderPopUp from "../components/WalletProviderPopUp";
 import { useRelay } from "../context/RelayContext";
 import { useSensilet } from "../context/SensiletContext";
+import { useHandCash } from "../context/HandCashContext";
 import TuningPanel from "../components/TuningPanel";
 
 import { FormattedMessage } from "react-intl";
@@ -23,6 +24,8 @@ export default function Settings() {
   const [isDark, setIsDark] = useState(theme === "dark");
   const [walletPopupOpen, setWalletPopupOpen] = useState(false);
   const [sensiletChecked, setSensiletChecked] = useState(!!web3Account)
+
+  const { handcashAuthenticated, handcashAuthenticate, handcashPaymail, handcashLogout } = useHandCash()
 
   useEffect(() => {
     if (theme === "dark") {
@@ -164,6 +167,47 @@ export default function Settings() {
               </label>
             </div>
           </div>
+
+          {handcashAuthenticated ? (
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                  <FormattedMessage id="Handcash Wallet" />
+                </p>
+                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                  <FormattedMessage id={`Handcash wallet connected ${handcashPaymail}`} />
+                </p>
+              </div>
+              <div className="grow" />
+              <div className="relative">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+        <button onClick={handcashLogout}>Logout Handcash</button>
+                  </div>
+                </label>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                  <FormattedMessage id="Handcash Wallet" />
+                </p>
+                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                  <FormattedMessage id={`Experimental Feature - Connect Handcash Wallet`} />
+                </p>
+              </div>
+              <div className="grow" />
+              <div className="relative">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+        <button onClick={() => handcashAuthenticate()}>Connect Handcash</button>
+                  </div>
+                </label>
+              </div>
+            </div>
+          )}
+          
 
           {web3Account ? (
             <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
