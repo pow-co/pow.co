@@ -80,7 +80,7 @@ const LoveOrdPopup = ({ txid, userPaymail, twetchPreview, onClose }: LoveOrdPopu
           currency: 'BSV',
         })
         outputs.push({
-          to: 'aristotelis@relayx.io',
+          to: '1Hd2gJyBxQZvVuCtcX26DFRDGNcWA5L9Eo',
           amount: 0.02,
           currency: 'USD'
         })
