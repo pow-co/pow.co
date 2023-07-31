@@ -13,6 +13,7 @@
   },
   "plugins": ["unused-imports", "tailwindcss"],
   "rules": {
+    "no-await-in-loop": "off",
     "react/jsx-props-no-spreading": "off",
     "implicit-arrow-linebreak": "off",
     "max-len": "off",
