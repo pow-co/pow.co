@@ -24,34 +24,40 @@ async function createScriptShortcode({ script }: { script: bsv.Script }): Promis
   return data.uid;
 }
 
-interface FundScript {
-  script: bsv.Script;
-  value: bigint;
-  authToken: string;
-  note?: string;
+interface Payment {
+  destination: string;
+  currencyCode: string;
+  sendAmount: number;
 }
 
-async function fundScript({
-  script, value, authToken, note, 
-}: FundScript): Promise<{ txid: string, txhex?: string }> {
+interface ScriptOutput {
+  script: bsv.Script;
+  value: bigint;
+}
+
+async function fundScripts({ authToken, outputs, note }: { authToken: string, outputs: ScriptOutput[], note?: string }): Promise<{ txid: string, txhex?: string }> {
   const account = handCashConnect.getAccountFromAuthToken(authToken);
 
-  const sendAmount = Number(value) * 1e-8;
+  const payments: Payment[] = await Promise.all(outputs.map(async (output) => {
+    const sendAmount = Number(output.value) * 1e-8;
 
-  const currencyCode = 'BSV';
+    const currencyCode = 'BSV';
 
-  const shortCode = await createScriptShortcode({ script });
+    const shortCode = await createScriptShortcode({ script: output.script });
 
-  const destination = `${shortCode}@pow.co`;
+    const destination = `${shortCode}@pow.co`;
 
-  const payment = {
-    destination, currencyCode, sendAmount,
-  };
+    const payment = {
+      destination, currencyCode, sendAmount,
+    };
+
+    return payment;
+  }));
 
   const { transactionId: txid } = await account.wallet.pay({
     note: note || '',
     // @ts-ignore TODO: Figure out why CurrencyCode is not assignable to string (typescript compilation error)
-    payments: [payment],
+    payments,
   });
 
   let txhex: string;
@@ -103,12 +109,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { authToken, script, value } = req.body;
+    const { authToken, outputs } = req.body;
 
-    const { txid, txhex } = await fundScript({
+    const { txid, txhex } = await fundScripts({
       authToken,
-      value: BigInt(value),
-      script: bsv.Script.fromHex(script),
+      outputs: outputs.map((output: { value: number, script: string }) => ({
+        value: BigInt(output.value),
+        script: bsv.Script.fromHex(output.script),
+      })), 
     });
 
     return res.status(200).json({ status: 'sent', txid, txhex });

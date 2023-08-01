@@ -1,29 +1,18 @@
 import { useState, useEffect } from 'react';
 
-import { useRouter } from 'next/router';
-
 import { BoostPowJob } from 'boostpow';
 
 import { bsv } from 'scrypt-ts';
-import { useHandCash } from '../context/HandCashContext';
-
 import ThreeColumnLayout from '../components/ThreeColumnLayout';
 
-import HandcashWallet from '../wallets/handcash';
+import RelayxWallet from '../wallets/relayx';
 
 export default function Home() {
-  const { handCashAuthToken: authToken } = useHandCash();
   const [txId, setTxid] = useState<string | null>();
   const [txHex, setTxhex] = useState<string | null>();
   const [isPosting, setIsPosting] = useState<boolean>(false);
 
-  const router = useRouter();
-
-  if (!authToken) {
-    router.push('/settings');
-  }
-
-  const wallet = new HandcashWallet({ authToken: String(authToken) });
+  const wallet = new RelayxWallet();
 
   useEffect(() => {
     if (isPosting) { return; }
@@ -58,11 +47,11 @@ export default function Home() {
   return (
 
       <ThreeColumnLayout>
-        <h1>Test Handcash Boostpow</h1>
+        <h1>Test Relayx Boostpow</h1>
     
         {isPosting ? (
 
-          <p>Posting Boost of 1000 sats</p>
+          <p>Posting Boost of Two 1000 sat Outputs</p>
 
         ) : (
 
