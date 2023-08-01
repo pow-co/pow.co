@@ -33,6 +33,7 @@
     "react/no-unused-prop-types": "off",
     "import/no-cycle": "off",
     "react/function-component-definition": "off",
-    "@typescript-eslint/no-use-before-define": "off"
+    "@typescript-eslint/no-use-before-define": "off",
+    "class-methods-use-this": "off"
   }
 }
