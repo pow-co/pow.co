@@ -13,10 +13,19 @@ export interface BoostPowJobOutput {
   value: bigint;
 }
 
+export interface ScriptOutput {
+  script: bsv.Script;
+  value: bigint;
+}
+
 export default abstract class Wallet {
-  abstract fundBoostOutputs(outputs: BoostPowJobOutput[]): Promise<bsv.Transaction>;
+
+  paymail: string | undefined;
+
+  abstract createTransaction({ outputs }: { outputs: ScriptOutput[] }): Promise<bsv.Transaction>;
 
   async createBoostTransaction(outputs: BoostPowJobOutput[]): Promise<bsv.Transaction> {
+
     const tx: bsv.Transaction = await this.fundBoostOutputs(outputs);
 
     try {
@@ -29,6 +38,20 @@ export default abstract class Wallet {
 
     return tx;
   }
+
+  private async fundBoostOutputs(outputs: BoostPowJobOutput[]): Promise<bsv.Transaction> {
+
+    return this.createTransaction({
+      outputs: outputs.map(output => {
+        return {
+          script: bsv.Script.fromASM(output.job.toASM()),
+          value: output.value
+        }
+      })
+    })
+
+  }
+
 }
 
 async function reliablePostJob(tx: bsv.Transaction): Promise<any[]> {

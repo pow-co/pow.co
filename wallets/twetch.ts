@@ -1,15 +1,22 @@
 import { bsv } from 'scrypt-ts';
 
 import TwetchWeb3 from '@twetch/web3';
-import Wallet, { BoostPowJobOutput } from './abstract';
+import Wallet, { ScriptOutput } from './abstract';
 
 export default class Twetch extends Wallet {
-  async fundBoostOutputs(outputs: BoostPowJobOutput[]): Promise<bsv.Transaction> {
+
+  constructor({ paymail }: { paymail: string }) {
+    super()
+    this.paymail = paymail
+  }
+
+  async createTransaction({ outputs }: {outputs: ScriptOutput[]}):  Promise<bsv.Transaction> {
+
     const twetchResponse = await TwetchWeb3.abi({
       contract: 'payment',
       outputs: outputs.map((output) => ({
         sats: output.value,
-        script: output.job.toASM(),
+        script: output.script.toASM(),
       })),
     });
 

@@ -7,21 +7,29 @@ import Local from '../wallets/local';
 
 import { useHandCash } from '../context/HandCashContext';
 
-export default function useWallet({ name }: { name: string }): Wallet {
+import { useBitcoin } from '../context/BitcoinContext';
+
+export default function useWallet(): Wallet {
+
+  let { wallet, paymail } = useBitcoin()
+
   const { handCashAuthToken } = useHandCash();
 
-  switch (name) {
+  paymail = String(paymail)
+
+  switch (wallet) {
+
     case 'twetch':
 
-      return new Twetch();
+      return new Twetch({ paymail });
 
     case 'relayx':
 
-      return new Relayx();
+      return new Relayx({ paymail });
 
     case 'handcash':
 
-      return new Handcash({ authToken: String(handCashAuthToken) });
+      return new Handcash({ authToken: String(handCashAuthToken), paymail });
 
     case 'sensilet':
 
