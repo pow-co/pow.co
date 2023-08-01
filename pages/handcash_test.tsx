@@ -15,7 +15,6 @@ export default function Home() {
   const { handCashAuthToken: authToken } = useHandCash();
   const [txId, setTxid] = useState<string | null>();
   const [txHex, setTxhex] = useState<string | null>();
-  const [isPosting, setIsPosting] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -23,12 +22,8 @@ export default function Home() {
     router.push('/settings');
   }
 
-  const wallet = new HandcashWallet({ authToken: String(authToken) });
-
   useEffect(() => {
-    if (isPosting) { return; }
-
-    setIsPosting(true);
+    const wallet = new HandcashWallet({ authToken: String(authToken) });
 
     wallet.createBoostTransaction([{
       job: BoostPowJob.fromObject({
@@ -49,22 +44,16 @@ export default function Home() {
         setTxid(tx.hash);
 
         setTxhex(tx.toString());
-
-        setIsPosting(false);
       })
       .catch(console.error);
-  });
+  }, []);
 
   return (
 
       <ThreeColumnLayout>
         <h1>Test Handcash Boostpow</h1>
     
-        {isPosting ? (
-
-          <p>Posting Boost of 1000 sats</p>
-
-        ) : (
+        {txId ? (
 
           <div>
 
@@ -72,6 +61,10 @@ export default function Home() {
             <p>txhex: {txHex}</p>
 
           </div>
+
+        ) : (
+
+          <p>Posting Boost of Two 1000 sat Outputs</p>
 
         )}
 

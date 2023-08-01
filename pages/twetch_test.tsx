@@ -5,14 +5,14 @@ import { BoostPowJob } from 'boostpow';
 import { bsv } from 'scrypt-ts';
 import ThreeColumnLayout from '../components/ThreeColumnLayout';
 
-import RelayxWallet from '../wallets/relayx';
+import TwetchWallet from '../wallets/twetch';
 
 export default function Home() {
   const [txId, setTxid] = useState<string | null>();
   const [txHex, setTxhex] = useState<string | null>();
 
   useEffect(() => {
-    const wallet = new RelayxWallet();
+    const wallet = new TwetchWallet();
 
     wallet.createBoostTransaction([{
       job: BoostPowJob.fromObject({
@@ -40,7 +40,7 @@ export default function Home() {
   return (
 
       <ThreeColumnLayout>
-        <h1>Test Relayx Boostpow</h1>
+        <h1>Test Twetch Boostpow</h1>
     
         {txId ? (
 
