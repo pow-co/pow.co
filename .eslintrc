@@ -13,6 +13,7 @@
   },
   "plugins": ["unused-imports", "tailwindcss"],
   "rules": {
+    "no-await-in-loop": "off",
     "react/jsx-props-no-spreading": "off",
     "implicit-arrow-linebreak": "off",
     "max-len": "off",
@@ -32,6 +33,7 @@
     "react/no-unused-prop-types": "off",
     "import/no-cycle": "off",
     "react/function-component-definition": "off",
-    "@typescript-eslint/no-use-before-define": "off"
+    "@typescript-eslint/no-use-before-define": "off",
+    "class-methods-use-this": "off"
   }
 }
