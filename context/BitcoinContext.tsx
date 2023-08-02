@@ -6,13 +6,14 @@ import { useTwetch } from "./TwetchContext";
 import { useHandCash } from "./HandCashContext";
 import { useSensilet } from "./SensiletContext";
 import axios, { AxiosResponse } from "axios";
+import React from 'react'
 
 type BitcoinContextValue = {
-    wallet: 'relayx' | 'twetch' | 'handcash';
+    wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet' | 'local';
     avatar: string | undefined;
     paymail: string | undefined;
     userName: string | undefined;
-    setWallet: (wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet') => void;
+    setWallet: (wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet' | 'local') => void;
     authenticate: () => Promise<void>;
     authenticated: boolean;
     logout: () => void;
@@ -105,6 +106,7 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
         relayxLogout()
         twetchLogout()
         handcashLogout()
+        sensiletLogout()
         localStorage.clear()
     }
 

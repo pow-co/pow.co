@@ -7,12 +7,17 @@ import ThreeColumnLayout from '../components/ThreeColumnLayout';
 
 import TwetchWallet from '../wallets/twetch';
 
+import { useBitcoin } from '../context/BitcoinContext'
+
 export default function Home() {
   const [txId, setTxid] = useState<string | null>();
   const [txHex, setTxhex] = useState<string | null>();
 
+  let { paymail } = useBitcoin()
+
   useEffect(() => {
-    const wallet = new TwetchWallet();
+
+    const wallet = new TwetchWallet({ paymail: String(paymail) });
 
     wallet.createBoostTransaction([{
       job: BoostPowJob.fromObject({

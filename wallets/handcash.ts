@@ -1,26 +1,31 @@
 import axios from 'axios';
 
 import { bsv } from 'scrypt-ts';
-import Wallet, { BoostPowJobOutput } from './abstract';
+import Wallet from './abstract';
 
 export default class Handcash extends Wallet {
   authToken: string;
 
-  constructor({ authToken }: { authToken: string }) {
+  name = 'handcash'
+
+  constructor({ authToken, paymail }: { authToken: string, paymail: string }) {
     super();
 
+    this.paymail = paymail
     this.authToken = authToken;
   }
 
-  async fundBoostOutputs(outputs: BoostPowJobOutput[]): Promise<bsv.Transaction> {
+  async createTransaction({ outputs }: { outputs: bsv.Transaction.Output[] }): Promise<bsv.Transaction> {
+
     const { data } = await axios.post('/api/v1/handcash/pay', {
       authToken: this.authToken,
       outputs: outputs.map((output) => ({
-        script: output.job.toHex(),
-        value: output.value,
+        script: output.script.toHex(),
+        value: output.satoshis
       })),
     });
 
     return new bsv.Transaction(data.txhex);
+
   }
 }

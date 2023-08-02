@@ -12,7 +12,7 @@ import ThreeColumnLayout from '../components/ThreeColumnLayout';
 import HandcashWallet from '../wallets/handcash';
 
 export default function Home() {
-  const { handCashAuthToken: authToken } = useHandCash();
+  const { handCashAuthToken: authToken, handcashPaymail: paymail } = useHandCash();
   const [txId, setTxid] = useState<string | null>();
   const [txHex, setTxhex] = useState<string | null>();
 
@@ -23,7 +23,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const wallet = new HandcashWallet({ authToken: String(authToken) });
+    const wallet = new HandcashWallet({ authToken: String(authToken), paymail: String(paymail) });
 
     wallet.createBoostTransaction([{
       job: BoostPowJob.fromObject({

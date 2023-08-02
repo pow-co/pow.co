@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from "react";
-import useSWR from "swr";
 import { MessageItem } from "./MessageItem";
 import ChatComposer from "./ChatComposer";
 
@@ -13,17 +12,16 @@ import axios from 'axios'
 
 export const SideChat = ({room: channel}: SideChatProps) => {
 
-    const socketRef = useRef<EventSource | null>(null);
-    const [newMessages, setNewMessages] = useState<any>([])
+  const [newMessages, setNewMessages] = useState<any>([])
   const [messages, setMessages] = useState<any>([])
-    const [pending, setPending] = useState<any>()
+  const [pending, setPending] = useState<any>()
 
   const { getWebSocket } = useWebSocket(`wss://pow.co/websockets/chat/channels/${channel}`, {
 
     onOpen: async () => {
 
     },
-    onMessage: async (message) => {
+    onMessage: async () => {
       refreshMessages()
     },
     onClose: async () => {
@@ -42,7 +40,6 @@ export const SideChat = ({room: channel}: SideChatProps) => {
         socket.close()
 
       }
-
     }
   }, [])
 
@@ -74,13 +71,17 @@ export const SideChat = ({room: channel}: SideChatProps) => {
     return (
         <>
             <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: "calc(100vh - 218px)"}} >
-            {pending && <div className='opacity-60'><MessageItem {...pending}/></div>}
-                {newMessages?.map((message: any) => {
+              {pending && (
+                  <div className='opacity-60'>
+                    <MessageItem {...pending}/>
+                  </div>
+              )}
+              {newMessages?.map((message: any) => {
                 return <MessageItem key={message.txid} {...message}/>
-                })}
-                {messages?.map((message: any) => {
+              })}
+              {messages?.map((message: any) => {
                 return <MessageItem key={message.txid} {...message}/>
-                })}
+              })}
             </div>
             <div ref={composerRef} className='p-4'>
                 <ChatComposer channel={channel} onNewMessageSent={(newMessage:any) => setPending(newMessage)} onChatImported={refreshMessages}/>
@@ -89,4 +90,3 @@ export const SideChat = ({room: channel}: SideChatProps) => {
     )
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());

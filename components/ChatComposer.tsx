@@ -1,66 +1,34 @@
 import React, { useState } from "react";
 
-import nimble from "@runonbitcoin/nimble";
-//import { BAP } from "bitcoin-bap";
 import bops from "bops";
-import bsv from "bsv";
-//import Buffer from "Buffer";
-import { last } from "lodash";
-//import { useBap } from "../../context/bap";
-//import { useHandcash } from "../../context/handcash";
-import { useRelay } from "../context/RelayContext";
-import { useBitcoin } from "../context/BitcoinContext";
-import { useRouter } from "next/router";
+import { bsv } from 'scrypt-ts'
 import axios from "axios";
-import TwetchWeb3 from "@twetch/web3";
 import moment from "moment";
-//import { useActiveChannel } from "../../hooks";
-//import ChannelTextArea from "./ChannelTextArea";
-//import InvisibleSubmitButton from "./InvisibleSubmitButton";
+
+import Wallet from '../wallets/abstract'
+
+import useWallet from '../hooks/useWallet'
+
+const B_PREFIX = `19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut`;
+export const MAP_PREFIX = `1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5`;
 
 interface ChatComposerProps {
   channel: string;
   onNewMessageSent: (message: any) => void;
   onChatImported?: (message: any) => void;
 }
-const ChatComposer = ({
-  channel,
-  onNewMessageSent,
-  onChatImported,
-}: ChatComposerProps) => {
-  //const dispatch = useDispatch();
-  // const user = useSelector((state) => state.session.user);
-  const { relayOne } = useRelay();
-  const { paymail, wallet } = useBitcoin();
-  const [inputValue, setInputValue] = useState("");
-  const [sending, setSending] = useState(false);
-  const [rows, setRows] = useState(1);
 
-  //const { profile, authToken, hcDecrypt } = useHandcash();
-  //const { identity } = useBap();
+class BitchatClient {
+  wallet: Wallet;
+  app: string;
 
-  //const activeChannel = useActiveChannel();
-  let timeout = undefined;
+  constructor({ app, wallet }: { app: string, wallet: Wallet }) {
+    this.app = app
+    this.wallet = wallet
+  }
 
-  const handleSubmit = async () => {
-    if (!paymail) {
-      alert("Please, connect your wallet");
-      return;
-    }
-    const content = inputValue;
+  buildMessageScript({ content, channel }: { content: string, channel: string }): bsv.Script {
 
-    if (content !== "" && paymail) {
-      setInputValue("");
-      setSending(true);
-      await sendMessage(
-        paymail!,
-        content,
-        channel //activeChannel?.channel || channel || null
-      ).then(() => setSending(false));
-    }
-  };
-
-  const sendMessage = async (pm: string, content: string, channel: string) => {
     let dataPayload = [
       B_PREFIX, // B Prefix
       content,
@@ -70,117 +38,128 @@ const ChatComposer = ({
       MAP_PREFIX, // MAP Prefix
       "SET",
       "app",
-      "chat.pow.co",
+      this.app,
       "type",
       "message",
       "paymail",
-      pm,
+      this.wallet.paymail,
+      "context",
+      "channel",
+      "channel",
+      channel
     ];
 
-    // add channel
-    if (channel) {
-      dataPayload.push("context", "channel", "channel", channel);
-    }
-
-    const script = nimble.Script.fromASM(
+    const script = bsv.Script.fromASM(
       "OP_0 OP_RETURN " +
         dataPayload
           .map((str) => bops.to(bops.from(str, "utf8"), "hex"))
           .join(" ")
     );
-    let outputs;
-    let pendingMsg = {
-      bmap:{
-        B: [
-          {
-            content: content,
-            "content-type": "text/plain",
-            encoding: "utf-8",
-          },
-        ],
-        MAP: [
-          {
-            channel: channel,
-            paymail: paymail,
-          },
-        ],
-        tx: {
-          h: "pending",
-        }
-      },
-      createdAt:moment()
-    };
-    onNewMessageSent(pendingMsg);
-    switch (wallet) {
-      case "relayx":
-        outputs = [{ script: script.toASM(), amount: 0, currency: "BSV" }];
-        let { rawTx, txid } = await relayOne!.send({ outputs });
 
-        console.log("relayone.result", { rawTx, txid });
+    return script
 
-        axios.post('https://pow.co/api/v1/posts', {
-          transactions: [{
-            tx: rawTx
-          }]
-        })
-        .then(result => {
-          console.debug('powco.posts.ingest.result', result.data)
-        })
-        .catch(error => {
-          console.error('post.submit.powco.error', error)
-        })
+  }
 
-        axios
-          .post("https://b.map.sv/ingest", {
-            rawTx: rawTx,
-          })
-          .catch((error) => console.error(error));
+  async sendMessage({ content, channel }: {content: string, channel:string }): Promise<bsv.Transaction> {
 
-        try {
-          const { data } = await axios.get(
-            `https://pow.co/api/v1/chat/messages/${txid}`
-          );
+    const script = this.buildMessageScript({ content, channel })
 
-          if (onChatImported) {
-            onChatImported(data);
+    const tx: bsv.Transaction = await this.wallet.createTransaction({
+
+      outputs: [new bsv.Transaction.Output({
+        script,
+        satoshis: 10
+      })]
+
+    })
+
+    axios.post('https://pow.co/api/v1/posts', {
+      transactions: [{
+        tx: tx.toString()
+      }]
+    })
+    .then(console.log)
+    .catch(console.error)
+
+    axios.post("https://b.map.sv/ingest", {
+      rawTx: tx.toString(),
+    })
+    .catch(console.error)
+
+    axios.get(`https://pow.co/api/v1/chat/messages/${tx.hash}`).catch(console.error);
+
+    return tx
+
+  }
+
+}
+
+const ChatComposer = ({
+  channel,
+  onNewMessageSent,
+  onChatImported,
+}: ChatComposerProps) => {
+
+  const [inputValue, setInputValue] = useState("");
+
+  const [sending, setSending] = useState(false);
+
+  const [rows, setRows] = useState(1);
+
+  const wallet = useWallet()
+
+  const handleSubmit = async () => {
+
+    if (!wallet.paymail) {
+      alert("Please, connect your wallet");
+      return;
+    }
+
+    const content = inputValue;
+
+    if (content !== "" && wallet.paymail) {
+
+      setInputValue("");
+
+      setSending(true);
+      
+      let client = new BitchatClient({ app: 'pow.co', wallet })
+
+      let pendingMsg = {
+        bmap:{
+          B: [
+            {
+              content,
+              "content-type": "text/plain",
+              encoding: "utf-8",
+            },
+          ],
+          MAP: [
+            {
+              channel,
+              paymail: wallet.paymail,
+            },
+          ],
+          tx: {
+            h: "pending",
           }
+        },
+        createdAt:moment()
+      };
 
-          return data;
+      onNewMessageSent(pendingMsg);
 
-          console.log("powco.bitchat.message.imported", data);
-        } catch (error) {
-          console.error("powco.bitchat.message.import.error", error);
+      await client.sendMessage({ content, channel })
 
-          if (onChatImported) {
-            onChatImported({});
-          }
-        }
+      setSending(false)
 
-        break;
-      case "twetch":
-        outputs = [
-          {
-            sats: 0,
-            script: script.toASM(),
-            address: null,
-          },
-        ];
-        const resp = await TwetchWeb3.abi({
-          contract: "payment",
-          outputs: outputs,
-        });
-        await axios.post("https://b.map.sv/ingest", {
-          rawTx: resp.rawtx,
-        });
-        break;
-      case "handcash":
-        break;
-      default:
-        console.log("no wallet selected");
+      if (onChatImported) {
+        console.log({ pendingMsg })
+        onChatImported(pendingMsg);
+      }
+
     }
   };
-
-  //const typingUser = useSelector((state) => state.chat.typingUser);
 
   // TODO: Detect whether the user is typing
   const handleKeyDown = (event: any) => {
@@ -191,12 +170,12 @@ const ChatComposer = ({
     let cKey = 67;
     const enterKey = 13;
 
-    if (event.keyCode == ctrlKey || event.keyCode == cmdKey) ctrlDown = true;
+    if (event.keyCode === ctrlKey || event.keyCode === cmdKey) ctrlDown = true;
 
-    if (ctrlDown && event.keyCode == cKey) console.log("Document catch Ctrl+C");
-    if (ctrlDown && event.keyCode == vKey) console.log("Document catch Ctrl+V");
+    if (ctrlDown && event.keyCode === cKey) console.log("Document catch Ctrl+C");
+    if (ctrlDown && event.keyCode === vKey) console.log("Document catch Ctrl+V");
 
-    if (event.keyCode == enterKey && !event.shiftKey) {
+    if (event.keyCode === enterKey && !event.shiftKey) {
       event.preventDefault();
       handleSubmit();
     }
@@ -212,7 +191,7 @@ const ChatComposer = ({
 
     setRows(event.target.value.split("\n").length);
 
-    if (event.keyCode == ctrlKey || event.keyCode == cmdKey) ctrlDown = false;
+    if (event.keyCode === ctrlKey || event.keyCode === cmdKey) ctrlDown = false;
 
     if (event.keyCode === enterKey) {
       //console.log("enter");
@@ -227,9 +206,9 @@ const ChatComposer = ({
     }
   };
 
-  const handleChange = (e: any) => {
-    e.preventDefault();
-    setInputValue(e.target.value);
+  const handleChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
+    event.preventDefault();
+    setInputValue((event.target as HTMLTextAreaElement).value);
   };
 
   return (
@@ -259,18 +238,11 @@ const ChatComposer = ({
           </div>
         </div>
       </form>
-      {/* <div>
-        {typingUser && `${typingUser.paymail} is typing...`}
-      </div> */}
     </div>
   );
 };
 
 export default ChatComposer;
-
-const B_PREFIX = `19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut`;
-const AIP_PREFIX = `15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva`;
-export const MAP_PREFIX = `1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5`;
 
 // /**
 //  * Sign an op_return hex array with AIP
