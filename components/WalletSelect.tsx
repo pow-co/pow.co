@@ -8,8 +8,7 @@ const WalletSelect = () => {
     const { wallet, setWallet } = useBitcoin()
     const { relayxAuthenticate } = useRelay()
     const { twetchAuthenticate } = useTwetch()
-    const { handcashAuthenticate } = useHandCash()
-
+    const { handcashAuthenticate, handcashPaymail } = useHandCash()
 
     const handleChange = (e:any) => {
         setWallet(e.target.value)
@@ -21,6 +20,7 @@ const WalletSelect = () => {
             twetchAuthenticate()
             break;
           case 'handcash':
+            if (handcashPaymail) { return }
             handcashAuthenticate()
             break;
           default:

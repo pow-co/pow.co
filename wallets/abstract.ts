@@ -13,42 +13,63 @@ export interface BoostPowJobOutput {
   value: bigint;
 }
 
-export interface ScriptOutput {
-  script: bsv.Script;
-  value: bigint;
-}
-
 export default abstract class Wallet {
 
   paymail: string | undefined;
 
-  abstract createTransaction({ outputs }: { outputs: ScriptOutput[] }): Promise<bsv.Transaction>;
+  name: string = 'abstract';
+
+  abstract createTransaction({ outputs }: { outputs: bsv.Transaction.Output[] }): Promise<bsv.Transaction>;
 
   async createBoostTransaction(outputs: BoostPowJobOutput[]): Promise<bsv.Transaction> {
 
-    const tx: bsv.Transaction = await this.fundBoostOutputs(outputs);
+    console.log('createBoostTransaction', outputs)
+
+    const tx: bsv.Transaction = await this.fundBoostOutputs(outputs)
 
     try {
+
       const result = await reliablePostJob(tx);
 
       console.log('reliablePostJob.result', result);
+
     } catch (error) {
+
       console.error(error);
+
     }
 
     return tx;
+
   }
 
-  private async fundBoostOutputs(outputs: BoostPowJobOutput[]): Promise<bsv.Transaction> {
+  private async fundBoostOutputs(boostOutputs: BoostPowJobOutput[]): Promise<bsv.Transaction> {
 
-    return this.createTransaction({
-      outputs: outputs.map(output => {
-        return {
-          script: bsv.Script.fromASM(output.job.toASM()),
-          value: output.value
-        }
+    const outputs = boostOutputs.map(output => {
+      return new bsv.Transaction.Output({
+        script: bsv.Script.fromASM(output.job.toASM()),
+        satoshis: Number(output.value)
       })
     })
+
+    console.log({ outputs })
+
+    const devFee = Math.floor(outputs.reduce((sum, output) => {
+      return sum + output.satoshis
+    }, 0) * 0.1)
+
+    console.log({ devFee })
+
+    if (process.env.NEXT_PUBLIC_FEE_SCRIPT) {
+
+      outputs.push(new bsv.Transaction.Output({
+        script: bsv.Script.fromHex(process.env.NEXT_PUBLIC_FEE_SCRIPT),
+        satoshis: devFee
+      }))
+
+    }
+
+    return this.createTransaction({ outputs })
 
   }
 

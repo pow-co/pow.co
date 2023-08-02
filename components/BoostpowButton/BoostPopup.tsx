@@ -5,6 +5,11 @@ import { useBitcoin } from '../../context/BitcoinContext';
 import TwetchWeb3 from '@twetch/web3';
 import { Relayone, RelayoneSignResult, BoostJobParams, signBoostJob, LocalhostRelayone } from "../../utils/relayone"
 
+import { BoostPowJob } from 'boostpow'
+
+import useWallet from '../../hooks/useWallet'
+import Wallet from '../../wallets/abstract'
+
 const API_BASE = "https://pow.co"
 
 const handleBoostLoading = () => {
@@ -52,7 +57,7 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
     const [input, setInput] = useState("")
     const [tags, setTags] = useState<string[]>(defaultTag ? [defaultTag] : [])
     const [tagsWeight, setTagsWeight] = useState<number[]>([])
-    const { wallet, exchangeRate } = useBitcoin()
+    const { exchangeRate } = useBitcoin()
     const absolute_min_value = useMemo(()=> tags.length > 0 ? tags.length * 500 : 500,[tags]);
     const min_profitability = 1;
     const default_profitability = 500000;
@@ -69,6 +74,7 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
     const [doSign, setDoSign] = useState(true);
     const totalAmount = useMemo(()=> devFee + value,[devFee, value])
 
+
   const handleCheckboxChange = () => {
     setDoSign(!doSign);
   };
@@ -84,244 +90,103 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
     setPosition(parseFloat(e.target.value))
   }
 
+  const wallet: Wallet = useWallet()
+
   const boost = async (contentTxid: string) => {
     
     handleBoostLoading()
 
     var jobParams: BoostJobParams = {
       content: contentTxid,
-      difficulty
+      diff: difficulty
     }
 
-    switch (wallet){
-      case "relayx":
+    try {
 
-        try {
+      const jobs: BoostPowJob[] = []
 
-          if (doSign) {
+      if (wallet.name === 'relayx' && doSign) {
 
-            //@ts-ignore
+        //@ts-ignore
+        const isLocalhost = window.location.host !== 'pow.co'
 
-            const isLocalhost = window.location.host !== 'pow.co'
+        //@ts-ignore
+        const relayone: Relayone = isLocalhost ? new LocalhostRelayone() : window.relayone as Relayone;
 
-            //@ts-ignore
-            const relayone: Relayone = isLocalhost ? new LocalhostRelayone() : window.relayone as Relayone;
+        let signResult: RelayoneSignResult = await signBoostJob({
+          relayone, 
+          job: jobParams
+        })
 
-            let signResult: RelayoneSignResult = await signBoostJob({
-              relayone, 
-              job: jobParams
-            })
+        console.log('relayone.RelayoneSignResult', signResult)
 
-            console.log('relayone.RelayoneSignResult', signResult)
+        jobParams['additionalData'] = Buffer.from(JSON.stringify(signResult), 'utf-8').toString("hex")
 
-            jobParams['additionalData'] = Buffer.from(JSON.stringify(signResult), 'utf-8').toString("hex")
+      }
 
-          }
+      if (tags.length > 0) {
 
-          let outputs
-          if (tags.length > 0){
-            const promises = tags.map(async (tag) => {
+        for (let tag of tags) {
 
-              jobParams['tag'] = tag
-              jobParams['difficulty'] = difficulty / parseFloat(tags.length.toFixed(4))
+          jobParams['tag'] = tag
 
-              console.log("powco.boost.scripts.create.params", jobParams)
-              
-              const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
-  
-              console.log("powco.boost.scripts.create.result", data)
-              
-              return {
-                to:data.script.asm,
-                amount: 1e-8 * value / tags.length,
-                currency: 'BSV'
-              }
-            })
+          jobParams['diff'] = difficulty / parseFloat(tags.length.toFixed(4))
 
-            outputs = await Promise.all(promises)
-          } else {
-            
-            console.log("powco.boost.scripts.create.params", jobParams)
-  
-            const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
-  
-            console.log("powco.boost.scripts.create.result", data)
-  
-            outputs = [{
-              to: data.script.asm,
-              amount: value * 1e-8,
-              currency: "BSV"
-            }]
+          jobs.push(BoostPowJob.fromObject(jobParams))
 
-          }
-
-          
-          //@ts-ignore
-          outputs.push({
-            currency: 'BSV',
-            amount: devFee * 1e-8,
-            to: '1Nw9obzfFbPeERLAmSgN82dtkQ6qssaGnU', // dev revenue address
-          })
-
-          console.log("relayx.transactions.outputs", outputs)
-
-          //@ts-ignore
-          const relayResponse = await window.relayone.send({
-            outputs,
-            opReturn: []
-          })
-
-          console.log("relayx.boost.response", relayResponse)
-
-          const { data: powcoJobsSubmitResultData } = await axios.post(`${API_BASE}/api/v1/boost/jobs`, {
-            transaction: relayResponse.rawTx
-          })
-          console.log('stag.powco.jobs.submit.result.data', powcoJobsSubmitResultData)
-
-          const [job] = powcoJobsSubmitResultData.jobs
-
-          const boost_result = {
-              txid: relayResponse.txid,
-              txhex: relayResponse.rawTx,
-              job
-          }
-
-          console.log('boost.send.result', boost_result)
-
-
-          /* const boost_result: BoostBuyResult = await stag.boost.buy({
-            content: contentTxid,
-            value: value,
-            difficulty: difficulty,
-            tag: tag,
-          })
-          //@ts-ignore
-          window.relayone
-            .send({
-              currency: 'BSV',
-              amount: devFee * 1e-8,
-              to: '1Nw9obzfFbPeERLAmSgN82dtkQ6qssaGnU', // dev revenue address
-            })
-            .then((result: any) => {
-              console.log('relayone.send.reward.result', result)
-            })
-            .catch((error: any) => {
-              console.log('relayone.send.reward.error', error)
-            }) */
-          handleBoostSuccess()
-          //@ts-ignore
-        } catch (error: any) {
-          console.log('boost.error', error)
-          handleBoostError()
         }
-        break;
-      case "twetch":
 
-        try {
-          if (doSign){
-            let resp = await TwetchWeb3.connect()
-            let paymail = resp.paymail.toString()
-            let pubkey = resp.publicKey.toString()
-            console.log("identity: ", { paymail, pubkey })
-            jobParams['additionalData'] = Buffer.from(`{
-              identity {
-                paymail: "${paymail}",
-                publicKey: "${pubkey}"
-              }
-            }`, 'utf-8').toString("hex")
-          }
-          
-          let outputs
+      } else {
 
-          if (tags.length > 0) {
-            const promises = tags.map(async (tag) => {
+        jobParams['diff'] = difficulty
 
-              jobParams['tag'] = tag
-              jobParams['difficulty'] = difficulty / parseFloat(tags.length.toFixed(4))
+        jobs.push(BoostPowJob.fromObject(jobParams))
 
-              console.log("powco.boost.scripts.create.params", jobParams)
+      }
 
-              const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
+      const jobValue = BigInt(Math.floor(value / jobs.length))
 
+      console.log("JOB VALUE", jobValue)
 
-              console.log("powco.boost.scripts.create.result", data)
-
-              return {
-                sats: Math.round(value / tags.length),
-                script: data.script.asm
-              }
-            })
-
-            outputs = await Promise.all(promises)
-          } else {
-            const { data } = await axios.post('https://pow.co/api/v1/boost/scripts', jobParams)
-          
-            console.log("powco.boost.scripts.create.result", data)
-
-            outputs = [{
-              sats: value,
-              script: data.script.asm
-            }];
-
-          }
-
-
-          outputs.push({
-            sats: devFee,
-            //@ts-ignore
-            to: '1Nw9obzfFbPeERLAmSgN82dtkQ6qssaGnU', // dev revenue address
-          })
-
-          console.log("twetch.boost.send", outputs)
-
-          const twetchResponse = await TwetchWeb3.abi({
-            contract: 'payment',
-            outputs
-          })
-          console.log("twetch.boost.result", twetchResponse)
-
-          const { data: powcoJobsSubmitResultData } = await axios.post(`${API_BASE}/api/v1/boost/jobs`, {
-            transaction: twetchResponse.rawtx
-          })
-          console.log('stag.powco.jobs.submit.result.data', powcoJobsSubmitResultData)
-
-          const [job] = powcoJobsSubmitResultData.jobs
-
-          const boost_result = {
-              txid: twetchResponse.txid,
-              txhex: twetchResponse.rawtx,
-              job
-          }
-
-          console.log('boost.send.result', boost_result)
-
-          handleBoostSuccess()
-          //@ts-ignore
-        } catch (error:any) {
-          console.log('twetch.boost.error', error)
-          handleBoostError()
+     const tx = await wallet.createBoostTransaction(jobs.map(job => {
+        return {
+          job,
+          value: jobValue
         }
-        break;
-      case "handcash":
-        //TODO
-        break;
-      default:
-        console.log("no wallet selected")
+      }))
+
+      handleBoostSuccess()
+
+      //@ts-ignore
+    } catch (error: any) {
+
+      console.log('boost.error', error)
+
+      handleBoostError()
     }
+
   }
 
   const handleBoost = async () => {
     
     try {
-      console.log(content)
-      if(content === undefined){
+
+      if (content === undefined) {
+
         throw new Error("Content txid is undefined")
+
       }
+
       await boost(content)
+
       onClose()
+
     } catch (error) {
-      console.log(error)
+
+      console.log('handleBoost.error', error)
+
     }
+
   }
 
   const handleClear = (e:any) => {

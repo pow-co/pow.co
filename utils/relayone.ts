@@ -8,7 +8,7 @@ export interface Relayone {
 
 export interface BoostJobParams {
   content: string;
-  difficulty: number;
+  diff: number;
   tag?: string;
   additionalData?: string;
 }

@@ -66,10 +66,10 @@ class BitchatClient {
 
     const tx: bsv.Transaction = await this.wallet.createTransaction({
 
-      outputs: [{
+      outputs: [new bsv.Transaction.Output({
         script,
-        value: BigInt(10)
-      }]
+        satoshis: 10
+      })]
 
     })
 

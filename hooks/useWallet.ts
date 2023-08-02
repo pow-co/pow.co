@@ -5,6 +5,8 @@ import Handcash from '../wallets/handcash';
 import Twetch from '../wallets/twetch';
 import Local from '../wallets/local';
 
+import { bsv } from 'scrypt-ts'
+
 import { useHandCash } from '../context/HandCashContext';
 
 import { useBitcoin } from '../context/BitcoinContext';
@@ -37,7 +39,7 @@ export default function useWallet(): Wallet {
 
     case 'local':
 
-      return new Local();
+      return new Local({ privateKey: new bsv.PrivateKey() });
 
     default:
     

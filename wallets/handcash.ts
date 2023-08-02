@@ -1,10 +1,12 @@
 import axios from 'axios';
 
 import { bsv } from 'scrypt-ts';
-import Wallet, { ScriptOutput } from './abstract';
+import Wallet from './abstract';
 
 export default class Handcash extends Wallet {
   authToken: string;
+
+  name = 'handcash'
 
   constructor({ authToken, paymail }: { authToken: string, paymail: string }) {
     super();
@@ -13,13 +15,13 @@ export default class Handcash extends Wallet {
     this.authToken = authToken;
   }
 
-  async createTransaction({ outputs }: { outputs: ScriptOutput[] }): Promise<bsv.Transaction> {
+  async createTransaction({ outputs }: { outputs: bsv.Transaction.Output[] }): Promise<bsv.Transaction> {
 
     const { data } = await axios.post('/api/v1/handcash/pay', {
       authToken: this.authToken,
       outputs: outputs.map((output) => ({
         script: output.script.toHex(),
-        value: output.value
+        value: output.satoshis
       })),
     });
 

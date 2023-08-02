@@ -1,5 +1,5 @@
 import { bsv } from 'scrypt-ts';
-import Wallet, { ScriptOutput } from './abstract';
+import Wallet from './abstract';
 
 interface RelayoneSendResult {
   rawTx: string;
@@ -7,18 +7,20 @@ interface RelayoneSendResult {
 
 export default class Relayx extends Wallet {
 
+  name = 'relayx'
+
   constructor({ paymail }: { paymail: string }) {
     super()
     this.paymail = paymail
   }
 
-  async createTransaction({ outputs }: {outputs: ScriptOutput[]}):  Promise<bsv.Transaction> {
+  async createTransaction({ outputs }: {outputs: bsv.Transaction.Output[]}):  Promise<bsv.Transaction> {
 
     const relayResponse: RelayoneSendResult = await (window as any).relayone.send({
 
-      outputs: outputs.map((output: ScriptOutput) => ({
+      outputs: outputs.map((output: bsv.Transaction.Output) => ({
         to: output.script.toASM(),
-        amount: Number(output.value) * 1e-8,
+        amount: Number(output.satoshis) * 1e-8,
         currency: 'BSV',
       })),
     });
