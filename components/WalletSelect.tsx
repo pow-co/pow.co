@@ -6,23 +6,60 @@ import { useTwetch } from '../context/TwetchContext'
 
 const WalletSelect = () => {
     const { wallet, setWallet } = useBitcoin()
-    const { relayxAuthenticate } = useRelay()
-    const { twetchAuthenticate } = useTwetch()
+    const { relayxAuthenticate, relayxPaymail } = useRelay()
+    const { twetchAuthenticate, twetchPaymail } = useTwetch()
     const { handcashAuthenticate, handcashPaymail } = useHandCash()
 
-    const handleChange = (e:any) => {
-        setWallet(e.target.value)
+    const handleChange = async (e:any) => {
+
         switch (e.target.value){
+
           case 'relayx':
-            relayxAuthenticate()
+
+            if (relayxPaymail) {
+
+              setWallet('relayx')
+
+            } else {
+
+              await relayxAuthenticate()
+
+              setWallet('relayx')
+
+            }
+
             break;
+
           case 'twetch':
-            twetchAuthenticate()
+
+            if (twetchPaymail) {
+
+              setWallet('twetch')
+
+            } else {
+
+              await twetchAuthenticate()
+
+              setWallet('twetch')
+
+            }
+
             break;
+
           case 'handcash':
-            if (handcashPaymail) { return }
-            handcashAuthenticate()
+
+            if (handcashPaymail) {
+
+              setWallet(e.target.value)
+
+            } else {
+
+              handcashAuthenticate()
+
+            }
+
             break;
+
           default:
             console.log("no wallet selected")
         }
