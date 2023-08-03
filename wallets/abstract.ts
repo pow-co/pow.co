@@ -52,13 +52,9 @@ export default abstract class Wallet {
       })
     })
 
-    console.log({ outputs })
-
     const devFee = Math.floor(outputs.reduce((sum, output) => {
       return sum + output.satoshis
     }, 0) * 0.1)
-
-    console.log({ devFee })
 
     if (process.env.NEXT_PUBLIC_FEE_SCRIPT) {
 

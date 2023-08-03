@@ -3,12 +3,14 @@ import { useBitcoin } from '../context/BitcoinContext'
 import { useHandCash } from '../context/HandCashContext'
 import { useRelay } from '../context/RelayContext'
 import { useTwetch } from '../context/TwetchContext'
+import { useLocalWallet } from '../context/LocalWalletContext'
 
 const WalletSelect = () => {
     const { wallet, setWallet } = useBitcoin()
     const { relayxAuthenticate, relayxPaymail } = useRelay()
     const { twetchAuthenticate, twetchPaymail } = useTwetch()
     const { handcashAuthenticate, handcashPaymail } = useHandCash()
+    const { localWalletAuthenticate, localWallet } = useLocalWallet()
 
     const handleChange = async (e:any) => {
 
@@ -60,7 +62,20 @@ const WalletSelect = () => {
 
             break;
 
+          case 'local':
+
+            if (!localWallet) {
+
+              await localWalletAuthenticate()
+
+            }
+
+            setWallet('local')
+
+            break;
+
           default:
+
             console.log("no wallet selected")
         }
     }
@@ -69,6 +84,7 @@ const WalletSelect = () => {
         <option value="relayx">RelayX</option>
         <option value="twetch">Twetch</option>
         <option value="handcash">Handcash</option>
+        <option value="local">Local</option>
         {/* <option value="handcash">HandCash</option> */}
     </select>
   )

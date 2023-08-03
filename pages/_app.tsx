@@ -18,6 +18,7 @@ import { TuneProvider } from '../context/TuningContext';
 import Locales from '../context/LocalContext';
 import { BitcoinProvider } from '../context/BitcoinContext';
 import { TwetchProvider } from '../context/TwetchContext';
+import { LocalWalletProvider } from '../context/LocalWalletContext';
 import 'react-tooltip/dist/react-tooltip.css';
 
 import { useSubdomain } from '../hooks/subdomain'
@@ -53,22 +54,24 @@ export default function App({ Component, pageProps }: AppProps) {
         enableSystem={false}
         disableTransitionOnChange
       >
-        <RelayProvider>
-          <SensiletProvider>
-            <TwetchProvider>
-              <HandCashProvider>
-                <BitcoinProvider>
-                  <TuneProvider>
-                    <Locales>
-                      <Component {...pageProps} />
-                      <Toaster />
-                    </Locales>
-                  </TuneProvider>
-                </BitcoinProvider>
-              </HandCashProvider>
-            </TwetchProvider>
-          </SensiletProvider>
-        </RelayProvider>
+        <LocalWalletProvider>
+          <RelayProvider>
+            <SensiletProvider>
+              <TwetchProvider>
+                <HandCashProvider>
+                  <BitcoinProvider>
+                    <TuneProvider>
+                      <Locales>
+                        <Component {...pageProps} />
+                        <Toaster />
+                      </Locales>
+                    </TuneProvider>
+                  </BitcoinProvider>
+                </HandCashProvider>
+              </TwetchProvider>
+            </SensiletProvider>
+          </RelayProvider>
+        </LocalWalletProvider>
       </ThemeProvider>
     </>
   );
