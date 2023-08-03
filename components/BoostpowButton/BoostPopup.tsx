@@ -128,7 +128,7 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
 
         for (let tag of tags) {
 
-          jobParams['tag'] = Buffer.from(tag, 'utf8')
+          jobParams['tag'] = Buffer.from(tag, 'utf8').toString('hex')
 
           jobParams['diff'] = difficulty / parseFloat(tags.length.toFixed(4))
 
