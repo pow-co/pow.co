@@ -9,6 +9,8 @@ import { useEffect } from 'react'
 
 import { useHandCash } from "../context/HandCashContext";
 
+import { useBitcoin } from "../context/BitcoinContext";
+
 interface ServerProps {
     sessionToken: string;
     user: any;
@@ -17,6 +19,8 @@ interface ServerProps {
 export default function Home({sessionToken, user}: ServerProps) {
 
     const [paymentResult, setPaymentResult] = useState<any>({status: 'none'});
+
+    const { setWallet } = useBitcoin()
 
     const { setProfileFromAuthToken } = useHandCash()
 
@@ -29,6 +33,8 @@ export default function Home({sessionToken, user}: ServerProps) {
       if (!authToken) { return }
 
       setProfileFromAuthToken({ authToken: String(authToken) }).then(() => {
+
+        setWallet('handcash')
 
         router.push('/settings')
 

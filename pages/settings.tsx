@@ -174,47 +174,28 @@ export default function Settings() {
               </label>
             </div>
           </div>
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+            <div className="flex flex-col">
+              <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                {/* <FormattedMessage id="Language settings" /> */}
+                Select Wallet
+              </p>
+              <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                {/* <FormattedMessage id="Interact with this app in your language" /> */}
+                Chose the BitCoin wallet you want to interact this app with
+              </p>
+            </div>
+            <div className="grow" />
+            <div className="relative">
+              <label className="flex items-center cursor-pointer">
+                <div className="relative">
+                  <WalletSelect />
+                </div>
+              </label>
+            </div>
+          </div>
 
-          {handcashAuthenticated ? (
-            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
-              <div className="flex flex-col">
-                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
-                  <FormattedMessage id="Handcash Wallet" />
-                </p>
-                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
-                  <FormattedMessage id={`Handcash wallet connected ${handcashPaymail}`} />
-                </p>
-              </div>
-              <div className="grow" />
-              <div className="relative">
-                <label className="flex items-center cursor-pointer">
-                  <div className="relative">
-        <button onClick={handcashLogout}>Logout Handcash</button>
-                  </div>
-                </label>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
-              <div className="flex flex-col">
-                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
-                  <FormattedMessage id="Handcash Wallet" />
-                </p>
-                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
-                  <FormattedMessage id={`Experimental Feature - Connect Handcash Wallet`} />
-                </p>
-              </div>
-              <div className="grow" />
-              <div className="relative">
-                <label className="flex items-center cursor-pointer">
-                  <div className="relative">
-        <button onClick={handleHandcashLogin}>Connect Handcash</button>
-                  </div>
-                </label>
-              </div>
-            </div>
-          )}
-          
+          <hr/>
 
           {web3Account ? (
             <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
@@ -256,26 +237,7 @@ export default function Settings() {
             </div>
           )}
           
-          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
-            <div className="flex flex-col">
-              <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
-                {/* <FormattedMessage id="Language settings" /> */}
-                Select Wallet
-              </p>
-              <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
-                {/* <FormattedMessage id="Interact with this app in your language" /> */}
-                Chose the BitCoin wallet you want to interact this app with
-              </p>
-            </div>
-            <div className="grow" />
-            <div className="relative">
-              <label className="flex items-center cursor-pointer">
-                <div className="relative">
-                  <WalletSelect />
-                </div>
-              </label>
-            </div>
-          </div>
+
           {authenticated && <button
             onClick={logout}
             className="h-[52px] p-5 flex bg-red-500 text-white text-base font-semibold my-4 w-full border-none rounded-lg cursor-pointer items-center justify-center transition duration-500 transform hover:-translate-y-1 hover:bg-red-600"
@@ -283,6 +245,7 @@ export default function Settings() {
             <FormattedMessage id="Log out" />
           </button>}
         </div>
+
         <div className="grow" />
         {/* <p className="mb-[68px] text-center text-xs text-gray-700 dark:text-gray-300 font-semibold ">
           Built for profit by
