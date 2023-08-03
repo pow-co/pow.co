@@ -51,11 +51,8 @@ function TwetchProvider(props: { children: React.ReactNode }) {
       await logUser(tokenTwetchAuth);
     } else {
       try {
-        console.log("TWETCH WEB3.connect")
         //@ts-ignore
-        window.TwetchWeb3 = TwetchWeb3
         const resp = await TwetchWeb3.connect();
-        console.log({ resp })
         setTwetchPaymail(resp.paymail);
         const resMsg = await fetch('/api/v1/twetch/auth/challenge');
         const msgData = await resMsg.json();
