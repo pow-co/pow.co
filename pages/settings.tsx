@@ -18,7 +18,7 @@ import Meta from "../components/Meta";
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
-  const { logout, authenticated } = useBitcoin();
+  const { logout, authenticated, setWallet } = useBitcoin();
   const { signPosts, setSignPosts } = useTuning();
   const { web3, web3Account, sensiletLogout, sensiletAuthenticate } = useSensilet()
   const [isDark, setIsDark] = useState(theme === "dark");
@@ -56,6 +56,13 @@ export default function Settings() {
       setTheme("dark");
     }
   };
+
+  const handleHandcashLogin = (e:any) => {
+    e.preventDefault();
+    setWallet("handcash")
+    handcashAuthenticate()
+  }
+    
 
   return (
     <>
@@ -201,7 +208,7 @@ export default function Settings() {
               <div className="relative">
                 <label className="flex items-center cursor-pointer">
                   <div className="relative">
-        <button onClick={() => handcashAuthenticate()}>Connect Handcash</button>
+        <button onClick={handleHandcashLogin}>Connect Handcash</button>
                   </div>
                 </label>
               </div>
