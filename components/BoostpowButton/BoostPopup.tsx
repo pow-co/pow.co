@@ -128,7 +128,7 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
 
         for (let tag of tags) {
 
-          jobParams['tag'] = tag
+          jobParams['tag'] = Buffer.from(tag, 'utf8')
 
           jobParams['diff'] = difficulty / parseFloat(tags.length.toFixed(4))
 
@@ -145,8 +145,6 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
       }
 
       const jobValue = BigInt(Math.floor(value / jobs.length))
-
-      console.log("JOB VALUE", jobValue)
 
      const tx = await wallet.createBoostTransaction(jobs.map(job => {
         return {
