@@ -1,26 +1,34 @@
 import { bsv } from 'scrypt-ts';
-import Wallet, { BoostPowJobOutput } from './abstract';
+import Wallet from './abstract';
 
 interface RelayoneSendResult {
   rawTx: string;
 }
 
 export default class Relayx extends Wallet {
-  async fundBoostOutputs(outputs: BoostPowJobOutput[]): Promise<bsv.Transaction> {
+
+  name = 'relayx'
+
+  constructor({ paymail }: { paymail: string }) {
+    super()
+    this.paymail = paymail
+  }
+
+  async createTransaction({ outputs }: {outputs: bsv.Transaction.Output[]}):  Promise<bsv.Transaction> {
+
     const relayResponse: RelayoneSendResult = await (window as any).relayone.send({
-      outputs: outputs.map((output) => ({
-        to: output.job.toASM(),
-        amount: Number(output.value) * 1e-8,
+
+      outputs: outputs.map((output: bsv.Transaction.Output) => ({
+        to: output.script.toASM(),
+        amount: Number(output.satoshis) * 1e-8,
         currency: 'BSV',
       })),
     });
 
-    console.log('relayx.send.result', relayResponse);
+    console.debug('relayx.send.result', relayResponse);
 
-    const txhex = relayResponse.rawTx;
+    return new bsv.Transaction(relayResponse.rawTx);
 
-    const tx = new bsv.Transaction(txhex);
-
-    return tx;
   }
+
 }

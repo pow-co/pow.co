@@ -25,6 +25,10 @@ import { useBitcoin } from '../context/BitcoinContext';
 
 import { buildInscriptionASM } from '../services/inscriptions' 
 
+import { bsv } from 'scrypt-ts'
+
+import useWallet from '../hooks/useWallet'
+
 export const MarkdownLogo = () => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" className='h-5' fill='currentColor' viewBox="0 0 208 128">
@@ -38,13 +42,10 @@ export const MarkdownLogo = () => {
 export default function WriteNewArticle() {
 
   const router = useRouter()
-  const { paymail, wallet } = useBitcoin()
+  const { paymail } = useBitcoin()
   const [signWithPaymail, setSignWithPaymail] = useState(true)
 
-    //@ts-ignore
-    const stag = wrapRelayx(window.relayone)
-    //@ts-ignore
-    window.stag = stag
+  const wallet = useWallet()
 
     const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -92,14 +93,25 @@ export default function WriteNewArticle() {
         color: '#fff',
         },
       });
-      switch (wallet) {
-        case "relayx":
-        
+
+      const opReturnScript = bsv.Script.fromASM(`OP_0 OP_RETURN ${hexArrayOps.join(' ')}`)
+
+      try {
+
+        const outputs: bsv.Transaction.Output[] = []
+
+        outputs.push(new bsv.Transaction.Output({
+          script: opReturnScript,
+          satoshis: 10
+        }))
+
+        if (wallet.name === 'relayx') {
+
           // Warning: Transferring Or Liquidating Inscriptions Requires Access To Backup Seed Phrase
           //@ts-ignore
           const address = await relayone.alpha.run.getOwner();
 
-          const inscriptionOutput = buildInscriptionASM({
+          const inscriptionScript = bsv.Script.fromASM(buildInscriptionASM({
             address,
             dataB64: Buffer.from(value, 'utf8').toString('base64'),
             contentType: 'text/markdown',
@@ -107,127 +119,78 @@ export default function WriteNewArticle() {
               app: 'pow.co',
               type: "post"
             }
+          }))
+
+          outputs.push(new bsv.Transaction.Output({
+            script: inscriptionScript,
+            satoshis: 10
+          }))
+
+        }
+
+        const tx = await wallet.createTransaction({ outputs })
+
+        console.log(tx)
+
+        toast('Success!', {
+          icon: '✅',
+          style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          },
+        });
+
+        try {
+
+          axios.post('https://b.map.sv/ingest', {
+              rawTx: tx.toString()
+          })
+          .then(result => {
+            console.debug('b.map.sv.ingest.result', result.data)
+          })
+          .catch(error => {
+            console.error('post.submit.b.map.sv.ingest.error', error)
           })
 
-          console.log({ inscriptionOutput })
+        } catch(error) {
+            console.error('post.submit.b.map.sv.ingest.error', error)
+        }
 
-          const send = {
-            to: inscriptionOutput,
-            amount: 1e-6, // Inscribe the contents of your post on a 100 satoshi coin
-            currency: 'BSV',
-            opReturn
-          }
-          console.log("relayone.send", send)
-          try {
-            let resp: any = await stag.relayone!.send(send)
-            toast('Success!', {
-              icon: '✅',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
-            });
+        try {
 
-            console.log("post.submit.relayx.response", resp)
+          axios.post('https://pow.co/api/v1/posts', {
+              transactions: [{
+                tx: tx.toString()
+              }]
+          })
+          .then(result => {
+            console.debug('powco.posts.ingest.result', result.data)
+          })
+          .catch(error => {
+            console.error('post.submit.powco.error', error)
+          })
 
-            try {
+        } catch(error) {
 
-              axios.post('https://b.map.sv/ingest', {
-                  rawTx: resp.rawTx
-              })
-              .then(result => {
-                console.debug('b.map.sv.ingest.result', result.data)
-              })
-              .catch(error => {
-                console.error('post.submit.b.map.sv.ingest.error', error)
-              })
+            console.error('post.submit.powco.error', error)
 
-            } catch(error) {
-                console.error('post.submit.b.map.sv.ingest.error', error)
-            }
+        }
 
-            try {
+        router.push(`/${tx.hash}`)
 
-              axios.post('https://pow.co/api/v1/posts', {
-                  transactions: [{
-                    tx: resp.rawTx
-                  }]
-              })
-              .then(result => {
-                console.debug('powco.posts.ingest.result', result.data)
-              })
-              .catch(error => {
-                console.error('post.submit.powco.error', error)
-              })
-
-            } catch(error) {
-
-                console.error('post.submit.powco.error', error)
-
-            }
-
-            router.push(`/${resp.txid}`)
-
-          } catch (error) {
-            console.log(error)
-            toast('Error!', {
-              icon: '🐛',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
-            });
-          }
-          break;
-        case "twetch":
-          try {
-            const outputs = [{
-              sats:0,
-              args: opReturn,
-              address: null
-            },{
-              to: 'johngalt@relayx.io',
-              sats: 0.001 * 1e8
-            }]
-            const resp = await TwetchWeb3.abi({
-              contract: "payment",
-              outputs: outputs,
-            })
-            toast('Success!', {
-              icon: '✅',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
-            });
-            console.log("twetch.response", resp)
-            await axios.post('https://b.map.sv/ingest', {
-                rawTx: resp.rawtx
-            });
-            router.push(`/${resp.txid}`)
-
-          } catch (error) {
-            console.log(error)
-            toast('Error!', {
-              icon: '🐛',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
-            });
-          }
-          break;
-        case "handcash":
-          //TODO
-          break;
-        default: 
-          console.log("no wallet selected")
+      } catch (error) {
+        console.log(error)
+        toast('Error!', {
+          icon: '🐛',
+          style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+          },
+        });
       }
-        
+ 
     }
 
     return (

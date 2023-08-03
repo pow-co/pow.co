@@ -9,39 +9,38 @@ import { useEffect } from 'react'
 
 import { useHandCash } from "../context/HandCashContext";
 
+import { useBitcoin } from "../context/BitcoinContext";
+
 interface ServerProps {
     sessionToken: string;
     user: any;
 }
 
 export default function Home({sessionToken, user}: ServerProps) {
-    console.log('AuthHandcash', { sessionToken, user })
 
     const [paymentResult, setPaymentResult] = useState<any>({status: 'none'});
+
+    const { setWallet } = useBitcoin()
 
     const { setProfileFromAuthToken } = useHandCash()
 
     const router = useRouter()
 
-    console.log('query', router.query)
-
-    const authToken = String(router.query.authToken)
-
-    if (!authToken) {
-
-      router.push('/settings')
-
-    }
-
     useEffect(() => {
 
-      setProfileFromAuthToken({ authToken }).then(() => {
+      const authToken = router.query.authToken
+
+      if (!authToken) { return }
+
+      setProfileFromAuthToken({ authToken: String(authToken) }).then(() => {
+
+        setWallet('handcash')
 
         router.push('/settings')
 
       })
 
-    }, [])
+    }, [router.query])
 
     return (
         <div className="flex flex-grow flex-col items-center justify-end self-start p-6">

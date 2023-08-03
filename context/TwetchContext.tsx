@@ -47,9 +47,11 @@ function TwetchProvider(props: { children: React.ReactNode }) {
 
   const twetchAuthenticate = useCallback(async () => {
     if (tokenTwetchAuth) {
+      console.log({ tokenTwetchAuth })
       await logUser(tokenTwetchAuth);
     } else {
       try {
+        //@ts-ignore
         const resp = await TwetchWeb3.connect();
         setTwetchPaymail(resp.paymail);
         const resMsg = await fetch('/api/v1/twetch/auth/challenge');
@@ -67,7 +69,7 @@ function TwetchProvider(props: { children: React.ReactNode }) {
         console.log(authResponseData.token);
         await logUser(authResponseData.token);
       } catch (err) {
-        console.error(err);
+        console.error('twetchAuthenticate.error', err);
         // { code: 4001, message: 'me rejected the request.' }
       }
     }
