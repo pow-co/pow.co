@@ -5,7 +5,7 @@ import { config } from "../template_config"
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 
-const handcashAppId = process.env.handcash_app_id || '63a825594c80646cee9dca84'
+const handcashAppId = process.env.NEXT_PUBLIC_HANDCASH_APP_ID
 
 import axios from 'axios'
 
