@@ -3,6 +3,8 @@ import axios from 'axios'
 
 import { bsv } from 'scrypt-ts'
 
+import Wallet from '../wallets/abstract'
+
 export const authorIdentityPrefix = '15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva';
 
 interface FindOne {
@@ -39,7 +41,7 @@ interface BlockchainMessage extends NewMessage {
 
 export async function findOne(params: FindOne) {
 
-    const where = {}
+    const where: any = {}
 
     if (params.app) { where['app'] = params.app }
 
@@ -76,7 +78,7 @@ export async function findOne(params: FindOne) {
 
 }
 
-export function createURL({ wallet, url }: { wallet: Wallet, url: string }): bsv.Transaction {
+export async function createURL({ wallet, url }: { wallet: Wallet, url: string }): Promise<bsv.Transaction> {
 
   const newMessage = {
     app: 'pow.co',

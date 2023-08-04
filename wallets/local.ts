@@ -41,7 +41,7 @@ export default class LocalWallet extends Wallet {
 
     const tx = new bsv.Transaction()
 
-    const unspent = await listUnspent({ address: this.address })
+    const unspent = await listUnspent({ address: this.address.toString() })
 
     tx.from(unspent)
 
