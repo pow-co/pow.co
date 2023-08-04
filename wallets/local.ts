@@ -41,7 +41,7 @@ export default class LocalWallet extends Wallet {
 
     const tx = new bsv.Transaction()
 
-    const unspent = await this.listUnspent()
+    const unspent = await listUnspent({ address: this.address })
 
     tx.from(unspent)
 
@@ -59,54 +59,5 @@ export default class LocalWallet extends Wallet {
 
   }
 
-  async broadcastTransaction({ tx }: { tx: bsv.Transaction }): Promise<bsv.Transaction> {
-
-    await axios.post(`https://api.whatsonchain.com/v1/bsv/main/tx/raw`, {
-      txhex: tx.toString()
-    })
-
-    return tx;
-
-  }
-
-  async listUnspent(): Promise<Utxo[]> {
-
-    const { data } = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/address/${this.address}/unspent`)
-
-    return Promise.all(data.map(async (unspent: WhatsonchainUtxo) => {
-
-      const { data: txData } = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/hash/${unspent.tx_hash}`)
-
-      const scriptPubKey = txData.vout[unspent.tx_pos].scriptPubKey.hex
-
-      return {
-
-        scriptPubKey,
-
-        satoshis: unspent.value,
-
-        txId: unspent.tx_hash,
-
-        outputIndex: unspent.tx_pos
-
-      }
-
-    }))
-
-  }
-
 }
 
-export interface Utxo {
-  scriptPubKey: string;
-  satoshis: number;
-  txId: string;
-  outputIndex: number;
-}
-
-interface WhatsonchainUtxo {
-  height: number;
-  tx_pos: 0;
-  tx_hash: string;
-  value: number;
-}

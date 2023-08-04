@@ -3,11 +3,20 @@ import React, { useState } from "react";
 import { wrapRelayx } from "stag-relayx";
 import { toast } from "react-hot-toast";
 import { useRelay } from "../context/RelayContext";
+import * as onchain from '../services/onchain'
+
+import axios from 'axios'
+
+import useWallet from '../hooks/useWallet'
+
+import { getTransaction } from '../services/whatsonchain'
 
 function FindOrCreate() {
   const [url, setUrl] = useState<string>("");
   const router = useRouter();
   const { relayOne } = useRelay();
+
+  const wallet = useWallet()
 
   const stag = wrapRelayx(relayOne);
 
@@ -38,26 +47,33 @@ function FindOrCreate() {
       router.push(`/${txid}`);
     } else {
       try {
-        const [result, isNew] = await stag.onchain.findOrCreate({
-          where: {
-            app: "pow.co",
-            type: "url",
-            content: {
-              url,
-            },
-          },
-          defaults: {
-            app: "pow.co",
-            type: "url",
-            content: {
-              url,
-            },
-          },
-        });
 
-        console.log(result, isNew);
-        router.prefetch(`/${result.txid}`);
-        router.push(`/${result.txid}`);
+        const record = await onchain.findOne({
+          app: "pow.co",
+          type: "url",
+          content: {
+            url,
+          }
+        })
+
+        let tx: bsv.Transaction
+
+        if (record) {
+
+          tx = await getTransaction({ txid: record.txid })
+
+        } else {
+
+          tx = await onchain.createURL({ wallet, url })
+
+          const { data } = await axios.get(`https://onchain.sv/api/v1/events/${tx.hash}`)
+
+        }
+
+        router.prefetch(`/${tx.hash}`);
+
+        router.push(`/${tx.hash}`);
+
       } catch (error) {
         console.log(error);
         toast("Error!", {
@@ -77,7 +93,7 @@ function FindOrCreate() {
     const enterKey = 13;
     if (e.keyCode === enterKey) {
       console.log("typed enter", url);
-      toast("Loading data...", {
+      toast("Finding URL on Chain...", {
         icon: "⛏️",
         style: {
           borderRadius: "10px",

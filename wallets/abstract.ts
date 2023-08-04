@@ -6,6 +6,8 @@ import axios from 'axios';
 
 import delay from 'delay';
 
+import bops from "bops";
+
 const API_BASE = 'https://pow.co';
 
 export interface BoostPowJobOutput {
@@ -66,6 +68,29 @@ export default abstract class Wallet {
     }
 
     return this.createTransaction({ outputs })
+
+  }
+
+  async broadcastTransaction({ tx }: { tx: bsv.Transaction }): Promise<bsv.Transaction> {
+
+    await axios.post(`https://api.whatsonchain.com/v1/bsv/main/tx/raw`, {
+      txhex: tx.toString()
+    })
+
+    return tx;
+
+  }
+
+  buildOpReturnScript(dataPayload: string[]): bsv.Script {
+
+    const script = bsv.Script.fromASM(
+      "OP_0 OP_RETURN " +
+        dataPayload
+          .map((str) => bops.to(bops.from(str, "utf8"), "hex"))
+          .join(" ")
+    );
+
+    return script
 
   }
 
