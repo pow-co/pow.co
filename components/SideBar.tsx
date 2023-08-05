@@ -49,10 +49,10 @@ const SideBar = () => {
                     <UserIcon src={avatar!} size={36}/>
             </Link>
             <div className='ml-3 hidden xl:block'>
-                <Link className='block text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline' href={`/profile/${paymail}`} >
+                <Link className='block truncate max-w-[100px] text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline' href={`/profile/${paymail}`} >
                     {userName}
                 </Link>
-                <Link className='block text-xs leading-4 text-gray-500 hover:underline' href={`/profile/${paymail}`}>
+                <Link className='block truncate max-w-[100px] text-xs leading-4 text-gray-500 hover:underline' href={`/profile/${paymail}`}>
                     {paymail}
                 </Link>
             </div>

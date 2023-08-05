@@ -80,7 +80,7 @@ export default function Settings() {
           </div>
           {/* <div
             onClick={() => setWalletPopupOpen(true)}
-            className="bg-gray-100 dark:bg-gray-600 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg"
+            className="bg-gray-100 dark:bg-gray-600 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg"
           >
             <div className="flex flex-col">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
@@ -106,7 +106,7 @@ export default function Settings() {
               />
             </svg>
           </div> */}
-          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
             <div className="flex flex-col">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                 <FormattedMessage id="Dark Mode" />
@@ -132,7 +132,7 @@ export default function Settings() {
               </label>
             </div>
           </div>
-          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
             <div className="flex flex-col">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                 Sign with paymail
@@ -158,7 +158,7 @@ export default function Settings() {
               </label>
             </div>
           </div>
-          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
             <div className="flex flex-col">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                 <FormattedMessage id="Language settings" />
@@ -176,7 +176,7 @@ export default function Settings() {
               </label>
             </div>
           </div>
-          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+          <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
             <div className="flex flex-col">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                 {/* <FormattedMessage id="Language settings" /> */}
@@ -188,20 +188,26 @@ export default function Settings() {
               </p>
             </div>
             <div className="grow" />
-            <div className="relative">
-              <label className="flex items-center cursor-pointer">
-                <div className="relative">
-                  <WalletSelect />
-                </div>
-              </label>
-            </div>
+            
+              <div className="relative flex items-center">
+                <button
+                  onClick={()=>setWalletPopupOpen(true)}
+                  type="button"
+                  onKeyDown={()=>setWalletPopupOpen(true)}
+                  className="relative ml-4 flex h-8 w-fit cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 p-5 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1"
+                >
+                  <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
+                    <path d="M2.16197 13.2675H13.838C15.2698 13.2675 16 12.5445 16 11.1271V2.86576C16 1.45546 15.2698 0.732422 13.838 0.732422H2.16197C0.730201 0.732422 0 1.44831 0 2.86576V11.1271C0 12.5445 0.730201 13.2675 2.16197 13.2675ZM1.18121 2.9445C1.18121 2.25725 1.54631 1.91363 2.20492 1.91363H13.7951C14.4465 1.91363 14.8188 2.25725 14.8188 2.9445V3.9539H1.18121V2.9445ZM2.20492 12.0863C1.54631 12.0863 1.18121 11.7356 1.18121 11.0483V5.50737H14.8188V11.0483C14.8188 11.7356 14.4465 12.0863 13.7951 12.0863H2.20492Z" fill="white" />
+                  </svg>
+                  <span className="ml-4">{authenticated ? "Select":<FormattedMessage id="Connect" />}</span>
+                </button>
+              </div>
+  
           </div>
 
-          <hr/>
+          {/* {localWallet && (
 
-          {localWallet && (
-
-            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
               <div className="flex flex-col">
                 <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                   <FormattedMessage id="Local Wallet" />
@@ -222,10 +228,10 @@ export default function Settings() {
               </div>
             </div>
 
-          )}
+          )} */}
 
-          {web3Account ? (
-            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+{/*           {web3Account ? (
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
               <div className="flex flex-col">
                 <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                   <FormattedMessage id="Sensilet Wallet" />
@@ -244,7 +250,7 @@ export default function Settings() {
               </div>
             </div>
           ) : (
-            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center h-[78px] cursor-pointer my-4 rounded-lg">
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
               <div className="flex flex-col">
                 <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                   <FormattedMessage id="Sensilet Wallet" />
@@ -263,7 +269,7 @@ export default function Settings() {
               </div>
             </div>
           )}
-          
+ */}          
 
           {authenticated && <button
             onClick={logout}
@@ -272,20 +278,7 @@ export default function Settings() {
             <FormattedMessage id="Log out" />
           </button>}
         </div>
-
         <div className="grow" />
-        {/* <p className="mb-[68px] text-center text-xs text-gray-700 dark:text-gray-300 font-semibold ">
-          Built for profit by
-          <a
-            href="https://twetch.com/u/652"
-            target="_blank"
-            rel="noreferrer"
-            className="ml-1 cursor-pointer hover:underline"
-          >
-            @652
-          </a>
-          , powered by BitCoin
-        </p> */}
       </div>
       <Drawer
         selector="#walletProviderPopupControler"

@@ -23,13 +23,14 @@ class ScryptWallet extends TestWallet {
 }
 
 type LocalWalletContextValue = {
-   localWalletAuthenticate: () => Promise<void>;
+   localWalletAuthenticate: (seed:string) => Promise<void>;
    localWalletAuthenticated: boolean;
    localWalletLogout: () => Promise<void>;
    localWalletAvatar: string | undefined;
    localWalletPaymail: string | undefined;
    localWalletUserName: string | undefined;
    localWalletPublicKey: string | undefined | null;
+   seedPhrase: string;
    web3: any;
    localWallet: LocalWallet | null | undefined;
    web3Account: string | undefined | null;
@@ -52,19 +53,17 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
   const [provider, setProvider] = useState<DefaultProvider | null>();
   const [signer, setSigner] = useState<ScryptWallet | null>();
 
-  const localWalletAvatar = ''
+  const localWalletAvatar = useMemo(() => `https://api.dicebear.com/6.x/pixel-art/svg?seed=${localWalletUserName}`, [localWalletUserName])
 
   const [ready, setReady] = useState(false);
 
   const [localWallet, setLocalWallet] = useState<LocalWallet | null | undefined>()
 
-  const localWalletAuthenticate = useCallback(async () => {
+  const localWalletAuthenticate = async (seed: string) => {
 
-    const phrase = window.prompt("Enter 12 Word Seed Phrase:")
+    setSeedPhrase(seed)
 
-    setSeedPhrase(phrase)
-
-  }, []);
+  }
 
   useEffect(() => {
 
@@ -130,7 +129,8 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
         })
   }, [web3])
 
-  const localWalletAuthenticated = useMemo(() => !!web3Account, [web3Account]);
+  //const localWalletAuthenticated = useMemo(() => !!web3Account, [web3Account]);
+  const localWalletAuthenticated = useMemo(() => !!seedPhrase, [seedPhrase]);
 
   const value = useMemo(
     () => ({
@@ -144,6 +144,7 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
       localWalletAvatar,
       localWalletPaymail,
       localWalletPublicKey,
+      seedPhrase,
       ready,
       provider,
       signer
@@ -159,6 +160,7 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
       localWalletAvatar,
       localWalletPaymail,
       localWalletPublicKey,
+      seedPhrase,
       ready,
       provider,
       signer

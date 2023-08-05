@@ -3,10 +3,15 @@ import React, { useState } from "react";
 import { wrapRelayx } from "stag-relayx";
 import { toast } from "react-hot-toast";
 import { useRelay } from "../context/RelayContext";
+import { useBitcoin } from "../context/BitcoinContext";
+import Drawer from "./Drawer";
+import WalletProviderPopUp from "./WalletProviderPopUp";
 
 function FindOrCreate() {
   const [url, setUrl] = useState<string>("");
   const router = useRouter();
+  const { authenticated } = useBitcoin()
+  const [walletPopupOpen, setWalletPopupOpen] = useState(false)
   const { relayOne } = useRelay();
 
   const stag = wrapRelayx(relayOne);
@@ -17,6 +22,10 @@ function FindOrCreate() {
   };
 
   const findOrCreate = async (url: string) => {
+    if(!authenticated){
+      setWalletPopupOpen(true)
+      return
+    }
     const BITCOIN_TXN_REGEX = /^[0-9a-fA-F]{64}$/;
     const TWETCH_TXN_REGEX =
       /^https:\/\/(twetch\.(com|app))\/t\/[a-fA-F0-9]{64}$/;
@@ -89,6 +98,7 @@ function FindOrCreate() {
     }
   };
   return (
+    <>
     <form onSubmit={(e: any) => e.preventDefault()} className="w-full px-4">
       <label
         htmlFor="search-txid"
@@ -131,6 +141,14 @@ function FindOrCreate() {
         </button>
       </div>
     </form>
+    <Drawer
+        selector="#walletProviderPopupControler"
+        isOpen={walletPopupOpen}
+        onClose={() => setWalletPopupOpen(false)}
+      >
+        <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
+    </Drawer>
+    </>
   );
 }
 

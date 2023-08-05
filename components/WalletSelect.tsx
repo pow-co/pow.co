@@ -10,7 +10,7 @@ const WalletSelect = () => {
     const { relayxAuthenticate, relayxPaymail } = useRelay()
     const { twetchAuthenticate, twetchPaymail } = useTwetch()
     const { handcashAuthenticate, handcashPaymail } = useHandCash()
-    const { localWalletAuthenticate, localWallet } = useLocalWallet()
+    const { localWalletAuthenticate, localWallet, seedPhrase } = useLocalWallet()
 
     const handleChange = async (e:any) => {
 
@@ -66,7 +66,7 @@ const WalletSelect = () => {
 
             if (!localWallet) {
 
-              await localWalletAuthenticate()
+              await localWalletAuthenticate(seedPhrase)
 
             }
 
