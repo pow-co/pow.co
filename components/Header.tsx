@@ -135,10 +135,9 @@ function Header() {
             </>
           ) : (
             <button
-              // onClick={()=>setWalletPopupOpen(true)}
+              onClick={()=>setWalletPopupOpen(true)}
               type="button"
-              onClick={login}
-              onKeyDown={login}
+              onKeyDown={()=>setWalletPopupOpen(true)}
               className="relative ml-4 flex h-8 w-fit cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 p-5 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1"
             >
               <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
@@ -197,9 +196,8 @@ function Header() {
           ) : (
             <button
               type="button"
-                // onClick={()=>setWalletPopupOpen(true)}
-              onClick={login}
-              onKeyDown={login}
+              onClick={()=>setWalletPopupOpen(true)}
+              onKeyDown={()=>setWalletPopupOpen(true)}
               className="relative ml-2 flex h-8 cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 px-3 text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1"
             >
               <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
