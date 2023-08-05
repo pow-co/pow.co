@@ -6,6 +6,12 @@ import axios from 'axios';
 
 import delay from 'delay';
 
+import bops from "bops";
+
+import { Inscription, MAP, LocalSigner, RemoteSigner } from 'js-1sat-ord'
+
+import BSV from 'bsv-wasm-web'
+
 const API_BASE = 'https://pow.co';
 
 export interface BoostPowJobOutput {
@@ -19,7 +25,9 @@ export default abstract class Wallet {
 
   name: string = 'abstract';
 
-  abstract createTransaction({ outputs }: { outputs: bsv.Transaction.Output[] }): Promise<bsv.Transaction>;
+  abstract createTransaction({ outputs }: { outputs: bsv.Transaction.Output[] }): Promise<bsv.Transaction>
+
+  abstract createOrdinal(args: { inscription: Inscription, metaData?: MAP, signer?: LocalSigner | RemoteSigner  }): Promise<BSV.Transaction>
 
   async createBoostTransaction(outputs: BoostPowJobOutput[]): Promise<bsv.Transaction> {
 
@@ -66,6 +74,31 @@ export default abstract class Wallet {
     }
 
     return this.createTransaction({ outputs })
+
+  }
+
+  async broadcastTransaction({ tx }: { tx: bsv.Transaction }): Promise<bsv.Transaction> {
+
+    console.log(tx.toString())
+
+    await axios.post(`https://api.whatsonchain.com/v1/bsv/main/tx/raw`, {
+      txhex: tx.toString()
+    })
+
+    return tx;
+
+  }
+
+  buildOpReturnScript(dataPayload: string[]): bsv.Script {
+
+    const script = bsv.Script.fromASM(
+      "OP_0 OP_RETURN " +
+        dataPayload
+          .map((str) => bops.to(bops.from(str, "utf8"), "hex"))
+          .join(" ")
+    );
+
+    return script
 
   }
 

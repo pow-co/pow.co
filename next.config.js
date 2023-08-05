@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+
+const WebpackPluginReplaceNpm = require('replace-module-webpack-plugin')
+
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -30,6 +33,17 @@ const nextConfig = {
         path: false,
         module: false
       }
+      config.plugins = [
+        ...config.plugins,
+        new WebpackPluginReplaceNpm({
+          rules: [
+            {
+              originModule: "bsv-wasm",
+              replaceModule: "bsv-wasm-web",
+            },
+          ],
+        })
+      ]
     }
     return config;
   }
