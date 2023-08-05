@@ -76,18 +76,12 @@ class BitchatClient {
 
     })
 
-    axios.post('https://pow.co/api/v1/posts', {
-      transactions: [{
-        tx: tx.toString()
-      }]
-    })
-    .then(console.log)
-    .catch(console.error)
-
     axios.post("https://b.map.sv/ingest", {
       rawTx: tx.toString(),
     })
     .catch(console.error)
+
+    axios.get(`https://pow.co/api/v1/content/${tx.hash}`).catch(console.error);
 
     axios.get(`https://pow.co/api/v1/chat/messages/${tx.hash}`).catch(console.error);
 
