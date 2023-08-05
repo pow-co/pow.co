@@ -20,24 +20,31 @@ interface ChannelListProps {
 const ChannelList = ({ currentChannel }: ChannelListProps) => {
     const router = useRouter()
 
-    const [channels, setChannels] = useState<Channel[]>([])
+    const { data: channels, error, isLoading, mutate } = useSWR(`https://pow.co/api/v1/chat/channels`, async (url: string) => {
 
-    async function refreshChannels() {
+      const result = await axios.get(url)
 
-      axios.get(`https://pow.co/api/v1/chat/channels`).then(({data}) =>{
+      return result.data.channels
 
-        setChannels(data.channels)
-
-      })
-
-    }
+    })
 
     useEffect(() => {
 
-      refreshChannels()
-      console.log(channels)
+      const interval = setInterval(() => {
+
+        mutate()
+
+      }, 10000);
+
+      return () => {
+
+        clearInterval(interval)
+
+      }
 
     }, [])
+
+    if (!channels) { return <></> }
 
     const ChannelItem = (props:any) => {
         const navigate = (e:any) => {
@@ -109,7 +116,6 @@ const ChannelList = ({ currentChannel }: ChannelListProps) => {
         },
       };
       const queryChannelsB64 = btoa(JSON.stringify(queryChannels));
-      const { data, error, isLoading } = useSWR(`https://b.map.sv/q/${queryChannelsB64}`, fetcher)
       //const channels = data?.c || []
   return (
     <div className='flex flex-col  overflow-hidden'>
