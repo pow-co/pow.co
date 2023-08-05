@@ -10,6 +10,7 @@ export default function Document() {
         <div id="tuningProviderPopupControler" />
         <div id="boostPopupControler" />
         <div id="loveOrdPopupControler"/>
+        <div id="walletProviderPopupControler"/>
         <NextScript />
       </body>
     </Html>

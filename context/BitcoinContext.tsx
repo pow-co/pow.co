@@ -107,6 +107,7 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
         twetchLogout()
         handcashLogout()
         sensiletLogout()
+        setWallet("")
         localStorage.clear()
     }
 

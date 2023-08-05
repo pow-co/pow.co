@@ -23,7 +23,7 @@ class ScryptWallet extends TestWallet {
 }
 
 type LocalWalletContextValue = {
-   localWalletAuthenticate: () => Promise<void>;
+   localWalletAuthenticate: (seed:string) => Promise<void>;
    localWalletAuthenticated: boolean;
    localWalletLogout: () => Promise<void>;
    localWalletAvatar: string | undefined;
@@ -58,13 +58,11 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
 
   const [localWallet, setLocalWallet] = useState<LocalWallet | null | undefined>()
 
-  const localWalletAuthenticate = useCallback(async () => {
+  const localWalletAuthenticate = async (seed: string) => {
 
-    const phrase = window.prompt("Enter 12 Word Seed Phrase:")
+    setSeedPhrase(seed)
 
-    setSeedPhrase(phrase)
-
-  }, []);
+  }
 
   useEffect(() => {
 
