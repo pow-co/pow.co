@@ -43,7 +43,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
   }))
   const [signer, setSigner] = useState<SensiletSigner>()
 
-  const sensiletAvatar = ''
+  const sensiletAvatar = useMemo(() => `https://api.dicebear.com/6.x/pixel-art/svg?seed=${sensiletUserName}`, [sensiletUserName])
 
   const [ready, setReady] = useState(false);
 

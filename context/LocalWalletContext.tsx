@@ -30,6 +30,7 @@ type LocalWalletContextValue = {
    localWalletPaymail: string | undefined;
    localWalletUserName: string | undefined;
    localWalletPublicKey: string | undefined | null;
+   seedPhrase: string;
    web3: any;
    localWallet: LocalWallet | null | undefined;
    web3Account: string | undefined | null;
@@ -52,7 +53,7 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
   const [provider, setProvider] = useState<DefaultProvider | null>();
   const [signer, setSigner] = useState<ScryptWallet | null>();
 
-  const localWalletAvatar = ''
+  const localWalletAvatar = useMemo(() => `https://api.dicebear.com/6.x/pixel-art/svg?seed=${localWalletUserName}`, [localWalletUserName])
 
   const [ready, setReady] = useState(false);
 
@@ -128,7 +129,8 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
         })
   }, [web3])
 
-  const localWalletAuthenticated = useMemo(() => !!web3Account, [web3Account]);
+  //const localWalletAuthenticated = useMemo(() => !!web3Account, [web3Account]);
+  const localWalletAuthenticated = useMemo(() => !!seedPhrase, [seedPhrase]);
 
   const value = useMemo(
     () => ({
@@ -142,6 +144,7 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
       localWalletAvatar,
       localWalletPaymail,
       localWalletPublicKey,
+      seedPhrase,
       ready,
       provider,
       signer
@@ -157,6 +160,7 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
       localWalletAvatar,
       localWalletPaymail,
       localWalletPublicKey,
+      seedPhrase,
       ready,
       provider,
       signer
