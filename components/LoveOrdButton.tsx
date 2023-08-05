@@ -5,6 +5,8 @@ import { useRelay } from '../context/RelayContext';
 import toast from "react-hot-toast"
 import Drawer from './Drawer';
 import LoveOrdPopup from './LoveOrdPopup';
+import WalletProviderPopUp from './WalletProviderPopUp';
+import { useBitcoin } from '../context/BitcoinContext';
 
 interface LoveOrdButtonProps {
     txid: string;
@@ -12,6 +14,8 @@ interface LoveOrdButtonProps {
 }
 
 const LoveOrdButton = ({ txid, userPaymail }: LoveOrdButtonProps) => {
+    const { authenticated } = useBitcoin()
+    const [walletPopupOpen, setWalletPopupOpen] = useState(false)
     const [base64String, setBase64String] = useState("")
     const { relayOne, hasTwetchPrivilege } = useRelay()
     const [loveOrdPopupOpen, setLoveOrdPopupOpen] = useState(false)
@@ -25,6 +29,10 @@ const LoveOrdButton = ({ txid, userPaymail }: LoveOrdButtonProps) => {
     const handleLoveOrdClick = (e:any) => {
       e.preventDefault()
       e.stopPropagation()
+      if(!authenticated){
+        setWalletPopupOpen(true)
+        return
+      }
       setLoveOrdPopupOpen(true)
     }
     
@@ -131,6 +139,13 @@ const LoveOrdButton = ({ txid, userPaymail }: LoveOrdButtonProps) => {
       onClose={() => setLoveOrdPopupOpen(false)}
     >
       <LoveOrdPopup txid={txid} userPaymail={userPaymail} twetchPreview={base64String} onClose={() => setLoveOrdPopupOpen(false)}/>
+    </Drawer>
+    <Drawer
+        selector="#walletProviderPopupControler"
+        isOpen={walletPopupOpen}
+        onClose={() => setWalletPopupOpen(false)}
+      >
+        <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
     </Drawer>
     </>
   )
