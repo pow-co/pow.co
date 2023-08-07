@@ -4,8 +4,11 @@ import { wrapRelayx } from "stag-relayx";
 import { toast } from "react-hot-toast";
 import { useRelay } from "../context/RelayContext";
 import { useBitcoin } from "../context/BitcoinContext";
+import useWallet from "../hooks/useWallet";
 import Drawer from "./Drawer";
 import WalletProviderPopUp from "./WalletProviderPopUp";
+
+import axios from 'axios'
 
 function FindOrCreate() {
   const [url, setUrl] = useState<string>("");
@@ -13,6 +16,8 @@ function FindOrCreate() {
   const { authenticated } = useBitcoin()
   const [walletPopupOpen, setWalletPopupOpen] = useState(false)
   const { relayOne } = useRelay();
+
+  const wallet = useWallet()
 
   const stag = wrapRelayx(relayOne);
 
@@ -47,7 +52,7 @@ function FindOrCreate() {
       router.push(`/${txid}`);
     } else {
       try {
-        const [result, isNew] = await stag.onchain.findOrCreate({
+        const tx = await wallet.onchainFindOrCreate({
           where: {
             app: "pow.co",
             type: "url",
@@ -64,9 +69,9 @@ function FindOrCreate() {
           },
         });
 
-        console.log(result, isNew);
-        router.prefetch(`/${result.txid}`);
-        router.push(`/${result.txid}`);
+        console.log(tx);
+        router.prefetch(`/${tx.hash}`);
+        router.push(`/${tx.hash}`);
       } catch (error) {
         console.log(error);
         toast("Error!", {
