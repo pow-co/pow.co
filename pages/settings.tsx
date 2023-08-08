@@ -19,17 +19,16 @@ import WalletSelect from "../components/WalletSelect";
 import { useTuning } from "../context/TuningContext";
 import Meta from "../components/Meta";
 
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+function capitalizeFirstLetter(s: string) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
-  const { logout, authenticated, setWallet } = useBitcoin();
+  const { logout, authenticated, setWallet, setWalletPopupOpen, walletPopupOpen } = useBitcoin();
   const { signPosts, setSignPosts } = useTuning();
   const { web3, web3Account, sensiletLogout, sensiletAuthenticate } = useSensilet()
   const [isDark, setIsDark] = useState(theme === "dark");
-  const [walletPopupOpen, setWalletPopupOpen] = useState(false);
   const [sensiletChecked, setSensiletChecked] = useState(!!web3Account)
 
   const { handcashAuthenticated, handcashAuthenticate, handcashPaymail, handcashLogout } = useHandCash()
