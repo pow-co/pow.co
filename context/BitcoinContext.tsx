@@ -23,7 +23,7 @@ type BitcoinContextValue = {
 
 const BitcoinContext = createContext<BitcoinContextValue | undefined>(undefined)
 const BitcoinProvider = (props: { children: React.ReactNode }) => {
-    const [wallet, setWallet] = useLocalStorage(walletStorageKey, "relayx")
+    const [wallet, setWallet] = useLocalStorage(walletStorageKey)
     const [exchangeRate, setExchangeRate] = useState(0)
     const { relayxAuthenticate, relayOne, relayxAuthenticated, relayxLogout, relayxAvatar, relayxPaymail, relayxUserName } = useRelay()
     const { twetchAuthenticate, twetchAuthenticated, twetchLogout, twetchAvatar, twetchPaymail, twetchUserName } = useTwetch()
@@ -113,7 +113,7 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
         }
     },[wallet, relayxUserName, twetchUserName, handcashUserName, sensiletUserName, localWalletUserName])
 
-    const authenticated = useMemo(()=> relayxAuthenticated || twetchAuthenticated || handcashAuthenticated || sensiletAuthenticated || localWalletAuthenticated, [relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated, localWalletAuthenticated])
+    const authenticated = useMemo(()=> wallet === "relayx" && relayxAuthenticated || wallet === "twetch" && twetchAuthenticated || wallet === "handcash" && handcashAuthenticated || wallet === "sensilet" && sensiletAuthenticated || wallet === "local" && localWalletAuthenticated, [wallet, relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated, localWalletAuthenticated])
 
     const logout = () => {
         setWallet("")
