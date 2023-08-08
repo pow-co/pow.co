@@ -46,7 +46,7 @@ const UserProfileCard = (props: UserProfileCardProps) => {
                 </div>
             </div>
             <div className="flex flex-col justify-center items-center">
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                <p className="text-3xl max-w-[333px] truncate font-bold text-gray-900 dark:text-white">
                     {userName}
                 </p>
                 {paymail && <p

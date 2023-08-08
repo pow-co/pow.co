@@ -75,13 +75,23 @@ export const relayFeedQuery = async (feed: string) => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const query = context.query;
     const paymail = query.paymail?.toString()
+    let userCard = {
+      banner: "",
+      avatar:"",
+      userName:"",
+      paymail:"",
+      description: "",
+      url:""
+    };
 
     if(!paymail){
         return { props: { userCard: null}}
     }
     const isTwetchUser = paymail?.includes("twetch")
     const isRelayXUser = paymail?.includes("relayx")
-    let userCard = null;
+    const isHandcashUser = paymail?.includes("handcash")
+    const isSensiletUser = paymail?.includes("sensilet")
+    const isLocalUser = paymail?.includes("pow.co")
 
     if (isTwetchUser){
         const userId = parseInt(paymail.split("@")[0])
@@ -94,7 +104,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             description: twetchUserProfileCard.description,
             url: twetchUserProfileCard.profileUrl
         }
-    }
+    } 
 
     if (isRelayXUser){
         const relayXUserProfileCardResponse = await axios.get(`https://staging-backend.relayx.com/api/profile/${paymail}`)
@@ -103,11 +113,54 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             banner: "",
             avatar: `https://a.relayx.com/u/${paymail}`,
             userName: relayXUserProfileCard.profile ? relayXUserProfileCard.profile?.name : `1${paymail.split("@")[0]}` ,
-            paymail: relayXUserProfileCard.profile ? `1${relayXUserProfileCard.profile?.paymail.split("@")[0]}` : null,
-            description: relayXUserProfileCard.profile ? relayXUserProfileCard.profile?.bio : null,
-            url: relayXUserProfileCard.profile ? relayXUserProfileCard.profile?.website : null
+            paymail: relayXUserProfileCard.profile ? `1${relayXUserProfileCard.profile?.paymail.split("@")[0]}` : "",
+            description: relayXUserProfileCard.profile ? relayXUserProfileCard.profile?.bio : "",
+            url: relayXUserProfileCard.profile ? relayXUserProfileCard.profile?.website : ""
         } 
         
+    }
+
+    if (isHandcashUser){
+      // LMAO someone explain Hadcash guys the concept of *public* profiles
+      /* const handCashConnect = new HandCashConnect({ 
+        appId: '<app-id>', 
+        appSecret: '<secret>',
+      }); 
+      let token='<handcash auth token>'
+      const account = handCashConnect.getAccountFromAuthToken(token);
+      const handcashUserProfileCardResponse = await account.profile.getPublicProfilesByHandle(users);
+      console.log(handcashUserProfileCardResponse); */
+      userCard = {
+        banner: "",
+        avatar: `https://cloud.handcash.io/v2/users/profilePicture/${paymail}`,
+        userName:`$${paymail.split('@')[0]}`,
+        paymail: paymail,
+        description: "",
+        url:""
+      }
+    }
+
+    if (isSensiletUser){
+      userCard = {
+        banner: "",
+        avatar:`https://api.dicebear.com/6.x/pixel-art/svg?seed=${paymail}`,
+        userName: paymail.split('@')[0],
+        paymail:paymail,
+        description: "",
+        url:""
+      };      
+
+    }
+
+    if (isLocalUser) {
+      userCard = {
+        banner: "",
+        avatar:`https://api.dicebear.com/6.x/pixel-art/svg?seed=${paymail}`,
+        userName: paymail.split('@')[0],
+        paymail:paymail,
+        description: "",
+        url:""
+      }; 
     }
 
     return { props: { userCard } };
