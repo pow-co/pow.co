@@ -10,7 +10,7 @@ const WalletSelect = () => {
     const { relayxAuthenticate, relayxPaymail } = useRelay()
     const { twetchAuthenticate, twetchPaymail } = useTwetch()
     const { handcashAuthenticate, handcashPaymail } = useHandCash()
-    const { localWalletAuthenticate, localWallet, seedPhrase } = useLocalWallet()
+    const { localWalletAuthenticate, localWallet, seedPhrase, localWalletPaymail } = useLocalWallet()
 
     const handleChange = async (e:any) => {
 
@@ -64,7 +64,9 @@ const WalletSelect = () => {
 
           case 'local':
 
-            if (!localWallet) {
+
+            if (!localWalletPaymail) {
+
 
               await localWalletAuthenticate(seedPhrase)
 
@@ -81,7 +83,7 @@ const WalletSelect = () => {
     }
   return (
     <select value={wallet} onChange={handleChange} id="locale" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:ring-primary-500 focus:border-primary-500 block grow p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-        <option value="relayx">RelayX</option>
+        <option selected value="relayx">RelayX</option>
         <option value="twetch">Twetch</option>
         <option value="handcash">Handcash</option>
         <option value="local">Local</option>

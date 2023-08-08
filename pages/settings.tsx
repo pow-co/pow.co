@@ -7,6 +7,8 @@ import WalletProviderPopUp from "../components/WalletProviderPopUp";
 import { useRelay } from "../context/RelayContext";
 import { useSensilet } from "../context/SensiletContext";
 import { useHandCash } from "../context/HandCashContext";
+import { useTwetch } from "../context/TwetchContext";
+import useWallet from "../hooks/useWallet";
 import TuningPanel from "../components/TuningPanel";
 
 import { FormattedMessage } from "react-intl";
@@ -16,6 +18,10 @@ import { useLocalWallet } from "../context/LocalWalletContext";
 import WalletSelect from "../components/WalletSelect";
 import { useTuning } from "../context/TuningContext";
 import Meta from "../components/Meta";
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
@@ -27,7 +33,10 @@ export default function Settings() {
   const [sensiletChecked, setSensiletChecked] = useState(!!web3Account)
 
   const { handcashAuthenticated, handcashAuthenticate, handcashPaymail, handcashLogout } = useHandCash()
+  const { relayxWallet, relayxLogout, relayxAuthenticate } = useRelay()
   const { localWalletLogout, localWallet } = useLocalWallet()
+  const { twetchWallet, twetchLogout } = useTwetch()
+  const wallet = useWallet()
 
   useEffect(() => {
     if (theme === "dark") {
@@ -65,6 +74,48 @@ export default function Settings() {
     handcashAuthenticate()
   }
     
+  function handleLogout(walletName: string) {
+
+    switch(walletName) {
+
+    case 'relayx':
+
+      relayxLogout()
+
+      break;
+
+    case 'handcash':
+
+      handcashLogout()
+
+      break;
+
+    case 'twetch':
+
+      twetchLogout()
+
+      break;
+
+    case 'local':
+
+      localWalletLogout()
+
+      break;
+
+    case 'sensilet':
+
+      sensiletLogout()
+
+      break;
+
+    }
+
+    if (wallet?.name === walletName) {
+
+      setWallet(null)
+    }
+
+  }
 
   return (
     <>
@@ -186,6 +237,7 @@ export default function Settings() {
                 {/* <FormattedMessage id="Interact with this app in your language" /> */}
                 Chose the BitCoin wallet you want to interact this app with
               </p>
+
             </div>
             <div className="grow" />
             
@@ -199,13 +251,90 @@ export default function Settings() {
                   <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
                     <path d="M2.16197 13.2675H13.838C15.2698 13.2675 16 12.5445 16 11.1271V2.86576C16 1.45546 15.2698 0.732422 13.838 0.732422H2.16197C0.730201 0.732422 0 1.44831 0 2.86576V11.1271C0 12.5445 0.730201 13.2675 2.16197 13.2675ZM1.18121 2.9445C1.18121 2.25725 1.54631 1.91363 2.20492 1.91363H13.7951C14.4465 1.91363 14.8188 2.25725 14.8188 2.9445V3.9539H1.18121V2.9445ZM2.20492 12.0863C1.54631 12.0863 1.18121 11.7356 1.18121 11.0483V5.50737H14.8188V11.0483C14.8188 11.7356 14.4465 12.0863 13.7951 12.0863H2.20492Z" fill="white" />
                   </svg>
-                  <span className="ml-4">{authenticated ? "Select":<FormattedMessage id="Connect" />}</span>
+                  <span className="ml-4">{wallet ? capitalizeFirstLetter(wallet.name):<FormattedMessage id="Connect" />}</span>
                 </button>
               </div>
   
           </div>
 
-          {/* {localWallet && (
+          {handcashPaymail && (
+
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                  <FormattedMessage id="Handcash Wallet" />
+                </p>
+                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                  <a href={`#`}>
+                    <FormattedMessage id={`${handcashPaymail}`} />
+                  </a>
+                </p>
+              </div>
+              <div className="grow" />
+              <div className="relative">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                    <button onClick={() => handleLogout('handcash') }>
+                      <FormattedMessage id="Log out" />
+                    </button>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+          )}
+
+          {relayxWallet?.paymail && (
+
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                  <FormattedMessage id="Relayx Wallet" />
+                </p>
+                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                  <a href={`#`}>
+                    <FormattedMessage id={`${relayxWallet.paymail}`} />
+                  </a>
+                </p>
+              </div>
+              <div className="grow" />
+              <div className="relative">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                      <button onClick={() => handleLogout('relayx')}><FormattedMessage id='Log out' /></button>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+          )}
+
+          {twetchWallet && (
+
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                  <FormattedMessage id="Twetch Wallet" />
+                </p>
+                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                  <a href={`#`}>
+                    <FormattedMessage id={`${twetchWallet.paymail}`} />
+                  </a>
+                </p>
+              </div>
+              <div className="grow" />
+              <div className="relative">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                      <button onClick={() => handleLogout('twetch')}><FormattedMessage id='Log out' /></button>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+          )}
+
+          {localWallet && (
 
             <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
               <div className="flex flex-col">
@@ -222,15 +351,15 @@ export default function Settings() {
               <div className="relative">
                 <label className="flex items-center cursor-pointer">
                   <div className="relative">
-        <button onClick={localWalletLogout}>Clear Local Wallet</button>
+        <button onClick={() => handleLogout('local') }><FormattedMessage id="Log out" /></button>
                   </div>
                 </label>
               </div>
             </div>
 
-          )} */}
+          )}
 
-{/*           {web3Account ? (
+          {web3Account ? (
             <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
               <div className="flex flex-col">
                 <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
@@ -244,7 +373,7 @@ export default function Settings() {
               <div className="relative">
                 <label className="flex items-center cursor-pointer">
                   <div className="relative">
-        <button onClick={sensiletLogout}>Logout Sensilet</button>
+        <button onClick={() => handleLogout('sensilet') }><FormattedMessage id="Log out" /></button>
                   </div>
                 </label>
               </div>
@@ -269,7 +398,6 @@ export default function Settings() {
               </div>
             </div>
           )}
- */}          
 
           {authenticated && <button
             onClick={logout}

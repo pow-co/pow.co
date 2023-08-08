@@ -162,7 +162,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   ));
 
   const submitPost = async (textContent: string) => {
-    if(!authenticated){
+    if(!authenticated || !wallet){
       setWalletPopupOpen(true)
       return
     }

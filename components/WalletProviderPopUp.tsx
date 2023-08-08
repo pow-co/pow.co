@@ -5,20 +5,93 @@ import { useTwetch } from "../context/TwetchContext";
 import { useHandCash } from "../context/HandCashContext";
 import { useLocalWallet } from "../context/LocalWalletContext";
 import { useSensilet } from "../context/SensiletContext";
+import useWallet from "../hooks/useWallet";
 
 interface WalletProviderProps {
   onClose: () => void
 }
 
 const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
-  const { wallet, setWallet } = useBitcoin()
+  const { setWallet, authenticate } = useBitcoin()
   const [seedInputScreen, setSeedInputScreen] = useState(false)
-  const { relayxAuthenticate, relayxPaymail } = useRelay()
-  const { twetchAuthenticate, twetchPaymail } = useTwetch()
+  const { relayxAuthenticate, relayxPaymail, relayxWallet } = useRelay()
+  const { twetchAuthenticate, twetchPaymail, twetchWallet, twetchLogout } = useTwetch()
   const { handcashAuthenticate, handcashPaymail } = useHandCash()
   const { sensiletAuthenticate } = useSensilet()
-  const { localWalletAuthenticate, localWallet } = useLocalWallet()
+  const { localWalletAuthenticate, localWallet, seedPhrase: savedSeedPhrase } = useLocalWallet()
   const [seedPhrase, setSeedPhrase] = useState("")
+
+  const wallet = useWallet()
+
+  async function handleSelectWallet(name: string) { 
+
+    switch(name) {
+
+    case 'local':
+
+      if (localWallet) {
+
+        setWallet('local')
+
+        onClose()
+
+      } else {
+
+        setSeedInputScreen(true)
+
+      }
+
+      break;
+
+    case 'relayx':
+
+      if (!relayxWallet) {
+
+        await relayxAuthenticate()
+
+      }
+
+      setWallet('relayx')
+
+      onClose()
+
+      break;
+
+
+    case 'sensilet':
+
+      if (!sensiletWallet) {
+
+        await handleSensiletAuth()
+
+      } else {
+
+        setWallet('sensilet')
+
+        onClose()
+
+      }
+
+      break;
+
+
+    case 'twetch':
+
+      if (!twetchWallet) {
+
+        handleTwetchAuth()
+
+      }
+
+      setWallet('twetch')
+
+      onClose()
+
+      break;
+
+    }
+
+  }
 
   const handleRelayxAuth = async (e:any) => {
     try {
@@ -32,9 +105,8 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
     
   }
 
-  const handleTwetchAuth = async (e: any) => {
+  const handleTwetchAuth = async () => {
     try {
-      e.preventDefault()
       await twetchAuthenticate()
       setWallet("twetch")
       onClose()
@@ -46,8 +118,12 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   const handleHandcashAuth = async (e:any) => {
     try {
       e.preventDefault()
-      await handcashAuthenticate()
-      setWallet("handcash")
+
+      if (!handcashPaymail) {
+        await handcashAuthenticate()
+      } else {
+        setWallet("handcash")
+      }
       onClose()
     } catch (error) {
       console.log(error)
@@ -139,7 +215,7 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
             </button>
 
             <button
-              onClick={handleTwetchAuth}
+              onClick={() => handleSelectWallet('twetch')}
               className={`bg-primary-200 dark:bg-primary-700 flex w-full mt-8 h-[52px] rounded-full py-2.5 px-5 items-center text-center justify-center font-semibold ${wallet === "twetch" ? "border-2 border-primary-500" : "border-none"}`}
             >
               <svg
@@ -219,7 +295,7 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
             </button>
 
             <button
-              onClick={() => setSeedInputScreen(true)}
+              onClick={() => { handleSelectWallet('local') }}
               className={`bg-primary-200 dark:bg-primary-700 flex w-full mt-8 h-[52px] rounded-full py-2.5 px-5 items-center text-center justify-center font-semibold ${wallet === "local" ? "border-2 border-primary-500" : "border-none"}`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 2499.6 2500" viewBox="0 0 2499.6 2500" className="h-6 w-6">

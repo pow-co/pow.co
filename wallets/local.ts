@@ -26,7 +26,20 @@ export default class LocalWallet extends Wallet {
 
   get privateKey(): bsv.PrivateKey { 
 
-    return bsv.HDPrivateKey.fromSeed(this.seed.toString('hex')).privateKey
+    const hdPrivateKey = bsv.HDPrivateKey.fromSeed(this.seed.toString('hex'))
+
+
+    const derivationPaths = {
+      sensiletDefault:        `m/44'/0'/0'/0/0`,
+      relayxBsv:              `m/44'/236'/0'/0/0`,
+      relayxChange:           `m/44'/236'/0'/1/0`,
+      relayxRunOwner:         `m/44'/236'/0'/2/0`,
+      relayxMarketOrderCancel:`m/44'/236'/0'/3/0`
+    }
+
+    const sensiletDefaultPrivateKey = hdPrivateKey.deriveChild(derivationPaths.sensiletDefault)
+
+    return sensiletDefaultPrivateKey
 
   }
 
