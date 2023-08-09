@@ -127,7 +127,7 @@ function Header() {
                 </svg>
               </div>
             </Link> */}
-              <Link href={`/profile/${paymail}`}>
+              <Link href={`/settings`}>
                 <div className="relative ml-4 flex h-8 w-8 cursor-pointer items-center justify-center">
                   <UserIcon src={avatar!} size={36} />
                 </div>

@@ -12,6 +12,8 @@ import { SideChat } from '../components/SideChat';
 import { useSubdomain } from '../hooks/subdomain'
 import PanelLayout from '../components/PanelLayout'
 import { useState } from 'react'
+import Drawer from '../components/Drawer';
+import WalletProviderPopUp from '../components/WalletProviderPopUp';
 
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -22,7 +24,7 @@ export default function Home() {
 
   const { subdomain } = useSubdomain()
   const { filter } = useTuning();
-  const { authenticated } = useBitcoin();
+  const { authenticated, walletPopupOpen, setWalletPopupOpen } = useBitcoin();
   const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
   //const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
 
@@ -84,6 +86,13 @@ export default function Home() {
     <>
     <Meta title='The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
+      <Drawer
+          selector="#walletProviderPopupController"
+          isOpen={walletPopupOpen}
+          onClose={() => setWalletPopupOpen(false)}
+        >
+          <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
+      </Drawer>
       {authenticated && (
       <div className="mt-5 sm:mt-10">
         <FindOrCreate />

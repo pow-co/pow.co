@@ -14,16 +14,20 @@ type BitcoinContextValue = {
     avatar: string | undefined;
     paymail: string | undefined;
     userName: string | undefined;
-    setWallet: (wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet' | 'local') => void;
+    setWallet: (wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet' | 'local' | null) => void;
     authenticate: () => Promise<void>;
     authenticated: boolean;
     logout: () => void;
     exchangeRate: number;
+    walletPopupOpen: boolean;
+    setWalletPopupOpen: (isOpen: boolean) => void;
 }
 
 const BitcoinContext = createContext<BitcoinContextValue | undefined>(undefined)
 const BitcoinProvider = (props: { children: React.ReactNode }) => {
     const [wallet, setWallet] = useLocalStorage(walletStorageKey)
+    const [walletPopupOpen, setWalletPopupOpen] = useState(false);
+
     const [exchangeRate, setExchangeRate] = useState(0)
     const { relayxAuthenticate, relayOne, relayxAuthenticated, relayxLogout, relayxAvatar, relayxPaymail, relayxUserName } = useRelay()
     const { twetchAuthenticate, twetchAuthenticated, twetchLogout, twetchAvatar, twetchPaymail, twetchUserName } = useTwetch()
@@ -135,7 +139,9 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
             authenticate,
             authenticated,
             logout, 
-            exchangeRate
+            exchangeRate,
+            walletPopupOpen,
+            setWalletPopupOpen
         }),
         [
             avatar,
@@ -146,7 +152,9 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
             authenticate,
             authenticated,
             logout,
-            exchangeRate
+            exchangeRate,
+            walletPopupOpen,
+            setWalletPopupOpen
         ]
     )
 

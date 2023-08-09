@@ -27,7 +27,7 @@ function FindOrCreate() {
   };
 
   const findOrCreate = async (url: string) => {
-    if(!authenticated){
+    if(!authenticated || !wallet){
       setWalletPopupOpen(true)
       return
     }

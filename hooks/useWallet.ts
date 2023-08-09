@@ -13,7 +13,7 @@ import { useBitcoin } from '../context/BitcoinContext';
 
 import { useLocalWallet } from '../context/LocalWalletContext';
 
-export default function useWallet(): Wallet {
+export default function useWallet(): Wallet | null {
 
   let { wallet, paymail } = useBitcoin()
 
@@ -47,6 +47,6 @@ export default function useWallet(): Wallet {
 
     default:
     
-      throw new Error('invalid wallet type');
+      return null
   }
 }

@@ -110,7 +110,7 @@ const ChatComposer = ({
 
   const handleSubmit = async () => {
 
-    if (!authenticated) {
+    if (!authenticated || !wallet) {
       setWalletPopupOpen(true)
       return;
     }

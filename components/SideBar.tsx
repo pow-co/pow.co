@@ -45,14 +45,14 @@ const SideBar = () => {
     <div className='py-6 xl:p-6 items-center bg-primary-200 dark:bg-primary-800/20 w-full h-full flex flex-col'>
         <div className='w-fit xl:w-full flex mb-2.5 items-center '>
             {authenticated ? (<>
-            <Link className='cursor-pointer' href={`/profile/${paymail}`}>
+            <Link className='cursor-pointer' href={`/settings`}>
                     <UserIcon src={avatar!} size={36}/>
             </Link>
             <div className='ml-3 hidden xl:block'>
-                <Link className='block truncate max-w-[100px] text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline' href={`/profile/${paymail}`} >
+                <Link className='block truncate max-w-[100px] text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline' href={`/settings`} >
                     {userName}
                 </Link>
-                <Link className='block truncate max-w-[100px] text-xs leading-4 text-gray-500 hover:underline' href={`/profile/${paymail}`}>
+                <Link className='block truncate max-w-[100px] text-xs leading-4 text-gray-500 hover:underline' href={`/settings`}>
                     {paymail}
                 </Link>
             </div>

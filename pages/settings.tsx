@@ -7,6 +7,8 @@ import WalletProviderPopUp from "../components/WalletProviderPopUp";
 import { useRelay } from "../context/RelayContext";
 import { useSensilet } from "../context/SensiletContext";
 import { useHandCash } from "../context/HandCashContext";
+import { useTwetch } from "../context/TwetchContext";
+import useWallet from "../hooks/useWallet";
 import TuningPanel from "../components/TuningPanel";
 
 import { FormattedMessage } from "react-intl";
@@ -17,6 +19,10 @@ import WalletSelect from "../components/WalletSelect";
 import { useTuning } from "../context/TuningContext";
 import Meta from "../components/Meta";
 
+function capitalizeFirstLetter(s: string) {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+    
+}
 const ConnectedWallet = () => {
   const { wallet } = useBitcoin()
   switch (wallet) {
@@ -172,15 +178,17 @@ const ConnectedWallet = () => {
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
-  const { logout, authenticated, setWallet } = useBitcoin();
+  const { logout, authenticated, setWallet, setWalletPopupOpen, walletPopupOpen } = useBitcoin();
   const { signPosts, setSignPosts } = useTuning();
   const { web3, web3Account, sensiletLogout, sensiletAuthenticate } = useSensilet()
   const [isDark, setIsDark] = useState(theme === "dark");
-  const [walletPopupOpen, setWalletPopupOpen] = useState(false);
   const [sensiletChecked, setSensiletChecked] = useState(!!web3Account)
 
   const { handcashAuthenticated, handcashAuthenticate, handcashPaymail, handcashLogout } = useHandCash()
+  const { relayxWallet, relayxLogout, relayxAuthenticate } = useRelay()
   const { localWalletLogout, localWallet } = useLocalWallet()
+  const { twetchWallet, twetchLogout } = useTwetch()
+  const wallet = useWallet()
 
   useEffect(() => {
     if (theme === "dark") {
@@ -218,6 +226,48 @@ export default function Settings() {
     handcashAuthenticate()
   }
     
+  function handleLogout(walletName: string) {
+
+    switch(walletName) {
+
+    case 'relayx':
+
+      relayxLogout()
+
+      break;
+
+    case 'handcash':
+
+      handcashLogout()
+
+      break;
+
+    case 'twetch':
+
+      twetchLogout()
+
+      break;
+
+    case 'local':
+
+      localWalletLogout()
+
+      break;
+
+    case 'sensilet':
+
+      sensiletLogout()
+
+      break;
+
+    }
+
+    if (wallet?.name === walletName) {
+
+      setWallet(null)
+    }
+
+  }
 
   return (
     <>
@@ -339,6 +389,7 @@ export default function Settings() {
                 {/* <FormattedMessage id="Interact with this app in your language" /> */}
                 Chose the BitCoin wallet you want to interact this app with
               </p>
+
             </div>
             <div className="grow" />
               <div className="relative flex items-center">
@@ -362,7 +413,84 @@ export default function Settings() {
   
           </div>
 
-          {/* {localWallet && (
+          {handcashPaymail && (
+
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                  <FormattedMessage id="Handcash Wallet" />
+                </p>
+                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                  <a href={`#`}>
+                    <FormattedMessage id={`${handcashPaymail}`} />
+                  </a>
+                </p>
+              </div>
+              <div className="grow" />
+              <div className="relative">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                    <button onClick={() => handleLogout('handcash') }>
+                      <FormattedMessage id="Log out" />
+                    </button>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+          )}
+
+          {relayxWallet?.paymail && (
+
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                  <FormattedMessage id="Relayx Wallet" />
+                </p>
+                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                  <a href={`#`}>
+                    <FormattedMessage id={`${relayxWallet.paymail}`} />
+                  </a>
+                </p>
+              </div>
+              <div className="grow" />
+              <div className="relative">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                      <button onClick={() => handleLogout('relayx')}><FormattedMessage id='Log out' /></button>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+          )}
+
+          {twetchWallet && (
+
+            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
+              <div className="flex flex-col">
+                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
+                  <FormattedMessage id="Twetch Wallet" />
+                </p>
+                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
+                  <a href={`#`}>
+                    <FormattedMessage id={`${twetchWallet.paymail}`} />
+                  </a>
+                </p>
+              </div>
+              <div className="grow" />
+              <div className="relative">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                      <button onClick={() => handleLogout('twetch')}><FormattedMessage id='Log out' /></button>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+          )}
+
+          {localWallet && (
 
             <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
               <div className="flex flex-col">
@@ -379,54 +507,34 @@ export default function Settings() {
               <div className="relative">
                 <label className="flex items-center cursor-pointer">
                   <div className="relative">
-        <button onClick={localWalletLogout}>Clear Local Wallet</button>
+        <button onClick={() => handleLogout('local') }><FormattedMessage id="Log out" /></button>
                   </div>
                 </label>
               </div>
             </div>
 
-          )} */}
+          )}
 
-{/*           {web3Account ? (
+          {web3Account && (
             <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
               <div className="flex flex-col">
                 <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                   <FormattedMessage id="Sensilet Wallet" />
                 </p>
                 <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
-                  <FormattedMessage id={`Sensilet wallet connected ${web3Account}`} />
+                  <FormattedMessage id={`${web3Account}`} />
                 </p>
               </div>
               <div className="grow" />
               <div className="relative">
                 <label className="flex items-center cursor-pointer">
                   <div className="relative">
-        <button onClick={sensiletLogout}>Logout Sensilet</button>
-                  </div>
-                </label>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
-              <div className="flex flex-col">
-                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
-                  <FormattedMessage id="Sensilet Wallet" />
-                </p>
-                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
-                  <FormattedMessage id={`Experimental Feature - Connect Sensilet Wallet`} />
-                </p>
-              </div>
-              <div className="grow" />
-              <div className="relative">
-                <label className="flex items-center cursor-pointer">
-                  <div className="relative">
-        <button onClick={connectSensilet}>Connect Sensilet</button>
+        <button onClick={() => handleLogout('sensilet') }><FormattedMessage id="Log out" /></button>
                   </div>
                 </label>
               </div>
             </div>
           )}
- */}          
 
           {authenticated && <button
             onClick={logout}
