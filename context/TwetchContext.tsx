@@ -5,6 +5,8 @@ import TwetchWeb3 from '@twetch/web3';
 import { useLocalStorage } from '../utils/storage';
 import { config } from '../template_config';
 
+import TwetchWallet from '../wallets/twetch'
+
 // Utils
 
 const paymailStorageKey = `${config.appname}__TwetchProvider_paymail`;
@@ -17,6 +19,7 @@ type TwetchContextValue = {
   tokenTwetchAuth: string | undefined;
   twetchAuthenticate: () => Promise<void>;
   twetchAuthenticated: boolean;
+  twetchWallet: TwetchWallet | null | undefined;
   twetchLogout: () => void;
 };
 
@@ -24,6 +27,8 @@ const TwetchContext = createContext<TwetchContextValue | undefined>(undefined);
 function TwetchProvider(props: { children: React.ReactNode }) {
   const [twetchPaymail, setTwetchPaymail] = useLocalStorage(paymailStorageKey);
   const [tokenTwetchAuth, setTokenTwetchAuth] = useLocalStorage(tokenStorageKey);
+
+  const [twetchWallet, setTwetchWallet] = useState<TwetchWallet | null | undefined>();
   const [me, setMe] = useState<any>({});
 
   const logUser = useCallback(async (token: string) => {
@@ -68,12 +73,23 @@ function TwetchProvider(props: { children: React.ReactNode }) {
         setTokenTwetchAuth(authResponseData.token);
         console.log(authResponseData.token);
         await logUser(authResponseData.token);
+
       } catch (err) {
         console.error('twetchAuthenticate.error', err);
         // { code: 4001, message: 'me rejected the request.' }
       }
     }
   }, [tokenTwetchAuth]);
+
+  useEffect(() => {
+
+    if (twetchPaymail) {
+
+      setTwetchWallet(new TwetchWallet({ paymail: twetchPaymail }))
+
+    }
+
+  }, [twetchPaymail])
 
   const twetchUserName = useMemo(() => me && me.name, [me]);
 
@@ -83,6 +99,7 @@ function TwetchProvider(props: { children: React.ReactNode }) {
     setTwetchPaymail('');
     setTokenTwetchAuth('');
     setMe({});
+    setTwetchWallet(null)
   };
 
   const value = useMemo(
@@ -94,6 +111,7 @@ function TwetchProvider(props: { children: React.ReactNode }) {
       twetchAuthenticate,
       twetchAuthenticated,
       twetchLogout,
+      twetchWallet
     }),
     [
       twetchAvatar,
@@ -103,6 +121,7 @@ function TwetchProvider(props: { children: React.ReactNode }) {
       twetchAuthenticate,
       twetchAuthenticated,
       twetchLogout,
+      twetchWallet
     ],
   );
 

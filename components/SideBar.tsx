@@ -45,14 +45,14 @@ const SideBar = () => {
     <div className='py-6 xl:p-6 items-center bg-primary-200 dark:bg-primary-800/20 w-full h-full flex flex-col'>
         <div className='w-fit xl:w-full flex mb-2.5 items-center '>
             {authenticated ? (<>
-            <Link className='cursor-pointer' href={`/profile/${paymail}`}>
+            <Link className='cursor-pointer' href={`/settings`}>
                     <UserIcon src={avatar!} size={36}/>
             </Link>
             <div className='ml-3 hidden xl:block'>
-                <Link className='block text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline' href={`/profile/${paymail}`} >
+                <Link className='block truncate max-w-[100px] text-sm leading-4 font-semibold text-gray-900 dark:text-white hover:underline' href={`/settings`} >
                     {userName}
                 </Link>
-                <Link className='block text-xs leading-4 text-gray-500 hover:underline' href={`/profile/${paymail}`}>
+                <Link className='block truncate max-w-[100px] text-xs leading-4 text-gray-500 hover:underline' href={`/settings`}>
                     {paymail}
                 </Link>
             </div>
@@ -64,8 +64,7 @@ const SideBar = () => {
             </div></>):
             (
                 <div
-                    //onClick={()=>setWalletPopupOpen(true)}
-                    onClick={login}
+                    onClick={()=>setWalletPopupOpen(true)}
                     className='hidden xl:flex ml-4 p-5 transition duration-500 transform hover:-translate-y-1 h-8 text-base leading-4 text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-500 to-primary-600  justify-center items-center cursor-pointer relative'>
                     <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
                     <path d="M2.16197 13.2675H13.838C15.2698 13.2675 16 12.5445 16 11.1271V2.86576C16 1.45546 15.2698 0.732422 13.838 0.732422H2.16197C0.730201 0.732422 0 1.44831 0 2.86576V11.1271C0 12.5445 0.730201 13.2675 2.16197 13.2675ZM1.18121 2.9445C1.18121 2.25725 1.54631 1.91363 2.20492 1.91363H13.7951C14.4465 1.91363 14.8188 2.25725 14.8188 2.9445V3.9539H1.18121V2.9445ZM2.20492 12.0863C1.54631 12.0863 1.18121 11.7356 1.18121 11.0483V5.50737H14.8188V11.0483C14.8188 11.7356 14.4465 12.0863 13.7951 12.0863H2.20492Z" fill="white">

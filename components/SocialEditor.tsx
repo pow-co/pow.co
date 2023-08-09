@@ -21,6 +21,8 @@ import { Tooltip } from 'react-tooltip';
 import { useTuning } from '../context/TuningContext';
 import { bsv } from 'scrypt-ts'
 import useWallet from '../hooks/useWallet'
+import Drawer from './Drawer';
+import WalletProviderPopUp from './WalletProviderPopUp';
 
 const extraAttributes: IdentifierSchemaAttributes[] = [
   { identifiers: ['mention', 'emoji'], attributes: { role: { default: 'presentation' } } },
@@ -81,7 +83,8 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   defaultTag,
   ...rest
 }) => {
-  const { paymail } = useBitcoin()
+  const [walletPopupOpen, setWalletPopupOpen] = useState(false)
+  const { paymail, authenticated } = useBitcoin()
   const { signPosts } = useTuning()
   const [signWithPaymail, setSignWithPaymail] = useState(signPosts)
   const [images, setImages] = useState<any>([])
@@ -159,6 +162,10 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   ));
 
   const submitPost = async (textContent: string) => {
+    if(!authenticated || !wallet){
+      setWalletPopupOpen(true)
+      return
+    }
 
     const bsocial = new BSocial('pow.co')
 
@@ -268,6 +275,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
   }
 
   return (
+    <>
     <AllStyledComponent className="p-4 sm:rounded-xl bg-primary-100 dark:bg-primary-700/20">
       <RemirrorThemeProvider theme={{
         color: {
@@ -334,6 +342,14 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
         </Remirror>
       </RemirrorThemeProvider>
     </AllStyledComponent>
+    <Drawer
+        selector="#walletProviderPopupControler"
+        isOpen={walletPopupOpen}
+        onClose={() => setWalletPopupOpen(false)}
+      >
+        <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
+    </Drawer>
+    </>
   );
 };
 

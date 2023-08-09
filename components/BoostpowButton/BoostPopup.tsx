@@ -90,7 +90,7 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
     setPosition(parseFloat(e.target.value))
   }
 
-  const wallet: Wallet = useWallet()
+  const wallet = useWallet()
 
   const boost = async (contentTxid: string) => {
     
@@ -100,6 +100,8 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
       content: contentTxid,
       diff: difficulty
     }
+
+    if (!wallet) { throw new Error('no wallet selected') }
 
     try {
 

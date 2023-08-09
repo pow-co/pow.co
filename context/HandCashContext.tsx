@@ -40,8 +40,8 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
 
     const handcashAuthenticated = useMemo(() => !!handCashAuthToken, [handCashAuthToken]);
 
-    const handcashAvatar = useMemo(() => `https://a.relayx.com/u/${handcashPaymail}`, [handcashPaymail])
-    const handcashUserName = useMemo(() => handcashPaymail ? handcashPaymail.split('$')[1] : "", [handcashPaymail])
+    const handcashUserName = useMemo(() => handcashPaymail ? "$" + handcashPaymail.split('@')[0] : "", [handcashPaymail])
+    const handcashAvatar = useMemo(() => `https://cloud.handcash.io/v2/users/profilePicture/${handcashPaymail}`, [handcashPaymail])
 
     const router = useRouter();
 
@@ -65,8 +65,11 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
     }
 
     const handcashAuthenticate = useCallback(async () => {
-
-        window.location.href = `https://app.handcash.io/#/authorizeApp?appId=${handcashAppId}`;
+        try {
+          window.location.href = `https://app.handcash.io/#/authorizeApp?appId=${handcashAppId}`;
+        } catch (error) {
+          throw new Error ("Handcash auth failed" + error)
+        }
 
     }, [setHandcashPaymail]);
 

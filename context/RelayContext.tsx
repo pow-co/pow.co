@@ -11,6 +11,8 @@ import { lsTest, useLocalStorage } from "../utils/storage";
 
 import { config } from "../template_config"
 
+import RelayxWallet from '../wallets/relayx'
+
 export interface RelaySignResult {
    algorithm: 'bitcoin-signed-message';
    address: string;
@@ -99,6 +101,7 @@ type RelayContextValue = {
    setRelayxPaymail: (paymail: string | undefined) => void;
    setRunOwner: (runOwner: string) => void;
    relayxLogout: () => void;
+   relayxWallet: RelayxWallet | null | undefined;
 };
 
 const RelayContext = createContext<RelayContextValue | undefined>(undefined);
@@ -108,6 +111,7 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
   const [relayAuthToken, setRelayAuthToken] = useLocalStorage(tokenStorageKey);
   const [runOwner, setRunOwner] = useLocalStorage(runOwnerStorageKey);
   const [relayOne, setRelayOne] = useState<RelayOne>();
+  const [relayxWallet, setRelayxWallet] = useState<RelayxWallet | null | undefined>();
   const [tokenBalance, setTokenBalance] = useState(0);
   const [hasTwetchPrivilege, setHasTwetchPrivilege] = useState(false)
 
@@ -144,6 +148,12 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       }
 
   }
+
+  useEffect(() => {
+
+    setRelayxWallet(new RelayxWallet({ paymail: relayxPaymail }))
+
+  }, [relayxPaymail])
 
   useEffect(() => {
     (async () => {
@@ -206,6 +216,7 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       setRelayxPaymail(returnedPaymail);
       const owner = await relayOne?.alpha.run.getOwner();
       setRunOwner(owner);
+
     } else {
       throw new Error(
         "If you are in private browsing mode try again in a normal browser window. (Relay requires localStorage)"
@@ -219,7 +230,6 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
 
   const relayxUserName = useMemo(() => relayxPaymail ? `1${relayxPaymail.split("@")[0]}` : "", [relayxPaymail])
 
-
   // Auto Authenticate when inside the Relay app
   useEffect(() => {
     if (isApp) {
@@ -228,10 +238,12 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
   }, [relayxAuthenticate, isApp]);
 
   const relayxLogout = () => {
+    console.log('relayxLogout')
     setRelayxPaymail("");
     setTokenBalance(0);
     setHasTwetchPrivilege(false)
     setRelayAuthToken(undefined)
+    setRelayxWallet(null)
   };
 
   const value = useMemo(
@@ -252,7 +264,8 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       ready,
       tokenBalance,
       isApp,
-      getTokenBalance
+      getTokenBalance,
+      relayxWallet
     }),
     [
       relayxAvatar,
@@ -270,7 +283,8 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       ready,
       tokenBalance,
       isApp,
-      getTokenBalance
+      getTokenBalance,
+      relayxWallet
     ]
   );
 

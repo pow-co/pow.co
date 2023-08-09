@@ -7,27 +7,33 @@ import { useHandCash } from "./HandCashContext";
 import { useSensilet } from "./SensiletContext";
 import axios, { AxiosResponse } from "axios";
 import React from 'react'
+import { useLocalWallet } from "./LocalWalletContext";
 
 type BitcoinContextValue = {
     wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet' | 'local';
     avatar: string | undefined;
     paymail: string | undefined;
     userName: string | undefined;
-    setWallet: (wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet' | 'local') => void;
+    setWallet: (wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet' | 'local' | null) => void;
     authenticate: () => Promise<void>;
     authenticated: boolean;
     logout: () => void;
     exchangeRate: number;
+    walletPopupOpen: boolean;
+    setWalletPopupOpen: (isOpen: boolean) => void;
 }
 
 const BitcoinContext = createContext<BitcoinContextValue | undefined>(undefined)
 const BitcoinProvider = (props: { children: React.ReactNode }) => {
-    const [wallet, setWallet] = useLocalStorage(walletStorageKey, "relayx")
+    const [wallet, setWallet] = useLocalStorage(walletStorageKey)
+    const [walletPopupOpen, setWalletPopupOpen] = useState(false);
+
     const [exchangeRate, setExchangeRate] = useState(0)
     const { relayxAuthenticate, relayOne, relayxAuthenticated, relayxLogout, relayxAvatar, relayxPaymail, relayxUserName } = useRelay()
     const { twetchAuthenticate, twetchAuthenticated, twetchLogout, twetchAvatar, twetchPaymail, twetchUserName } = useTwetch()
     const { handcashAuthenticate, handcashAuthenticated, handcashLogout, handcashAvatar, handcashPaymail, handcashUserName} = useHandCash()
     const { sensiletAuthenticate, sensiletAuthenticated, sensiletLogout, sensiletAvatar, sensiletPaymail, sensiletUserName} = useSensilet()
+    const { localWalletAuthenticate, localWalletAuthenticated, localWalletLogout, localWalletAvatar, localWalletPaymail, localWalletUserName, seedPhrase } = useLocalWallet()
 
     useEffect(() => {
         axios.get('https://api.whatsonchain.com/v1/bsv/main/exchangerate').then((resp:AxiosResponse) => {
@@ -50,6 +56,9 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
             case 'sensilet':
                 await sensiletAuthenticate()
                 break;
+            case 'local':
+                await localWalletAuthenticate(seedPhrase)
+                break
             default:
                 break;
         }
@@ -66,10 +75,12 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
                 return handcashAvatar
             case 'sensilet':
                 return sensiletAvatar
+            case 'local':
+                return localWalletAvatar
             default:
                 break;
         }
-    },[wallet, relayxAvatar, twetchAvatar, handcashAvatar, sensiletAvatar])
+    },[wallet, relayxAvatar, twetchAvatar, handcashAvatar, sensiletAvatar, localWalletAvatar])
 
 
     const paymail = useMemo(() => {
@@ -80,10 +91,14 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
                 return twetchPaymail
             case 'handcash':
                 return handcashPaymail
+            case "sensilet":
+                return sensiletPaymail
+            case "local": 
+                return localWalletPaymail
             default:
                 break;
         }
-    },[wallet, relayxPaymail, twetchPaymail, handcashPaymail, sensiletPaymail])
+    },[wallet, relayxPaymail, twetchPaymail, handcashPaymail, sensiletPaymail, localWalletPaymail])
 
     const userName = useMemo(() => {
         switch (wallet){
@@ -95,18 +110,22 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
                 return handcashUserName
             case 'sensilet':
                 return sensiletUserName
+            case 'local':
+                return localWalletUserName
             default:
                 break;
         }
-    },[wallet, relayxUserName, twetchUserName, handcashUserName])
+    },[wallet, relayxUserName, twetchUserName, handcashUserName, sensiletUserName, localWalletUserName])
 
-    const authenticated = useMemo(()=> relayxAuthenticated || twetchAuthenticated || handcashAuthenticated || sensiletAuthenticated, [relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated])
+    const authenticated = useMemo(()=> wallet === "relayx" && relayxAuthenticated || wallet === "twetch" && twetchAuthenticated || wallet === "handcash" && handcashAuthenticated || wallet === "sensilet" && sensiletAuthenticated || wallet === "local" && localWalletAuthenticated, [wallet, relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated, localWalletAuthenticated])
 
     const logout = () => {
+        setWallet("")
         relayxLogout()
         twetchLogout()
         handcashLogout()
         sensiletLogout()
+        localWalletLogout()
         localStorage.clear()
     }
 
@@ -120,7 +139,9 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
             authenticate,
             authenticated,
             logout, 
-            exchangeRate
+            exchangeRate,
+            walletPopupOpen,
+            setWalletPopupOpen
         }),
         [
             avatar,
@@ -131,7 +152,9 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
             authenticate,
             authenticated,
             logout,
-            exchangeRate
+            exchangeRate,
+            walletPopupOpen,
+            setWalletPopupOpen
         ]
     )
 

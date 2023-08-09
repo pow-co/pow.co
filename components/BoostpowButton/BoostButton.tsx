@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import Drawer from '../Drawer'
 import BoostPopup from './BoostPopup';
+import { useBitcoin } from '../../context/BitcoinContext';
+import WalletProviderPopUp from '../WalletProviderPopUp';
 
 interface BoostButtonProps {
     content: string;
@@ -11,11 +13,17 @@ interface BoostButtonProps {
 }
 
 const BoostButton = ({ content, difficulty, showDifficulty = true, existingTags, defaultTag }: BoostButtonProps) => {
+    const { authenticated } = useBitcoin()
+    const [walletPopupOpen, setWalletPopupOpen] = useState(false)
     const [boostPopupOpen, setBoostPopupOpen] = useState(false)
 
     const handleBoost = (e:any) => {
         e.preventDefault()
         e.stopPropagation()
+        if(!authenticated){
+            setWalletPopupOpen(true)
+            return
+        }
         setBoostPopupOpen(true)
     }
   return (
@@ -41,6 +49,13 @@ const BoostButton = ({ content, difficulty, showDifficulty = true, existingTags,
         onClose={() => setBoostPopupOpen(false)}
         >
         <BoostPopup content={content} tagList={existingTags} defaultTag={defaultTag} onClose={() => setBoostPopupOpen(false)}/>
+        </Drawer>
+        <Drawer
+            selector="#walletProviderPopupControler"
+            isOpen={walletPopupOpen}
+            onClose={() => setWalletPopupOpen(false)}
+        >
+            <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
         </Drawer>
     </>
   )

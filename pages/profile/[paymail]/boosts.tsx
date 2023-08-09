@@ -13,6 +13,7 @@ import { UserProfileCardProps } from '../../../components/UserProfileCard'
 import axios from 'axios'
 import request from 'graphql-request'
 import Meta from '../../../components/Meta'
+import { getServerSideProps as getUserCardProps } from '.'
 
 const graphqlAPI = "https://graphql.relayx.com";
 
@@ -71,44 +72,7 @@ export const relayFeedQuery = async (feed: string) => {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const query = context.query;
-    const paymail = query.paymail?.toString()
-
-    if(!paymail){
-        return { props: { userCard: null}}
-    }
-    const isTwetchUser = paymail?.includes("twetch")
-    const isRelayXUser = paymail?.includes("relayx")
-    let userCard = null;
-
-    if (isTwetchUser){
-        const userId = parseInt(paymail.split("@")[0])
-        const twetchUserProfileCard = await userProfileCardAnonQuery(userId);
-        userCard = {
-            banner: twetchUserProfileCard.banner,
-            avatar: twetchUserProfileCard.icon,
-            userName: twetchUserProfileCard.name,
-            paymail: `${twetchUserProfileCard.id}@twetch.me`,
-            description: twetchUserProfileCard.description,
-            url: twetchUserProfileCard.profileUrl
-        }
-    }
-
-    if (isRelayXUser){
-        const relayXUserProfileCardResponse = await axios.get(`https://staging-backend.relayx.com/api/profile/${paymail}`)
-        const relayXUserProfileCard = relayXUserProfileCardResponse.data.data
-        userCard = {
-            banner: "",
-            avatar: `https://a.relayx.com/u/${paymail}`,
-            userName: relayXUserProfileCard.profile ? relayXUserProfileCard.profile?.name : `1${paymail.split("@")[0]}` ,
-            paymail: relayXUserProfileCard.profile ? `1${relayXUserProfileCard.profile?.paymail.split("@")[0]}` : null,
-            description: relayXUserProfileCard.profile ? relayXUserProfileCard.profile?.bio : null,
-            url: relayXUserProfileCard.profile ? relayXUserProfileCard.profile?.website : null
-        } 
-        
-    }
-
-    return { props: { userCard } };
+    return getUserCardProps(context)
 }
 
 interface ProfileCardProps {

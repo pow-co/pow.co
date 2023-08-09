@@ -3,7 +3,7 @@ import Relayx from '../wallets/relayx';
 import Sensilet from '../wallets/sensilet';
 import Handcash from '../wallets/handcash';
 import Twetch from '../wallets/twetch';
-import Local from '../wallets/local';
+import LocalWallet from '../wallets/local';
 
 import { bsv } from 'scrypt-ts'
 
@@ -11,11 +11,15 @@ import { useHandCash } from '../context/HandCashContext';
 
 import { useBitcoin } from '../context/BitcoinContext';
 
-export default function useWallet(): Wallet {
+import { useLocalWallet } from '../context/LocalWalletContext';
+
+export default function useWallet(): Wallet | null {
 
   let { wallet, paymail } = useBitcoin()
 
   const { handCashAuthToken } = useHandCash();
+
+  const { localWallet } = useLocalWallet()
 
   paymail = String(paymail)
 
@@ -39,10 +43,10 @@ export default function useWallet(): Wallet {
 
     case 'local':
 
-      return new Local({ privateKey: new bsv.PrivateKey() });
+      return localWallet as LocalWallet
 
     default:
     
-      throw new Error('invalid wallet type');
+      return null
   }
 }

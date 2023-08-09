@@ -59,6 +59,8 @@ export default function WriteNewArticle() {
 
     async function submitPost() {
 
+      if (!wallet){ throw new Error('wallet not selected') }
+
         console.log('submit post!', value)
         toast('Publishing Your Post to the Network', {
             icon: '⛏️',

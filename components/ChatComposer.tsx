@@ -8,6 +8,9 @@ import moment from "moment";
 import Wallet from '../wallets/abstract'
 
 import useWallet from '../hooks/useWallet'
+import Drawer from "./Drawer";
+import WalletProviderPopUp from "./WalletProviderPopUp";
+import { useBitcoin } from "../context/BitcoinContext";
 
 const B_PREFIX = `19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut`;
 export const MAP_PREFIX = `1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5`;
@@ -73,18 +76,12 @@ class BitchatClient {
 
     })
 
-    axios.post('https://pow.co/api/v1/posts', {
-      transactions: [{
-        tx: tx.toString()
-      }]
-    })
-    .then(console.log)
-    .catch(console.error)
-
     axios.post("https://b.map.sv/ingest", {
       rawTx: tx.toString(),
     })
     .catch(console.error)
+
+    axios.get(`https://pow.co/api/v1/content/${tx.hash}`).catch(console.error);
 
     axios.get(`https://pow.co/api/v1/chat/messages/${tx.hash}`).catch(console.error);
 
@@ -102,6 +99,9 @@ const ChatComposer = ({
 
   const [inputValue, setInputValue] = useState("");
 
+  const [walletPopupOpen, setWalletPopupOpen] = useState(false)
+  const { authenticated } = useBitcoin()
+
   const [sending, setSending] = useState(false);
 
   const [rows, setRows] = useState(1);
@@ -110,8 +110,8 @@ const ChatComposer = ({
 
   const handleSubmit = async () => {
 
-    if (!wallet.paymail) {
-      alert("Please, connect your wallet");
+    if (!authenticated || !wallet) {
+      setWalletPopupOpen(true)
       return;
     }
 
@@ -212,6 +212,7 @@ const ChatComposer = ({
   };
 
   return (
+    <>
     <div className="w-full items-center border-t-0 dark:border-white/20 bg-white dark:bg-gray-800 !bg-transparent py-2">
       <form
         onSubmit={handleSubmit}
@@ -239,6 +240,14 @@ const ChatComposer = ({
         </div>
       </form>
     </div>
+    <Drawer
+      selector="#walletProviderPopupControler"
+      isOpen={walletPopupOpen}
+      onClose={() => setWalletPopupOpen(false)}
+    >
+      <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
+    </Drawer>
+    </>
   );
 };
 

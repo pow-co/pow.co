@@ -13,7 +13,10 @@ import { config } from "../template_config"
 
 import { SensiletSigner, DefaultProvider, bsv } from 'scrypt-ts'
 
+import SensiletWallet from '../wallets/sensilet'
+
 type SensiletContextValue = {
+   sensiletWallet: SensiletWallet | undefined | null;
    sensiletAuthenticate: () => Promise<void>;
    sensiletAuthenticated: boolean;
    sensiletLogout: () => Promise<void>;
@@ -37,13 +40,14 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
   const [sensiletPaymail, setSensiletPaymail] = useState<string>()
   const [sensiletUserName, setSensiletUserName] = useState<string>()
   const [sensiletPublicKey, setSensiletPublicKey] = useState<string | null>()
+  const [sensiletWallet, setSensiletWallet] = useState<SensiletWallet | null | undefined>()
 
   const [provider, setProvider] = useState<DefaultProvider>(new DefaultProvider({
     network: bsv.Networks.mainnet
   }))
   const [signer, setSigner] = useState<SensiletSigner>()
 
-  const sensiletAvatar = ''
+  const sensiletAvatar = useMemo(() => `https://api.dicebear.com/6.x/pixel-art/svg?seed=${sensiletUserName}`, [sensiletUserName])
 
   const [ready, setReady] = useState(false);
 
@@ -181,6 +185,16 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
         })
   }, [web3])
 
+  useEffect(() => {
+
+    if (sensiletPublicKey) {
+
+      setSensiletWallet(new SensiletWallet())
+
+    } 
+
+  }, [sensiletPublicKey])
+
   const sensiletAuthenticated = useMemo(() => !!web3Account, [web3Account]);
 
   const value = useMemo(
@@ -196,7 +210,8 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
       sensiletPublicKey,
       ready,
       signer,
-      provider
+      provider,
+      sensiletWallet
     }),
     [
       web3,
@@ -210,7 +225,8 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
       sensiletPublicKey,
       ready,
       signer,
-      provider
+      provider,
+      sensiletWallet
     ]
   );
 
