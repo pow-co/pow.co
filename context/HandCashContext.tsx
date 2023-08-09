@@ -40,8 +40,8 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
 
     const handcashAuthenticated = useMemo(() => !!handCashAuthToken, [handCashAuthToken]);
 
-    const handcashUserName = useMemo(() => handcashPaymail ? handcashPaymail.split('$')[1] : "", [handcashPaymail])
-    const handcashAvatar = useMemo(() => `https://cloud.handcash.io/v2/users/profilePicture/${handcashUserName}`, [handcashUserName])
+    const handcashUserName = useMemo(() => handcashPaymail ? "$" + handcashPaymail.split('@')[0] : "", [handcashPaymail])
+    const handcashAvatar = useMemo(() => `https://cloud.handcash.io/v2/users/profilePicture/${handcashPaymail}`, [handcashPaymail])
 
     const router = useRouter();
 

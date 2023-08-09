@@ -18,8 +18,10 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   const { twetchAuthenticate, twetchPaymail, twetchWallet, twetchLogout } = useTwetch()
   const { handcashAuthenticate, handcashPaymail } = useHandCash()
   const { sensiletAuthenticate, sensiletWallet } = useSensilet()
-  const { localWalletAuthenticate, localWallet, seedPhrase: savedSeedPhrase } = useLocalWallet()
-  const [seedPhrase, setSeedPhrase] = useState("")
+
+  const { sensiletAuthenticate } = useSensilet()
+  const { localWalletAuthenticate, localWallet, seedPhrase } = useLocalWallet()
+  const [inputSeedPhrase, setInputSeedPhrase] = useState(seedPhrase)
 
   const wallet = useWallet()
 
@@ -143,8 +145,8 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   const handleSeedAuth = async (e:any) => {
     try {
       e.preventDefault()
-      if (seedPhrase.length > 0){ //TODO Additional Checks might be necessary
-        await localWalletAuthenticate(seedPhrase)
+      if (inputSeedPhrase.length > 0){ //TODO Additional Checks might be necessary
+        await localWalletAuthenticate(inputSeedPhrase)
         setWallet("local")
         onClose()
       } else {
@@ -157,7 +159,7 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
 
   const handleChangeSeedPhrase = (e:any) => {
     e.preventDefault()
-    setSeedPhrase(e.target.value)
+    setInputSeedPhrase(e.target.value)
   }
 
   return (
@@ -330,7 +332,7 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
               <p className="text-2xl text-center font-bold text-gray-800 dark:text-gray-200">
                 Input Seed
               </p>
-              <textarea placeholder="Enter 12 words seed phrase here..." rows={4} value={seedPhrase} onChange={handleChangeSeedPhrase} className='mt-4 w-full p-4 rounded-lg placeholder:opacity-90 appearance-none bg-primary-200 dark:bg-primary-900 placeholder:hover:text-white/80 focus:border-2 focus:outline-none focus:border-primary-500'/>
+              <textarea placeholder="Enter 12 words seed phrase here..." rows={4} value={inputSeedPhrase} onChange={handleChangeSeedPhrase} className='mt-4 w-full p-4 rounded-lg placeholder:opacity-90 appearance-none bg-primary-200 dark:bg-primary-900 placeholder:hover:text-white/80 focus:border-2 focus:outline-none focus:border-primary-500'/>
               <div className="flex justify-center mt-4">
                 <button type="button" onClick={handleSeedAuth} className="flex h-8 w-fit cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 p-5 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1">Authenticate</button>
               </div>
