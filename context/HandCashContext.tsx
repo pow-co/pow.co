@@ -65,8 +65,11 @@ export const HandCashProvider = (props: { children: React.ReactNode }) => {
     }
 
     const handcashAuthenticate = useCallback(async () => {
-
-        window.location.href = `https://app.handcash.io/#/authorizeApp?appId=${handcashAppId}`;
+        try {
+          window.location.href = `https://app.handcash.io/#/authorizeApp?appId=${handcashAppId}`;
+        } catch (error) {
+          throw new Error ("Handcash auth failed" + error)
+        }
 
     }, [setHandcashPaymail]);
 
