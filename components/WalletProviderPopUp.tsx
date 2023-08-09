@@ -19,7 +19,6 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   const { handcashAuthenticate, handcashPaymail } = useHandCash()
   const { sensiletAuthenticate, sensiletWallet } = useSensilet()
 
-  const { sensiletAuthenticate } = useSensilet()
   const { localWalletAuthenticate, localWallet, seedPhrase } = useLocalWallet()
   const [inputSeedPhrase, setInputSeedPhrase] = useState(seedPhrase)
 
