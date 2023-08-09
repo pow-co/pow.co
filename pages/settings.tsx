@@ -515,14 +515,14 @@ export default function Settings() {
 
           )}
 
-          {web3Account ? (
+          {web3Account && (
             <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
               <div className="flex flex-col">
                 <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                   <FormattedMessage id="Sensilet Wallet" />
                 </p>
                 <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
-                  <FormattedMessage id={`Sensilet wallet connected ${web3Account}`} />
+                  <FormattedMessage id={`${web3Account}`} />
                 </p>
               </div>
               <div className="grow" />
@@ -530,25 +530,6 @@ export default function Settings() {
                 <label className="flex items-center cursor-pointer">
                   <div className="relative">
         <button onClick={() => handleLogout('sensilet') }><FormattedMessage id="Log out" /></button>
-                  </div>
-                </label>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
-              <div className="flex flex-col">
-                <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
-                  <FormattedMessage id="Sensilet Wallet" />
-                </p>
-                <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
-                  <FormattedMessage id={`Experimental Feature - Connect Sensilet Wallet`} />
-                </p>
-              </div>
-              <div className="grow" />
-              <div className="relative">
-                <label className="flex items-center cursor-pointer">
-                  <div className="relative">
-        <button onClick={connectSensilet}>Connect Sensilet</button>
                   </div>
                 </label>
               </div>
