@@ -294,33 +294,36 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
         <div className='flex'>
           <div onClick={onClose} className='grow cursor-pointer' />
           <div className='flex flex-col w-[420px] min-h-[500px] rounded-t-lg bg-gray-100 dark:bg-gray-800'>
-            <div className='flex items-center p-5 border-b-4 border-b-gray-300 dark:border-b-gray-700'>
-              <svg
-                className=''
-                width='65'
-                height='65'
-                viewBox='0 0 65 65'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-              >
-                <path
-                  d='M32.5 65C50.4493 65 65 50.4493 65 32.5C65 14.5507 50.4493 0 32.5 0C14.5507 0 0 14.5507 0 32.5C0 50.4493 14.5507 65 32.5 65Z'
-                  fill='#CEDEFD'
-                />
-                <path
-                  d='M32.4999 52.5876C43.5945 52.5876 52.5886 43.5936 52.5886 32.4989C52.5886 21.4042 43.5945 12.4102 32.4999 12.4102C21.4052 12.4102 12.4111 21.4042 12.4111 32.4989C12.4111 43.5936 21.4052 52.5876 32.4999 52.5876Z'
-                  fill='#6B9CFA'
-                />
-                <path
-                  d='M44.9113 32.8604C44.9113 37.5655 42.2948 41.7715 38.4331 43.8773C36.6715 44.8413 34.646 41.5305 32.5 41.5305C30.4343 41.5305 28.4892 44.7667 26.7735 43.8773C22.7971 41.8059 20.083 37.6516 20.083 32.8604C20.083 26.0035 25.6431 20.4434 32.5 20.4434C39.3569 20.4434 44.9113 26.0035 44.9113 32.8604Z'
-                  fill='#085AF6'
-                />
-                <path
-                  d='M40.1719 32.6561C40.1719 35.6054 38.5079 38.1645 36.0692 39.4499C35.002 40.0122 33.7855 36.2423 32.4945 36.2423C31.1288 36.2423 29.8492 40.0696 28.7418 39.4499C26.4007 38.1359 24.8228 35.5308 24.8228 32.6561C24.8228 28.4214 28.2598 24.9844 32.4945 24.9844C36.7291 24.9844 40.1719 28.4157 40.1719 32.6561Z'
-                  fill='white'
-                />
-              </svg>
-              <p className='ml-5 text-2xl font-bold'>Boostpow</p>
+            <div className='flex justify-between  p-5 border-b-4 border-b-gray-300 dark:border-b-gray-700'>
+              <div className='flex items-center'>
+                <svg
+                  className=''
+                  width='65'
+                  height='65'
+                  viewBox='0 0 65 65'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path
+                    d='M32.5 65C50.4493 65 65 50.4493 65 32.5C65 14.5507 50.4493 0 32.5 0C14.5507 0 0 14.5507 0 32.5C0 50.4493 14.5507 65 32.5 65Z'
+                    fill='#CEDEFD'
+                  />
+                  <path
+                    d='M32.4999 52.5876C43.5945 52.5876 52.5886 43.5936 52.5886 32.4989C52.5886 21.4042 43.5945 12.4102 32.4999 12.4102C21.4052 12.4102 12.4111 21.4042 12.4111 32.4989C12.4111 43.5936 21.4052 52.5876 32.4999 52.5876Z'
+                    fill='#6B9CFA'
+                  />
+                  <path
+                    d='M44.9113 32.8604C44.9113 37.5655 42.2948 41.7715 38.4331 43.8773C36.6715 44.8413 34.646 41.5305 32.5 41.5305C30.4343 41.5305 28.4892 44.7667 26.7735 43.8773C22.7971 41.8059 20.083 37.6516 20.083 32.8604C20.083 26.0035 25.6431 20.4434 32.5 20.4434C39.3569 20.4434 44.9113 26.0035 44.9113 32.8604Z'
+                    fill='#085AF6'
+                  />
+                  <path
+                    d='M40.1719 32.6561C40.1719 35.6054 38.5079 38.1645 36.0692 39.4499C35.002 40.0122 33.7855 36.2423 32.4945 36.2423C31.1288 36.2423 29.8492 40.0696 28.7418 39.4499C26.4007 38.1359 24.8228 35.5308 24.8228 32.6561C24.8228 28.4214 28.2598 24.9844 32.4945 24.9844C36.7291 24.9844 40.1719 28.4157 40.1719 32.6561Z'
+                    fill='white'
+                  />
+                </svg>
+                <p className='ml-5 text-2xl font-bold'>Boostpow</p>
+              </div>
+              <div onClick={onClose} className='sm:hidden items-start opacity-50 text-sm'>Close</div>
             </div>
             <div className='grow flex flex-col justify-around items-center'>
               {/* <div className='flex flex-col w-full justify-center items-center'>
@@ -347,7 +350,7 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
                   <input onKeyDown={handleKeyDown} value={input} onChange={handleChangeInput} className="w-full py-2 px-4" type="search" placeholder="Enter a list of tags..."/>
                   {tags.length > 0 && <button onClick={handleClear} className="ml-5 text-blue-500 font-semibold hover:underline">Clear</button>}
                 </div>
-                <div className="justify-around w-full flex flex-wrap p-3 gap-2">
+                <div className="max-h-44 sm:max-h-56 overflow-auto justify-around w-full flex flex-wrap p-3 gap-2">
                   {tags.length > 0 && <>
                     {tags.map((topic: string, index: number) => (
                       <div key={topic} className=''>
