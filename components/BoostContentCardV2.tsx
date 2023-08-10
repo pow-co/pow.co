@@ -483,7 +483,7 @@ const BoostContentCardV2 = ({
           </div>
           <div className="col-span-11 ml-6">
             <div className="flex">
-              <div className="">
+              <div className="truncate">
                 {paymail && (
                   <Link
                     href={`/profile/${paymail}`}
