@@ -10,9 +10,11 @@ import Link from 'next/link'
 import { WalletHeader } from '.'
 import { useAPI } from '../../hooks/useAPI'
 import Loader from '../../components/Loader'
+import BoostPopup from '../../components/BoostpowButton/BoostPopup'
 
 interface WalletToken {
     tokenId: string;
+    tokenProtocol: 'BSV20' | 'run';
     tokenImage: string;
     tokenName: string;
     tokenBalance: number;
@@ -20,6 +22,7 @@ interface WalletToken {
 }
 
 const WalletTokenPage = () => {
+    const [boostPopupOpen, setBoostPopupOpen] = useState(false)
     const [walletPopupOpen, setWalletPopupOpen] = useState(false)
     const { authenticated, paymail } = useBitcoin()
     const { data, error, loading } = useAPI(`wallet/${paymail}/tokens`, '')
@@ -64,7 +67,7 @@ const WalletTokenPage = () => {
                 <div className='bg-primary-100 dark:bg-primary-700/20 sm:rounded-xl p-5'>
                     <WalletHeader/>
                     <div className='flex flex-col w-full'>
-                        <div className='flex items-start gap-5'>
+                        <div className='flex items-start gap-2 sm:gap-5'>
                             <Link href="/wallet/items">
                                 <button className="cursor-pointer whitespace-nowrap rounded-md px-5 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">My items</button>
                             </Link>
@@ -75,7 +78,7 @@ const WalletTokenPage = () => {
                                 <button className="cursor-pointer whitespace-nowrap rounded-md px-5 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">Wallet history</button>
                             </Link>
                         </div>
-                        <div className='mt-5'>
+                        {/* <div className='mt-5'>
                             {loading && <Loader/>}
                             {error && (<div className=''>Error, something happened</div>)}
                             <div className='grid grid-cols-2 gap-1'>
@@ -98,11 +101,23 @@ const WalletTokenPage = () => {
                                     </div>
                                 ))}
                             </div>
+                        </div> */}
+                        <div className='mt-5 flex flex-col justify-center text-center'>
+                            <p className='text-5xl mb-3'>🚧</p>
+                            <p className='text-lg italic opacity-80 px-10'>This feature is not available yet. Help us know it is important for you by boosting this 👇</p>
+                            <button onClick={() => setBoostPopupOpen(true)} className='mt-5 mx-auto text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>wen wallet tokens?</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </ThreeColumnLayout> 
+        </ThreeColumnLayout>
+        <Drawer
+            selector='#boostPopupControler'
+            isOpen={boostPopupOpen}
+            onClose={() => setBoostPopupOpen(false)}
+        >
+            <BoostPopup content="b028df83d242146dcecf875db1011d2e5771272e3af30fec3db64d812f0e273e" defaultTag='powco.dev' onClose={() => setBoostPopupOpen(false)} />
+        </Drawer> 
     </>
   )
 }

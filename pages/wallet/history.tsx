@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { WalletHeader } from '.'
 import { useAPI } from '../../hooks/useAPI'
 import Loader from '../../components/Loader'
+import BoostPopup from '../../components/BoostpowButton/BoostPopup'
 
 interface WalletTransaction {
     transactionId: string;
@@ -26,6 +27,7 @@ interface WalletHistory {
 }
 
 const WalletHistoryPage = () => {
+    const [boostPopupOpen, setBoostPopupOpen] = useState(false)
     const [walletPopupOpen, setWalletPopupOpen] = useState(false)
     const { authenticated, paymail } = useBitcoin()
     const { data, error, loading } = useAPI(`wallet/${paymail}/history`, '')
@@ -69,7 +71,7 @@ const WalletHistoryPage = () => {
                 <div className='bg-primary-100 dark:bg-primary-700/20 sm:rounded-xl p-5'>
                     <WalletHeader/>
                     <div className='flex flex-col w-full'>
-                        <div className='flex items-start gap-5'>
+                        <div className='flex items-start gap-2 sm:gap-5'>
                             <Link href="/wallet/items">
                                 <button className="cursor-pointer whitespace-nowrap rounded-md px-5 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">My items</button>
                             </Link>
@@ -80,7 +82,7 @@ const WalletHistoryPage = () => {
                                 <button className="cursor-pointer whitespace-nowrap rounded-md bg-primary-200 px-5 py-2 text-sm font-medium leading-4 text-gray-900 dark:bg-primary-600/20 dark:text-white">Wallet history</button>
                             </Link>
                         </div>
-                        <div className='mt-5'>
+                        {/* <div className='mt-5'>
                             {loading && <Loader/>}
                             {error && (<div className=''>Error, something happened</div>)}
                             <div className='flex flex-col'>
@@ -101,11 +103,23 @@ const WalletHistoryPage = () => {
                                     </>
                                 ))}
                             </div>
+                        </div> */}
+                        <div className='mt-5 flex flex-col justify-center text-center'>
+                            <p className='text-5xl mb-3'>🚧</p>
+                            <p className='text-lg italic opacity-80 px-10'>This feature is not available yet. Help us know it is important for you by boosting this 👇</p>
+                            <button onClick={() => setBoostPopupOpen(true)} className='mt-5 mx-auto text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>wen wallet history?</button>
                         </div>
                     </div>
                 </div>
             </div>
         </ThreeColumnLayout> 
+        <Drawer
+            selector='#boostPopupControler'
+            isOpen={boostPopupOpen}
+            onClose={() => setBoostPopupOpen(false)}
+        >
+            <BoostPopup content="13b558e811dbbbfb1d113a7b7983561855e3d063c4bfea8595901dc62bb800e2" defaultTag='powco.dev' onClose={() => setBoostPopupOpen(false)} />
+        </Drawer>
     </>
   )
 }
