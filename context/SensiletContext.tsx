@@ -168,6 +168,12 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
 
     setWeb3Account(null)
 
+    setSensiletPaymail(undefined)
+
+    setSensiletUserName(undefined)
+
+    setSensiletPublicKey(undefined)
+
   }, [web3]);
     
   useEffect(() => {
