@@ -140,6 +140,7 @@ const BoostContentCardV2 = ({
   const [paymail, setPaymail] = useState("");
   const [userName, setUserName] = useState("");
   const [isTwetch, setIsTwetch] = useState(false);
+  const [hlsVideoUrl, setHlsVideoUrl] = useState<string | undefined>();
   const avatar = useMemo(() => {
     switch (true) {
       case paymail?.includes("relayx"):
@@ -340,6 +341,9 @@ const BoostContentCardV2 = ({
                 fetchPreview(ev.content.url).then((res) => {
                   setLinkUnfurls([res]);
                 });
+              }
+              if (ev.content.url.match(/.m3u8$/)) {
+                setHlsVideoUrl(ev.content.url)
               }
             }
           });
@@ -580,7 +584,7 @@ const BoostContentCardV2 = ({
                 ))}
               </div>
             )}
-            {linkUnfurls.map((linkUnfurl: any) => (
+            {!hlsVideoUrl && linkUnfurls.map((linkUnfurl: any) => (
               <a
                 onClick={(e:any) => e.stopPropagation()}
                 href={linkUnfurl.url}
@@ -619,6 +623,11 @@ const BoostContentCardV2 = ({
                 />
               ))}
             {tweetId.length > 0 && <TwitterTweetEmbed tweetId={tweetId} />}
+            {hlsVideoUrl && ( 
+              <div style={{'flexDirection': 'column', display: 'flex'}} className='flex items-center mt-10 hls-video-container'>
+                <ReactPlayer width={'100%'} height={'100%'} controls={true}  url={hlsVideoUrl} />
+              </div>  
+            )}
           </div>
         </div>
         <div
