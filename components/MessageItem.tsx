@@ -72,7 +72,7 @@ export const MessageItem = (props:any, isSide: boolean) => {
         <div className="col-span-10 px-2 sm:col-span-11 flex flex-col justify-center w-full">
           <div className='flex justify-between pr-5'>
             <Link href={`/profile/${bmap.MAP[0].paymail}`}>
-              <p className='ml-2cursor-pointer text-lg text-primary-600 dark:text-primary-400 font-semibold hover:underline'>{bmap.MAP[0].paymail}</p>
+              <p className='truncate cursor-pointer text-lg text-primary-600 dark:text-primary-400 font-semibold hover:underline'>{bmap.MAP[0].paymail}</p>
             </Link>
             <a href={`https://whatsonchain.com/tx/${bmap.tx.h}`} target="_blank" rel="noreferrer">
               <span className='text-xs text-gray-500 font-semibold'>{moment(createdAt).fromNow()}</span>

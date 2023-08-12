@@ -14,12 +14,12 @@ interface WalletProviderProps {
 const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   const { setWallet, authenticate } = useBitcoin()
   const [seedInputScreen, setSeedInputScreen] = useState(false)
-  const { relayxAuthenticate, relayxPaymail, relayxWallet } = useRelay()
-  const { twetchAuthenticate, twetchPaymail, twetchWallet, twetchLogout } = useTwetch()
-  const { handcashAuthenticate, handcashPaymail } = useHandCash()
-  const { sensiletAuthenticate, sensiletWallet } = useSensilet()
+  const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayxWallet, relayxLogout } = useRelay()
+  const { twetchAuthenticate, twetchAuthenticated, twetchPaymail, twetchWallet, twetchLogout } = useTwetch()
+  const { handcashAuthenticate, handcashAuthenticated, handcashPaymail, handcashLogout } = useHandCash()
+  const { sensiletAuthenticate, sensiletAuthenticated, sensiletWallet, sensiletPaymail, sensiletLogout } = useSensilet()
 
-  const { localWalletAuthenticate, localWallet, seedPhrase } = useLocalWallet()
+  const { localWalletAuthenticate, localWalletAuthenticated, localWalletPaymail, localWallet, seedPhrase, localWalletLogout } = useLocalWallet()
   const [inputSeedPhrase, setInputSeedPhrase] = useState(seedPhrase)
 
   const wallet = useWallet()
@@ -95,9 +95,11 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   }
 
   const handleRelayxAuth = async (e:any) => {
+    e.preventDefault()
     try {
-      e.preventDefault()
-      await relayxAuthenticate()
+      if (!relayxAuthenticated){
+        await relayxAuthenticate()
+      }
       setWallet("relayx")
       onClose()
     } catch (error) {
@@ -108,7 +110,9 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
 
   const handleTwetchAuth = async () => {
     try {
-      await twetchAuthenticate()
+      if (!twetchAuthenticated){
+        await twetchAuthenticate()
+      }
       setWallet("twetch")
       onClose()
     } catch (error) {
@@ -117,14 +121,13 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   }
 
   const handleHandcashAuth = async (e:any) => {
+    e.preventDefault()
     try {
-      e.preventDefault()
-
       if (!handcashPaymail) {
         await handcashAuthenticate()
-      } else {
-        setWallet("handcash")
-      }
+      } 
+      setWallet("handcash")
+      
       onClose()
     } catch (error) {
       console.log(error)
@@ -142,15 +145,15 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   }
 
   const handleSeedAuth = async (e:any) => {
+    e.preventDefault()
     try {
-      e.preventDefault()
       if (inputSeedPhrase.length > 0){ //TODO Additional Checks might be necessary
         await localWalletAuthenticate(inputSeedPhrase)
-        setWallet("local")
-        onClose()
       } else {
         throw new Error("Invalid Seed Phrase")
       }
+      setWallet("local")
+      onClose()
     } catch (error) {
       console.log(error)
     }
@@ -161,13 +164,98 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
     setInputSeedPhrase(e.target.value)
   }
 
+  const handleRelayxLogout = (e:any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    relayxLogout()
+    if (twetchAuthenticated){
+      setWallet("twetch")
+    } else if (handcashAuthenticated) {
+      setWallet("handcash")
+    } else if (sensiletAuthenticated) {
+      setWallet("sensilet")
+    } else if (localWalletAuthenticated) {
+      setWallet("local")
+    } else {
+      setWallet(null)
+    }
+  }
+
+  const handleTwetchLogout = (e:any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    twetchLogout()
+    if (relayxAuthenticated){
+      setWallet("relayx")
+    } else if (handcashAuthenticated) {
+      setWallet("handcash")
+    } else if (sensiletAuthenticated) {
+      setWallet("sensilet")
+    } else if (localWalletAuthenticated) {
+      setWallet("local")
+    } else {
+      setWallet(null)
+    }
+  }
+
+  const handleHandcashLogout = (e:any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    handcashLogout()
+    if (twetchAuthenticated){
+      setWallet("twetch")
+    } else if (relayxAuthenticated) {
+      setWallet("relayx")
+    } else if (sensiletAuthenticated) {
+      setWallet("sensilet")
+    } else if (localWalletAuthenticated) {
+      setWallet("local")
+    } else {
+      setWallet(null)
+    }
+  }
+
+  const handleSensiletLogout = (e:any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    sensiletLogout()
+    if (twetchAuthenticated){
+      setWallet("twetch")
+    } else if (handcashAuthenticated) {
+      setWallet("handcash")
+    } else if (relayxAuthenticated) {
+      setWallet("relayx")
+    } else if (localWalletAuthenticated) {
+      setWallet("local")
+    } else {
+      setWallet(null)
+    }
+  }
+
+  const handleLocalWalletLogout = (e:any) => {
+    e.preventDefault()
+    e.stopPropagation()
+    localWalletLogout()
+    if (twetchAuthenticated){
+      setWallet("twetch")
+    } else if (handcashAuthenticated) {
+      setWallet("handcash")
+    } else if (sensiletAuthenticated) {
+      setWallet("sensilet")
+    } else if (relayxAuthenticated) {
+      setWallet("relayx")
+    } else {
+      setWallet(null)
+    }
+  }
+
   return (
     <div className="fixed inset-0 ">
       <div className="flex flex-col h-screen">
         <div onClick={onClose} className="grow cursor-pointer" />
         <div className="flex ">
           <div onClick={onClose} className="grow cursor-pointer" />
-          {!seedInputScreen ? (<div className="flex-col max-w-sm w-[310px] p-5 rounded-lg bg-primary-100 dark:bg-primary-800">
+          {!seedInputScreen ? (<div className="flex-col max-w-md w-[420px] p-5 sm:rounded-lg bg-primary-100 dark:bg-primary-800">
             <p className="text-2xl text-center font-bold text-gray-800 dark:text-gray-200">
               Select Wallet
             </p>
@@ -196,9 +284,12 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
                   fill="white"
                 />
               </svg>
-              <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">RelayX</p>
+              <div className="flex flex-col items-start">
+                <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">RelayX</p>
+                {relayxPaymail && <p className="ml-2.5 text-xs max-w-[144px] opacity-50 truncate">{relayxPaymail}</p>}
+              </div>
               <div className="grow" />
-              <svg
+              {!relayxAuthenticated ? (<svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
                 fill="none"
@@ -211,7 +302,9 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
                   strokeLinejoin="round"
                   d="M9 5l7 7-7 7"
                 />
-              </svg>
+              </svg>) : (
+                <button onClick={handleRelayxLogout} className="bg-red-500 text-sm text-white px-3 py-2 rounded-lg">Log out</button>
+              )}
             </button>
 
             <button
@@ -230,9 +323,12 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
                   fill="white"
                 ></path>
               </svg>
-              <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">Twetch</p>
+              <div className="flex flex-col items-start">
+                <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">Twetch</p>
+                {twetchPaymail && <p className="ml-2.5 text-xs max-w-[144px] opacity-50 truncate">{twetchPaymail}</p>}
+              </div>
               <div className="grow" />
-              <svg
+              {!twetchAuthenticated ? (<svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
                 fill="none"
@@ -245,7 +341,9 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
                   strokeLinejoin="round"
                   d="M9 5l7 7-7 7"
                 />
-              </svg>
+              </svg>) : (
+                <button onClick={handleTwetchLogout} className="bg-red-500 text-sm text-white px-3 py-2 rounded-lg">Log out</button>
+              )}
             </button>
 
             <button
@@ -253,9 +351,12 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
               className={`bg-primary-200 dark:bg-primary-700 flex w-full mt-8 h-[52px] rounded-full py-2.5 px-5 items-center text-center justify-center font-semibold ${wallet?.name === "handcash" ? "border-2 border-primary-500" : "border-none"}`}
             >
               <img src="/handcash_green_icon.webp" className="rounded-full h-6 w-6" />
-              <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">Handcash</p>
+              <div className="flex flex-col items-start">
+                <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">Handcash</p>
+                {handcashPaymail && <p className="ml-2.5 max-w-[144px] text-xs opacity-50 truncate">{handcashPaymail}</p>}
+              </div>
               <div className="grow" />
-              <svg
+              {!handcashAuthenticated ? (<svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
                 fill="none"
@@ -268,7 +369,9 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
                   strokeLinejoin="round"
                   d="M9 5l7 7-7 7"
                 />
-              </svg>
+              </svg>) : (
+                <button onClick={handleHandcashLogout} className="bg-red-500 text-sm text-white px-3 py-2 rounded-lg">Log out</button>
+              )}
             </button>
 
             <button
@@ -276,9 +379,12 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
               className={`bg-primary-200 dark:bg-primary-700 flex w-full mt-8 h-[52px] rounded-full py-2.5 px-5 items-center text-center justify-center font-semibold ${wallet?.name === "sensilet" ? "border-2 border-primary-500" : "border-none"}`}
             >
               <img src="/sensilet.png" className="h-6 w-6"/>
-              <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">Sensilet</p>
+              <div className="flex flex-col items-start">
+                <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">Sensilet</p>
+                {sensiletPaymail && <p className="ml-2.5 max-w-[144px] text-xs opacity-50 truncate">{sensiletPaymail}</p>}
+              </div>
               <div className="grow" />
-              <svg
+              {!sensiletAuthenticated ? (<svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
                 fill="none"
@@ -291,9 +397,10 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
                   strokeLinejoin="round"
                   d="M9 5l7 7-7 7"
                 />
-              </svg>
+              </svg>) : (
+                <button onClick={handleSensiletLogout} className="bg-red-500 text-sm text-white px-3 py-2 rounded-lg">Log out</button>
+              )}
             </button>
-
             <button
               onClick={() => { handleSelectWallet('local') }}
               className={`bg-primary-200 dark:bg-primary-700 flex w-full mt-8 h-[52px] rounded-full py-2.5 px-5 items-center text-center justify-center font-semibold ${wallet?.name === "local" ? "border-2 border-primary-500" : "border-none"}`}
@@ -303,9 +410,12 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
                 <path d="m902 1175.7h21v15.5h-21z"/>
                 </g>
               </svg>
-              <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">Seed Phrase</p>
+              <div className="flex flex-col items-start">
+                <p className="text-gray-800 dark:text-gray-200 ml-2.5 ">Seed Phrase</p>
+                {localWalletPaymail && <p className="ml-2.5 max-w-[144px] text-xs opacity-50 truncate">{localWalletPaymail}</p>}
+              </div>
               <div className="grow" />
-              <svg
+              {!localWalletAuthenticated ? (<svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
                 fill="none"
@@ -318,7 +428,9 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
                   strokeLinejoin="round"
                   d="M9 5l7 7-7 7"
                 />
-              </svg>
+              </svg>) : (
+                <button onClick={handleLocalWalletLogout} className="bg-red-500 text-sm text-white px-3 py-2 rounded-lg">Log out</button>
+              )}
             </button>
           </div>):(
             <div className="flex flex-col max-w-sm w-[310px] p-5 rounded-lg bg-primary-100 dark:bg-primary-800">

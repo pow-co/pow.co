@@ -37,9 +37,7 @@ export default class LocalWallet extends Wallet {
       relayxMarketOrderCancel:`m/44'/236'/0'/3/0`
     }
 
-    const sensiletDefaultPrivateKey = hdPrivateKey.deriveChild(derivationPaths.sensiletDefault)
-
-    return sensiletDefaultPrivateKey
+    return hdPrivateKey.deriveChild(derivationPaths.sensiletDefault).privateKey
 
   }
 

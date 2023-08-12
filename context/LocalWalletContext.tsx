@@ -75,6 +75,13 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
 
       setLocalWalletPublicKey(localWallet.privateKey.publicKey.toString())
 
+    } else {
+      
+      setLocalWalletUserName(undefined)
+
+      setLocalWalletPaymail(undefined)
+
+      setLocalWalletPublicKey(undefined)
     }
 
   }, [localWallet])
