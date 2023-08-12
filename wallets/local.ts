@@ -34,7 +34,9 @@ export default class LocalWallet extends Wallet {
       relayxBsv:              `m/44'/236'/0'/0/0`,
       relayxChange:           `m/44'/236'/0'/1/0`,
       relayxRunOwner:         `m/44'/236'/0'/2/0`,
-      relayxMarketOrderCancel:`m/44'/236'/0'/3/0`
+      relayxMarketOrderCancel:`m/44'/236'/0'/3/0`,
+      twetchAccount: `m/0/0`,
+      twetchWallet: `m/44'/0'/0'/0`
     }
 
     return hdPrivateKey.deriveChild(derivationPaths.sensiletDefault).privateKey
