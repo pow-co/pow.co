@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import { useTheme } from "next-themes";
 import Drawer from "../components/Drawer";
@@ -180,14 +180,18 @@ export default function Settings() {
   const { theme, setTheme } = useTheme();
   const { logout, authenticated, setWallet, setWalletPopupOpen, walletPopupOpen } = useBitcoin();
   const { signPosts, setSignPosts } = useTuning();
-  const { web3, web3Account, sensiletLogout, sensiletAuthenticate } = useSensilet()
+  const { web3, web3Account, sensiletLogout, sensiletAuthenticate, sensiletAuthenticated } = useSensilet()
   const [isDark, setIsDark] = useState(theme === "dark");
   const [sensiletChecked, setSensiletChecked] = useState(!!web3Account)
 
   const { handcashAuthenticated, handcashAuthenticate, handcashPaymail, handcashLogout } = useHandCash()
-  const { relayxWallet, relayxLogout, relayxAuthenticate } = useRelay()
-  const { localWalletLogout, localWallet } = useLocalWallet()
-  const { twetchWallet, twetchLogout } = useTwetch()
+  const { relayxWallet, relayxLogout, relayxAuthenticated } = useRelay()
+  const { localWalletLogout, localWallet, localWalletAuthenticated } = useLocalWallet()
+  const { twetchWallet, twetchLogout, twetchAuthenticated } = useTwetch()
+  const walletConnected = useMemo(() => {
+    const wallets = [relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated, localWalletAuthenticated];
+    return wallets.filter(wallet => wallet).length;
+  },[relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated, localWalletAuthenticated])
   const wallet = useWallet()
 
   useEffect(() => {
@@ -383,7 +387,7 @@ export default function Settings() {
             <div className="flex flex-col max-w-[144px] sm:max-w-[333px]">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                 {/* <FormattedMessage id="Language settings" /> */}
-                Select Wallet
+                Select Wallet {walletConnected > 0 && `(${walletConnected} connected)`}
               </p>
               <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
                 {/* <FormattedMessage id="Interact with this app in your language" /> */}
@@ -413,7 +417,7 @@ export default function Settings() {
   
           </div>
 
-          {handcashPaymail && (
+          {/* {handcashPaymail && (
 
             <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
               <div className="flex flex-col">
@@ -534,13 +538,13 @@ export default function Settings() {
                 </label>
               </div>
             </div>
-          )}
+          )} */}
 
           {authenticated && <button
             onClick={logout}
             className="h-[52px] p-5 flex bg-red-500 text-white text-base font-semibold my-4 w-full border-none rounded-lg cursor-pointer items-center justify-center transition duration-500 transform hover:-translate-y-1 hover:bg-red-600"
           >
-            <FormattedMessage id="Log out" />
+            {walletConnected <2 ? <FormattedMessage id="Log out" />: "Log out all wallets"}
           </button>}
         </div>
         <div className="grow" />
