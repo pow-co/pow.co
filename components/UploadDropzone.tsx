@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/semi */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
@@ -11,7 +12,10 @@ import useWallet from '../hooks/useWallet';
 import Drawer from "./Drawer";
 import WalletProviderPopUp from "./WalletProviderPopUp";
 
-import { bsv, sha256, toByteString } from 'scrypt-ts'
+import delay from 'delay';
+
+
+import { bsv } from 'scrypt-ts'
 
 function buf2hex(buffer: ArrayBuffer) {
   return Array.from(new Uint8Array(buffer))
@@ -32,6 +36,36 @@ function formatBytes(b: BigInt, decimals = 2) {
     return `${parseFloat((bytes / k ** i).toFixed(dm))} ${sizes[i]}`;
 }
 
+async function reliableGetUploadUrlByHash({ location }: { location: string }): Promise<string | undefined> {
+
+  let attempts = 0;
+
+  var uploadUrl: string | undefined = undefined;
+
+  while (attempts < 5) {
+
+    try {
+
+      const response = await axios.get(`https://hls.pow.co/api/v1/videos/${location}/uploads`)
+
+      uploadUrl = response.data.upload_url
+
+      break;
+
+    } catch (error) {
+
+      attempts += 1;
+
+      await delay(attempts * 1000)
+
+    }
+
+  }
+
+  return uploadUrl
+
+}
+
 export default function MyDropzone() {
   const router = useRouter();
   const [files, setFiles] = useState([]);
@@ -50,16 +84,8 @@ export default function MyDropzone() {
   const [uploaded, setUploaded] = useState<boolean>(false)
   const [error, setError] = useState<Error | undefined>()
 
-  useEffect(() => {
-
-    if (sha256Hash) {
-    }
-
-  }, [sha256Hash])
-
   async function uploadVideo() {
-
-    if (uploading || uploaded || !sha256Hash) { return }
+    if (uploading || uploaded || !sha256Hash || !wallet) { return }
 
     if (!files[0]) { return }
 
@@ -67,22 +93,29 @@ export default function MyDropzone() {
 
     try {
 
-      const { data } = await axios.post(`https://pow.co/api/v1/videos/uploads`, {
+      const { data: result } = await axios.get(`https://hls.pow.co/api/v1/videos/new?sha256Hash=${sha256Hash}&contentLength=${contentLength}`)
 
-        sha256Hash,
+      const script = bsv.Script.fromASM(result.funding_script)
 
-        contentLength
+      const tx = await wallet.createTransaction({ outputs: [new bsv.Transaction.Output({ script, satoshis: 10 })] })
 
-      })
+      console.log('video.upload.funded', tx.hash)
 
-      await axios.put(String(data.upload_url), files[0], {
+      const upload_url = await reliableGetUploadUrlByHash({ location: tx.hash })
+
+      console.log('video.upload.presigned', upload_url)
+
+      await axios.put(String(upload_url), files[0], {
         headers: {
           'Content-Type': 'video/mp4'
         }
       })
 
       setUploading(false)
+
       setUploaded(true)
+
+      router.push(`/videos/${tx.hash}`)
 
     } catch(error) {
 
@@ -139,41 +172,6 @@ export default function MyDropzone() {
           setPriceToPay(BigInt(Math.floor(file.size / 100)));
       }).catch(ex => console.error(ex));
 
-      // Do whatever you want with the file contents
-        /*const binaryStr = reader.result;
-        if (!binaryStr) {
-          console.log('Error reading file');
-          return;
-        }
-        // @ts-ignore
-        const hex = buf2hex(binaryStr);
-
-        const buffer = Buffer.from(hex, 'hex');*/
-
-        //setSha256Hash(sha256(toByteString(hex, false)));
-
-        //setContentLength(BigInt(buffer.length));
-
-        //setPriceToPay(BigInt(Math.floor(buffer.length / 100)));
-
-        /* const bsocial = new BSocial('pow.co');
-
-        const post = bsocial.post();
-        // and image data Url
-        post.addImage(`data:image/png;base64,${base64}`);
-
-        if (signWithPaymail){
-          post.addMapData('paymail', paymail)
-        }
-
-        const ops = post.getOps('hex');
-
-        const utf8 = post.getOps('utf8');
-
-        console.log('file ops', ops)
-
-        console.log('file ops utf8', utf8)
-        setOpReturn(ops.map((op: any) => `0x${op}`)) */
       };
       reader.readAsArrayBuffer(file);
     });
@@ -210,76 +208,9 @@ export default function MyDropzone() {
     [],
   );
 
-  const postFile = async (e:any) => {
-    e.preventDefault();
-
-    if (!wallet) {
-
-      setWalletPopupOpen(true)
-      return
-
-    }
-
-    const bsocial = new BSocial('pow.co');
-
-    const post = bsocial.post();
-    // and image data Url
-    post.addImage(`data:image/png;base64,${b64}`);
-
-    if (signWithPaymail) {
-      post.addMapData('paymail', paymail);
-    }
-
-    const ops = post.getOps('hex');
-
-    const utf8 = post.getOps('utf8');
-
-    console.log('file ops', ops);
-
-    console.log('file ops utf8', utf8);
-    const opReturn = ops.map((op: any) => `0x${op}`);
-
-    toast('Publishing Your Post to the Network', {
-      icon: '⛏️',
-      style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-      },
-    });
-
-    const script = wallet.buildOpReturnScript(ops)
-
-    try {
-
-      const tx = await wallet.createTransaction({
-        outputs: [new bsv.Transaction.Output({ script, satoshis: 10 })]
-      })
-
-      window.open(`https://whatsonchain.com/tx/${tx.hash}`, '_blank')
-
-      axios.post('https://pow.co/api/v1/posts', {
-          transactions: [{
-            tx: tx.toString()
-          }]
-      })
-      .then(result => {
-        console.debug('powco.posts.ingest.result', result.data)
-      })
-      .catch(error => {
-        console.error('post.submit.powco.error', error)
-      })
-
-    } catch(error) {
-
-      console.error(error)
-
-    }
-
-  };
 
   return (
-    <form onSubmit={postFile}>
+    <form onSubmit={(e) => {e.preventDefault();uploadVideo()}}>
       <Drawer
         selector="#walletProviderPopupControler"
         isOpen={walletPopupOpen}
