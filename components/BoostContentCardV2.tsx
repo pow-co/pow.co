@@ -25,6 +25,14 @@ import { useRelay } from "../context/RelayContext";
 
 const Markdown = require("react-remarkable");
 
+async function fetchVideo({ txid }: { txid: string }): Promise<{ sha256Hash: string }> {
+
+  const { data } = await axios.get(`https://hls.pow.co/api/v1/videos/${txid}`);
+
+  return data.video
+
+}
+
 const RemarkableOptions = {
   breaks: true,
   html: true,
@@ -235,7 +243,28 @@ const BoostContentCardV2 = ({
   }, [contentText]);
 
   const parseContent = async (content: any) => {
-    console.log(content);
+
+    fetchVideo({ txid: content.txid }).then(async (video) => {
+
+      if (!video) { return }
+
+      axios.head(`https://hls.pow.co/${video.sha256Hash}.m3u8`)
+        .then(() => setHlsVideoUrl(`https://hls.pow.co/${video.sha256Hash}.m3u8`))
+        .catch(() => setHlsVideoUrl(`https://hls.pow.co/${video.sha256Hash}.mp4`))
+
+      try {
+
+        const headResult = await axios.head(`https://hls.pow.co/${video.sha256Hash}.m3u8`)
+
+        
+
+      } catch(error) {
+
+        
+
+      }
+
+    }).catch(() => {})
 
     if (content.bmap) {
       if (content.bmap.B && content.bmap.MAP) {
@@ -498,7 +527,7 @@ const BoostContentCardV2 = ({
                         <span className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap font-bold  text-gray-900 hover:underline dark:text-white">
                           {userName}
                         </span>
-                        <span className="text-sm font-semibold hover:underline text-gray-400 dark:text-gray-600 ml-1">
+                        <span className="ml-1 text-sm font-semibold text-gray-400 hover:underline dark:text-gray-600">
                           {paymail}
                         </span>
                       </p>

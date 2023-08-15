@@ -115,7 +115,7 @@ export default function MyDropzone() {
 
       setUploaded(true)
 
-      router.push(`/videos/${tx.hash}`)
+      router.push(`/${tx.hash}`)
 
     } catch(error) {
 
