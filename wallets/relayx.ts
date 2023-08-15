@@ -1,5 +1,5 @@
 import { bsv } from 'scrypt-ts';
-import Wallet from './abstract';
+import Wallet from './base';
 
 interface RelayoneSendResult {
   rawTx: string;
@@ -7,11 +7,16 @@ interface RelayoneSendResult {
 
 export default class Relayx extends Wallet {
 
-  name = 'relayx'
+  name = 'relayx';
 
-  constructor({ paymail }: { paymail: string }) {
+  token: string;
+
+  constructor({ paymail, publicKey, token}: { paymail: string, publicKey: bsv.PublicKey, token: string }) {
     super()
     this.paymail = paymail
+    console.log("this.publicKey", publicKey)
+    this.publicKey = publicKey
+    this.token = token
   }
 
   async createTransaction({ outputs }: {outputs: bsv.Transaction.Output[]}):  Promise<bsv.Transaction> {

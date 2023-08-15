@@ -12,12 +12,15 @@ import { useHandCash } from '../context/HandCashContext';
 import { useBitcoin } from '../context/BitcoinContext';
 
 import { useLocalWallet } from '../context/LocalWalletContext';
+import { useRelay } from '../context/RelayContext';
 
 export default function useWallet(): Wallet | null {
 
   let { wallet, paymail } = useBitcoin()
 
   const { handCashAuthToken } = useHandCash();
+
+  const { relayxPublicKey, relayxAuthToken } = useRelay()
 
   const { localWallet } = useLocalWallet()
 
@@ -31,7 +34,7 @@ export default function useWallet(): Wallet | null {
 
     case 'relayx':
 
-      return new Relayx({ paymail });
+      return new Relayx({ paymail, publicKey: relayxPublicKey, token: relayAuthToken }))
 
     case 'handcash':
 
