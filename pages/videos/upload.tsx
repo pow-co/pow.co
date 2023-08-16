@@ -19,14 +19,14 @@ const ComposeImage = () => {
 
     const { relayxPublicKey } = useRelay()
 
-    console.log("wallet name", wallet.name)
+    console.log("wallet name", wallet?.name)
 
     //@ts-ignore 
     window.wallet= wallet 
 
     var owner = '020d5d4d6c0c3824d7b979586b2537d2e17af4901ad8edc82dccf7e29a0838caa2'
 
-    if (wallet.name === 'relayx' && relayxPublicKey) {
+    if (wallet?.name === 'relayx' && relayxPublicKey) {
 
       owner = relayxPublicKey.toString()
 
@@ -34,7 +34,7 @@ const ComposeImage = () => {
 
     }
 
-    owner = wallet.publicKey?.toString() || owner
+    owner = wallet?.publicKey?.toString() || owner
 
     console.log({ owner })
 

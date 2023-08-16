@@ -1,7 +1,7 @@
 import { bsv } from 'scrypt-ts';
 
 import TwetchWeb3 from '@twetch/web3';
-import Wallet from './abstract';
+import Wallet from './base';
 
 export default class Twetch extends Wallet {
 

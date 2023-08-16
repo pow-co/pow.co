@@ -1,5 +1,5 @@
 import { bsv } from 'scrypt-ts';
-import Wallet from './abstract';
+import Wallet from './base';
 
 export default class Sensilet extends Wallet {
   

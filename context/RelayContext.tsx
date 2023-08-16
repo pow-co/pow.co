@@ -91,7 +91,7 @@ type RelayContextValue = {
    runOwner: string;
    relayxPaymail: string | undefined;
    relayxUserName: string | undefined;
-   relayAuthToken: string | undefined;
+   relayxAuthToken: string | undefined;
    hasTwetchPrivilege: boolean;
    relayxAuthenticate: () => Promise<void>;
    getTokenBalance: ({token_contract}: {token_contract: string}) => Promise<{balance: number}>;
@@ -99,7 +99,7 @@ type RelayContextValue = {
    tokenBalance: number;
    ready: boolean;
    isApp: boolean;
-   setRelayAuthToken:(relayAuthToken: string | undefined) => void 
+   setRelayxAuthToken:(relayxAuthToken: string | undefined) => void 
    setRelayxPaymail: (paymail: string | undefined) => void;
    setRunOwner: (runOwner: string) => void;
    relayxLogout: () => void;

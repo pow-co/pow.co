@@ -1,4 +1,4 @@
-import Wallet from '../wallets/abstract';
+import Wallet from '../wallets/base';
 import Relayx from '../wallets/relayx';
 import Sensilet from '../wallets/sensilet';
 import Handcash from '../wallets/handcash';
@@ -34,7 +34,7 @@ export default function useWallet(): Wallet | null {
 
     case 'relayx':
 
-      return new Relayx({ paymail, publicKey: relayxPublicKey, token: relayAuthToken }))
+      return new Relayx({ paymail, publicKey: relayxPublicKey as bsv.PublicKey, token: String(relayxAuthToken) })
 
     case 'handcash':
 

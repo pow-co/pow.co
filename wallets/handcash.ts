@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { bsv } from 'scrypt-ts';
-import Wallet from './abstract';
+import Wallet from './base';
 
 export default class Handcash extends Wallet {
   authToken: string;

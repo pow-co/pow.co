@@ -1,6 +1,5 @@
 import { bsv } from 'scrypt-ts';
-import Wallet from './abstract';
-import { listUnspent } from '../services/whatsonchain'
+import Wallet from './base';
 import * as bip39 from 'bip39'
 import axios from 'axios'
 
@@ -22,10 +21,6 @@ export default class LocalWallet extends Wallet {
 
     this.seed = seed
 
-  }
-
-  get privateKey(): bsv.PrivateKey { 
-
     const hdPrivateKey = bsv.HDPrivateKey.fromSeed(this.seed.toString('hex'))
 
 
@@ -39,13 +34,13 @@ export default class LocalWallet extends Wallet {
       twetchWallet: `m/44'/0'/0'/0`
     }
 
-    return hdPrivateKey.deriveChild(derivationPaths.sensiletDefault).privateKey
+    this.privateKey = hdPrivateKey.deriveChild(derivationPaths.sensiletDefault).privateKey
 
   }
 
   get address(): bsv.Address {
   
-    return this.privateKey.publicKey.toAddress()
+    return (this.privateKey as bsv.PrivateKey).publicKey.toAddress()
   }
 
   async createTransaction({ outputs }: {outputs: bsv.Transaction.Output[]}):  Promise<bsv.Transaction> {
