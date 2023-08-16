@@ -13,6 +13,8 @@ import { config } from "../template_config"
 
 import RelayxWallet from '../wallets/relayx'
 
+import { bsv } from 'scrypt-ts'
+
 export interface RelaySignResult {
    algorithm: 'bitcoin-signed-message';
    address: string;
@@ -89,7 +91,7 @@ type RelayContextValue = {
    runOwner: string;
    relayxPaymail: string | undefined;
    relayxUserName: string | undefined;
-   relayAuthToken: string | undefined;
+   relayxAuthToken: string | undefined;
    hasTwetchPrivilege: boolean;
    relayxAuthenticate: () => Promise<void>;
    getTokenBalance: ({token_contract}: {token_contract: string}) => Promise<{balance: number}>;
@@ -97,23 +99,26 @@ type RelayContextValue = {
    tokenBalance: number;
    ready: boolean;
    isApp: boolean;
-   setRelayAuthToken:(relayAuthToken: string | undefined) => void 
+   setRelayxAuthToken:(relayxAuthToken: string | undefined) => void 
    setRelayxPaymail: (paymail: string | undefined) => void;
    setRunOwner: (runOwner: string) => void;
    relayxLogout: () => void;
    relayxWallet: RelayxWallet | null | undefined;
+   relayxPublicKey: bsv.PublicKey | undefined;
+   setRelayxPublicKey: (relayxPublicKey: bsv.PublicKey | undefined) => void;
 };
 
 const RelayContext = createContext<RelayContextValue | undefined>(undefined);
 
 const RelayProvider = (props: { children: React.ReactNode }) => {
   const [relayxPaymail, setRelayxPaymail] = useLocalStorage(paymailStorageKey);
-  const [relayAuthToken, setRelayAuthToken] = useLocalStorage(tokenStorageKey);
+  const [relayxAuthToken, setRelayxAuthToken] = useLocalStorage(tokenStorageKey);
   const [runOwner, setRunOwner] = useLocalStorage(runOwnerStorageKey);
   const [relayOne, setRelayOne] = useState<RelayOne>();
   const [relayxWallet, setRelayxWallet] = useState<RelayxWallet | null | undefined>();
   const [tokenBalance, setTokenBalance] = useState(0);
   const [hasTwetchPrivilege, setHasTwetchPrivilege] = useState(false)
+  const [relayxPublicKey, setRelayxPublicKey] = useState<bsv.PublicKey | undefined>();
 
   const token_contract = config.token;
   const TWETCH_PRIVILEGE_CONTRACT = "011a97bdc1868fc53342cb9bffdc3e42782a9c258fbb6597cd20effa3a4d6077_o2"
@@ -151,9 +156,13 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
 
   useEffect(() => {
 
-    setRelayxWallet(new RelayxWallet({ paymail: relayxPaymail }))
+    if (!relayxPublicKey || !relayxPaymail) return
 
-  }, [relayxPaymail])
+    console.log('setRelayxWallet', { paymail: relayxPaymail, publicKey: relayxPublicKey, token: relayxAuthToken })
+
+    setRelayxWallet(new RelayxWallet({ paymail: relayxPaymail, publicKey: relayxPublicKey, token: relayxAuthToken }))
+
+  }, [relayxPaymail, relayxPublicKey])
 
   useEffect(() => {
     (async () => {
@@ -205,15 +214,21 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
     if (!lsTest()) {
       throw new Error("localStorage is not available");
     }
-    const token = await relayOne.authBeta();
+    const authToken = await relayOne.authBeta();
 
-    //@ts-ignore
-    if (token && !token.error) {
-      setRelayAuthToken(token)
-      const payloadBase64 = token.split(".")[0]; // Token structure: "payloadBase64.signature"
-      const { paymail: returnedPaymail } = JSON.parse(atob(payloadBase64));
+    if (authToken) {
+
+      setRelayxAuthToken(authToken)
+
+      const payloadBase64 = authToken.split(".")[0]; // Token structure: "payloadBase64.signature"
+
+      console.log('relayx.authBeta.result', JSON.parse(atob(payloadBase64)))
+
+      const { paymail: returnedPaymail, pubkey } = JSON.parse(atob(payloadBase64));
       // localStorage.setItem('paymail', returnedPaymail);
       setRelayxPaymail(returnedPaymail);
+      console.log('pubkey', new bsv.PublicKey(pubkey))
+      setRelayxPublicKey(new bsv.PublicKey(pubkey));
       const owner = await relayOne?.alpha.run.getOwner();
       setRunOwner(owner);
 
@@ -242,7 +257,7 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
     setRelayxPaymail("");
     setTokenBalance(0);
     setHasTwetchPrivilege(false)
-    setRelayAuthToken(undefined)
+    setRelayxAuthToken(undefined)
     setRelayxWallet(null)
   };
 
@@ -253,8 +268,8 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       relayOne,
       setRelayxPaymail,
       relayxPaymail,
-      relayAuthToken,
-      setRelayAuthToken,
+      relayxAuthToken,
+      setRelayxAuthToken,
       hasTwetchPrivilege,
       runOwner,
       setRunOwner,
@@ -265,26 +280,30 @@ const RelayProvider = (props: { children: React.ReactNode }) => {
       tokenBalance,
       isApp,
       getTokenBalance,
-      relayxWallet
+      relayxWallet,
+      relayxPublicKey,
+      setRelayxPublicKey,
     }),
     [
       relayxAvatar,
       relayxUserName,
       relayOne,
       setRelayxPaymail,
-      setRelayAuthToken,
+      setRelayxAuthToken,
       hasTwetchPrivilege,
       runOwner, 
       setRunOwner,
       relayxPaymail,
-      relayAuthToken,
+      relayxAuthToken,
       relayxAuthenticate,
       relayxLogout,
       ready,
       tokenBalance,
       isApp,
       getTokenBalance,
-      relayxWallet
+      relayxWallet,
+      relayxPublicKey,
+      setRelayxPublicKey,
     ]
   );
 

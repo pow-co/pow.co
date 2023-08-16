@@ -7,13 +7,36 @@ import useSWR from 'swr'
 import Link from 'next/link'
 import axios from 'axios'
 import ReactPlayer from 'react-player'
+import useWallet from '../../hooks/useWallet'
 
+import { useRelay } from '../../context/RelayContext'
 
 const ComposeImage = () => {
 
     const router = useRouter()
 
-    const owner = '020d5d4d6c0c3824d7b979586b2537d2e17af4901ad8edc82dccf7e29a0838caa2'
+    const wallet = useWallet()
+
+    const { relayxPublicKey } = useRelay()
+
+    console.log("wallet name", wallet?.name)
+
+    //@ts-ignore 
+    window.wallet= wallet 
+
+    var owner = '020d5d4d6c0c3824d7b979586b2537d2e17af4901ad8edc82dccf7e29a0838caa2'
+
+    if (wallet?.name === 'relayx' && relayxPublicKey) {
+
+      owner = relayxPublicKey.toString()
+
+      console.log("owner.relayx.set", owner)
+
+    }
+
+    owner = wallet?.publicKey?.toString() || owner
+
+    console.log({ owner })
 
     const { data: videos, error, isLoading, mutate } = useSWR(`https://hls.pow.co/api/v1/owners/${owner}/videos`, async (url: string): Promise<Video[]> => {
 
@@ -60,7 +83,7 @@ const ComposeImage = () => {
         </svg>
         <div className="mb-[200px] mt-3 bg-primary-100 pb-3 pt-4 dark:bg-primary-700/20 lg:mt-8 lg:rounded-xl">
             {/* <FileInput/> */}
-            <Dropzone />
+            <Dropzone owner={owner}/>
         </div>
 
         <div className="mb-[200px] mt-3 bg-primary-100 pb-3 pt-4 dark:bg-primary-700/20 lg:mt-8 lg:rounded-xl">

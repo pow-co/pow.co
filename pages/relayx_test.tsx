@@ -13,10 +13,10 @@ export default function Home() {
   const [txId, setTxid] = useState<string | null>();
   const [txHex, setTxhex] = useState<string | null>();
 
-  const { relayxPaymail } = useRelay()
+  const { relayxPaymail, relayxWallet } = useRelay()
 
   useEffect(() => {
-    const wallet = new RelayxWallet({ paymail: String(relayxPaymail) });
+    const wallet = relayxWallet as RelayxWallet;
 
     wallet.createBoostTransaction([{
       job: BoostPowJob.fromObject({

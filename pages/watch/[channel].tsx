@@ -78,7 +78,7 @@ export default function MeetingPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayxAuthToken } = useRelay()
 
     const [jitsiInitialized, setJitsiInitialized] = useState<boolean>()
 
@@ -130,7 +130,7 @@ export default function MeetingPage() {
             axios.post('https://api.tokenmeet.live/api/v1/jaas/auth', {
                 wallet: 'relay',
                 paymail: relayxPaymail,
-                token: relayAuthToken
+                token: relayxAuthToken
             })
             .then(({data}) => {
 
@@ -230,7 +230,7 @@ export default function MeetingPage() {
         console.log('--end use effect--', {nJitsis})
 
     // @ts-ignore
-    }, [window.JitsiMeetExternalAPI, relayAuthToken, jitsiJWT])
+    }, [window.JitsiMeetExternalAPI, relayxAuthToken, jitsiJWT])
 
 
     async function handleJitsiEvent(type: string, event: any, socket: Socket) {

@@ -99,7 +99,7 @@ export default function MeetingPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayxAuthToken } = useRelay()
 
     const [livestream, setLivestream] = useState<Livestream | null>(null)
 

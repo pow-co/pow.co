@@ -73,7 +73,7 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
 
       setLocalWalletPaymail(`${localWallet.address.toString()}@pow.co`)
 
-      setLocalWalletPublicKey(localWallet.privateKey.publicKey.toString())
+      setLocalWalletPublicKey(localWallet?.privateKey?.publicKey.toString())
 
     } else {
       

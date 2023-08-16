@@ -66,7 +66,7 @@ async function reliableGetUploadUrlByHash({ location }: { location: string }): P
 
 }
 
-export default function MyDropzone() {
+export default function MyDropzone({ owner }: { owner: string }) {
   const router = useRouter();
   const [files, setFiles] = useState([]);
   // const [opReturn, setOpReturn] = useState()
@@ -93,7 +93,7 @@ export default function MyDropzone() {
 
     try {
 
-      const { data: result } = await axios.get(`https://hls.pow.co/api/v1/videos/new?sha256Hash=${sha256Hash}&contentLength=${contentLength}`)
+      const { data: result } = await axios.get(`https://hls.pow.co/api/v1/videos/new?sha256Hash=${sha256Hash}&contentLength=${contentLength}&owner=${owner}`)
 
       const script = bsv.Script.fromASM(result.funding_script)
 
