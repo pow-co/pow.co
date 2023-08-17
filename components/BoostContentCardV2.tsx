@@ -22,6 +22,7 @@ import ReactPlayer from "react-player/lazy";
 import Meta from "./Meta";
 import LoveOrdButton from "./LoveOrdButton";
 import { useRelay } from "../context/RelayContext";
+import EventCard, { EventCardProps } from "./EventCard";
 
 const Markdown = require("react-remarkable");
 
@@ -123,6 +124,20 @@ export interface Ranking {
   defaultTag?: string;
 }
 
+const testEvent = {
+  transaction: "jhgqdkjfhejkbfhlhsbbzkjfhjkrllkfhsvkjcbkcbekj",
+  admin: {name:"Satoshi N.", paymail:"satoshin@relayx.io"},
+  eventTitle: "Hyperbitcoinization Day",
+  eventCoverImage: "https://berry2.relayx.com/d71b421885d5b2da8b14df7a5bffc92e596b1aba6e087f30054be3cd80fcd2d1_o1",
+  startDate: new Date("2024-01-03T03:24:00"),
+  startTime: "19:00",
+  endDate: new Date("2024-01-04T03:24:00"),
+  endTime: "19:00",
+  invitesRequired: false,
+  invitees: [{name: "aristotelis"}, {name: "owenkellog"}, {name: "eddiewillers"}, {name: "elvis"}, {name: "shirishsharkar"}, {name: "danielkrawisz"}, {name: "jackliu"}, {name: "rafaellaverde"}],
+  attendees: [{name: "aristotelis"}, {name: "owenkellog"}, {name: "eddiewillers"}, {name: "elvis"}, {name: "shirishsharkar"}],
+}
+
 const BoostContentCardV2 = ({
   content_txid,
   difficulty,
@@ -185,6 +200,8 @@ const BoostContentCardV2 = ({
   const [youtubeId, setYoutubeId] = useState("");
   const [playerURLs, setPlayerURLs] = useState<string[]>([]);
   const [jig, setJig] = useState(null);
+  //const [eventData, setEventData] = useState<EventCardProps | null>(testEvent)
+  const [eventData, setEventData] = useState<EventCardProps | null>(null)
   const existingTags = useMemo(
     () =>
       tags
@@ -363,6 +380,9 @@ const BoostContentCardV2 = ({
             return prev;
           });
           break;
+        case content.content_type?.includes("event"):
+          setPaymail(content.content_json.admin.paymail)
+          setEventData(content.content_json)
         default:
           console.log("unknown content type");
       }
@@ -612,6 +632,7 @@ const BoostContentCardV2 = ({
                 </div>
               </a>
             ))}
+            {eventData && <EventCard {...eventData} />}
             {jig && <NFTJig jig={jig} />}
             {playerURLs.length > 0 &&
               playerURLs.map((url: string, index: number) => (
