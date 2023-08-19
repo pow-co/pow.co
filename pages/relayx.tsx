@@ -45,9 +45,9 @@ export default function RelayXFeed() {
             All
           </div>
         </Link>
-        <Link href={`/relayx`}>
+        <Link href={`/watch`}>
           <div className="text-sm leading-4 py-2 px-3 text-gray-900 dark:text-white bg-primary-100 dark:bg-primary-600/20 font-medium mr-2 cursor-pointer rounded-md whitespace-nowrap">
-            Club RelayX
+            Youtube
           </div>
         </Link>
         <Link href={`/twetch`}>
