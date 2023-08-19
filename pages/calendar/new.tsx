@@ -50,11 +50,32 @@ const NewCalendarEventPage = () => {
     const { avatar, userName } = useBitcoin()
     const [base64CoverImage, setBase64CoverImage] = useState("")
     const [eventTitle, setEventTitle] = useState("")
+    const [eventDescription, setEventDescription] = useState("")
     const [startDate, setStartDate] = useState(new Date())
     const [startTime, setStartTime] = useState(new Date().toISOString().split('T')[1].substring(0,5))
     const [showStartDatePicker, setShowStartDatePicker] = useState(false)
-    const [endDate, setEndDate] = useState(new Date())
-    const [endTime, setEndTime] = useState(new Date().toISOString().split('T')[1].substring(0,5))
+    const [endDate, setEndDate] = useState<Date>()
+    const [endTime, setEndTime] = useState<string>()
+    const startDateTime = useMemo(() => {
+        let dateTime = startDate
+        let [hours, minutes] = startTime.split(":").map(Number)
+        dateTime.setHours(hours)
+        dateTime.setMinutes(minutes)
+        return dateTime
+    } ,[startDate, startTime])
+    const endDateTime = useMemo(() => {
+        let dateTime
+        if (endDate && endTime) {
+            dateTime = endDate
+            let [hours, minutes] = endTime.split(":").map(Number)
+            dateTime.setHours(hours)
+            dateTime.setMinutes(minutes)
+        } else {
+            dateTime = new Date (startDateTime)
+            dateTime.setHours(startDateTime.getHours() + 1)
+        }
+        return dateTime
+    }, [endDate, endTime, startDateTime])
     const [showEndDatePicker, setShowEndDatePicker] = useState(false)
     const [addEndDate, setAddEndDate] = useState(false)
     const [requireInvites, setRequireInvites] = useState(false)
@@ -99,8 +120,12 @@ const NewCalendarEventPage = () => {
         setEventTitle(e.target.value)
     }
 
+    const handleChangeEventDescription = (e:any) => {
+        e.preventDefault()
+        setEventDescription(e.target.value)
+    }
+
     const handleChangeStartDate = (selectedDate: Date) => {
-        console.log(selectedDate)
         setStartDate(selectedDate)
     }
 
@@ -114,7 +139,6 @@ const NewCalendarEventPage = () => {
     }
 
     const handleChangeEndDate = (selectedDate: Date) => {
-        console.log(selectedDate)
         setEndDate(selectedDate)
     }
 
@@ -136,19 +160,19 @@ const NewCalendarEventPage = () => {
         
         try {
 
-            console.log('SUBMIT!', {eventTitle, startDate, startTime, endDate, endTime, requireInvites})
+            console.log('SUBMIT!', {eventTitle, eventDescription, startDateTime, endDateTime, requireInvites})
 
             const { data } = await axios.post(`https://pow.co/api/v1/meetings/new`, {
                 title: eventTitle,
-                description: eventTitle,
-                start: startDate.getTime(),
-                end: endDate.getTime(),
+                description: eventDescription,
+                start: startDateTime.getTime(),
+                end: endDateTime.getTime(),
                 owner: wallet?.publicKey?.toString() || '034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8',
                 organizer: wallet?.publicKey?.toString() || '034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8',
                 url: ' ',
                 status: ' ',
                 location: ' ',
-                inviteRequired: false,
+                inviteRequired: requireInvites,
             })
 
             const script = bsv.Script.fromASM(data.scriptASM)
@@ -211,7 +235,7 @@ const NewCalendarEventPage = () => {
                         <p className='text-sm opacity-50'>Host (you)</p>
                     </div>
                 </div>
-                <div className='p-5'>
+                <div className='px-5 mt-5'>
                     <input 
                         type="text" 
                         required 
@@ -222,10 +246,13 @@ const NewCalendarEventPage = () => {
                         placeholder='Title of the event'
                     />
                 </div>
+                <div className='px-5 my-5'>
+                    <textarea id="nft-description" placeholder='Describe your event' maxLength={500} rows={4} value={eventDescription} onChange={handleChangeEventDescription} className="w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-gray-900 outline-none focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
+                </div>
                 <p className='px-5 font-semibold mb-2'>Start date and time</p>
                 <div className='px-5 flex relative'>
                     <Datepicker options={options} onChange={handleChangeStartDate} show={showStartDatePicker} setShow={handleCloseStartDatePicker} />
-                    <input type="time" value={startTime} onChange={handleChangeEndTime} className="ml-2 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 text-gray-900 outline-none focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"/>
+                    <input type="time" value={startTime} onChange={handleChangeStartTime} className="ml-2 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 text-gray-900 outline-none focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"/>
                 </div>
                 <div onClick={handleAddEndDate} className='px-5 my-5 flex text-primary-500 cursor-pointer hover:underline'>
                     {!addEndDate ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
