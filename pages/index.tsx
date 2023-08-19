@@ -104,9 +104,9 @@ export default function Home() {
             All
           </div>
         </Link>
-        <Link href="/relayx">
+        <Link href="/watch">
           <div className="mr-2 cursor-pointer whitespace-nowrap rounded-md px-3 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">
-            Club RelayX
+            Youtube
           </div>
         </Link>
         <Link href="/twetch">

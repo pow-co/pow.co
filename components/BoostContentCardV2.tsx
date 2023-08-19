@@ -23,6 +23,8 @@ import Meta from "./Meta";
 import LoveOrdButton from "./LoveOrdButton";
 import { useRelay } from "../context/RelayContext";
 
+import { Meeting, getMeeting } from '../services/meetings'
+
 const Markdown = require("react-remarkable");
 
 async function fetchVideo({ txid }: { txid: string }): Promise<{ sha256Hash: string }> {
@@ -190,9 +192,10 @@ const BoostContentCardV2 = ({
   const [postMedia, setPostMedia] = useState<any[]>([]);
   const [linkUnfurls, setLinkUnfurls] = useState<any[]>([]);
   const [tweetId, setTweetId] = useState<string>("");
-  const [youtubeId, setYoutubeId] = useState("");
   const [playerURLs, setPlayerURLs] = useState<string[]>([]);
   const [jig, setJig] = useState(null);
+  const [meeting, setMeeting] = useState<Meeting | null>(null)
+
   const existingTags = useMemo(
     () =>
       tags
@@ -243,6 +246,15 @@ const BoostContentCardV2 = ({
   }, [contentText]);
 
   const parseContent = async (content: any) => {
+
+    if (content.content_type === 'text/calendar') {
+
+      const meeting = await getMeeting({ txid: content_txid })
+
+      console.log('calendar event', meeting)
+      
+      setMeeting(meeting)
+    }
 
     fetchVideo({ txid: content.txid }).then(async (video) => {
 
@@ -612,6 +624,34 @@ const BoostContentCardV2 = ({
                   </div>
                 ))}
               </div>
+            )}
+            {meeting && (
+                  <div className="border rounded p-4 shadow-md max-w-lg m-2">
+                      <h2 className="text-xl font-semibold mb-2">{meeting.title}</h2>
+                      <p className="text-gray-700 mb-2">{meeting.description}</p>
+                      <div className="mb-2">
+                          <span className="font-semibold">Start:</span> {new Date(meeting.start * 1000).toLocaleString()}
+                      </div>
+                      <div className="mb-2">
+                          <span className="font-semibold">End:</span> {new Date(meeting.end * 1000).toLocaleString()}
+                      </div>
+                      <div className="mb-2">
+                          <span className="font-semibold">Location:</span> {meeting.location}
+                      </div>
+                      <div className="mb-2">
+                          <span className="font-semibold">Status:</span> {meeting.status}
+                      </div>
+                      <a href={meeting.url?.replace('{origin}', meeting.origin)} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline mb-2 block">
+                          Event Link
+                      </a>
+                      <div className="mb-2">
+                          <span className="font-semibold">Invite Required:</span> {meeting.inviteRequired ? 'Yes' : 'No'}
+                      </div>
+                      <div className="mb-2">
+                          <span className="font-semibold">Organizer:</span> {meeting.organizer}
+                      </div>
+                  </div>
+
             )}
             {!hlsVideoUrl && linkUnfurls.map((linkUnfurl: any) => (
               <a

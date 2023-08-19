@@ -1,9 +1,14 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Meta from '../../components/Meta'
 import ThreeColumnLayout from '../../components/ThreeColumnLayout'
 import { useBitcoin } from '../../context/BitcoinContext'
 import UserIcon from '../../components/UserIcon'
 import Datepicker from "tailwind-datepicker-react"
+
+import { SmartContract, Scrypt, bsv } from 'scrypt-ts'
+import axios from 'axios'
+import useWallet from '../../hooks/useWallet'
+import { useRouter } from 'next/router'
 
 const options = {
 	title: "Choose a Date",
@@ -52,6 +57,10 @@ const NewCalendarEventPage = () => {
     const [requireInvites, setRequireInvites] = useState(false)
     const isContractReady = useMemo(() => eventTitle.length > 0,[eventTitle])
 
+    const wallet = useWallet()
+
+    const router = useRouter()
+
     const handleChangeEventTitle = (e:any) => {
         e.preventDefault()
         setEventTitle(e.target.value)
@@ -89,10 +98,54 @@ const NewCalendarEventPage = () => {
         setAddEndDate(!addEndDate)
     }
 
-    const handleSubmitEvent = (e:any) => {
+    const handleSubmitEvent = async (e:any) => {
         e.preventDefault()
         
+        try {
+
+            console.log('SUBMIT!', {eventTitle, startDate, startTime, endDate, endTime, requireInvites})
+
+            const { data } = await axios.post(`https://pow.co/api/v1/meetings/new`, {
+                title: eventTitle,
+                description: eventTitle,
+                start: startDate.getTime(),
+                end: endDate.getTime(),
+                owner: wallet?.publicKey?.toString() || '034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8',
+                organizer: wallet?.publicKey?.toString() || '034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8',
+                url: ' ',
+                status: ' ',
+                location: ' ',
+                inviteRequired: false,
+            })
+
+            const script = bsv.Script.fromASM(data.scriptASM)
+
+            const tx = await wallet?.createTransaction({
+                outputs: [
+                    new bsv.Transaction.Output({
+                        script,
+                        satoshis: 10
+                    })
+                ]
+            })
+
+            if (!tx) { return }
+
+            console.log('meeting.created', tx.hash)
+
+            router.push(`/${tx.hash}`)
+    
+            console.log('meeting.new', data)
+
+        } catch(error) {
+
+            console.error(error)
+
+        }
+        
+        
     }
+
   return (
     <>
     <Meta title='Calendar | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
