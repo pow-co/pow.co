@@ -38,22 +38,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.env
 
 .env
-
-.env
+scrypt.index.json
 #/artifacts
-scrypt.index.json
-.env
-/artifacts
-scrypt.index.json
-.env
-/artifacts
-scrypt.index.json
-.env
-/artifacts
-scrypt.index.json
-.env
-/artifacts
-scrypt.index.json

@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "errors": [],
+  "scryptfile": "erc721.scrypt",
+  "sourceMapFile": "erc721.scrypt.map",
+  "ctxMethods": [
+    "mint",
+    "burn",
+    "transferFrom"
+  ]
+}
