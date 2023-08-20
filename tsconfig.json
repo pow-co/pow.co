@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./node_modules/@types", "./types"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ],
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "target": "ES2020",
+    "target": "ESNext",
     "lib": [
       "dom",
       "dom.iterable",
@@ -38,5 +41,10 @@
       "outDir": "./artifacts",
       "transformProgram": true
     }
-  ]
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
 }
