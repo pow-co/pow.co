@@ -23,7 +23,6 @@ export default class LocalWallet extends Wallet {
 
     const hdPrivateKey = bsv.HDPrivateKey.fromSeed(this.seed.toString('hex'))
 
-
     const derivationPaths = {
       sensiletDefault:        `m/44'/0'/0'/0/0`,
       relayxBsv:              `m/44'/236'/0'/0/0`,
@@ -35,6 +34,8 @@ export default class LocalWallet extends Wallet {
     }
 
     this.privateKey = hdPrivateKey.deriveChild(derivationPaths.sensiletDefault).privateKey
+
+    this.paymail = `${this.address.toString()}@pow.co`
 
   }
 
@@ -96,26 +97,6 @@ export default class LocalWallet extends Wallet {
       }
 
     })
-
-    return Promise.all(data.map(async (unspent: WhatsonchainUtxo) => {
-
-      const { data: txData } = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/hash/${unspent.tx_hash}`)
-
-      const scriptPubKey = txData.vout[unspent.tx_pos].scriptPubKey.hex
-
-      return {
-
-        scriptPubKey,
-
-        satoshis: unspent.value,
-
-        txId: unspent.tx_hash,
-
-        outputIndex: unspent.tx_pos
-
-      }
-
-    }))
 
   }
 
