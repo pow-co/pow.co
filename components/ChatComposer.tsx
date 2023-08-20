@@ -117,7 +117,11 @@ const ChatComposer = ({
 
     const content = inputValue;
 
+    console.log({ content, wallet })
+
     if (content !== "" && wallet.paymail) {
+
+      console.log('paymail', wallet.paymail)
 
       setInputValue("");
 
