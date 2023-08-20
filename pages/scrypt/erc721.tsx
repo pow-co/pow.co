@@ -7,15 +7,23 @@ import Datepicker from "tailwind-datepicker-react"
 import { useDropzone } from 'react-dropzone';
 import { buf2hex } from '../../utils/file'
 
-import { SmartContract, Scrypt, bsv } from "scrypt-ts";
+import { SmartContract, Scrypt, bsv, PubKey, HashedMap, toByteString } from "scrypt-ts";
 import axios from "axios";
 import useWallet from "../../hooks/useWallet";
 import { useRouter } from "next/router";
+import { toast } from "react-hot-toast";
+
 
 import { Meeting } from "../../src/contracts/meeting";
 import artifact from "../../artifacts/meeting.json";
 
 Meeting.loadArtifact(artifact);
+
+import { Erc721 } from "../../src/contracts/erc721";
+import erc721 from "../../artifacts/erc721.json";
+
+Erc721.loadArtifact(erc721);
+
 
 const options = {
   title: "Choose a Date",
@@ -110,6 +118,7 @@ const NewCalendarEventPage = () => {
     const [requireInvites, setRequireInvites] = useState(false)
     const isContractReady = useMemo(() => eventTitle.length > 0,[eventTitle])
 
+
   const wallet = useWallet();
 
     const router = useRouter()
@@ -186,42 +195,54 @@ const NewCalendarEventPage = () => {
 
     const handleSubmitEvent = async (e:any) => {
         e.preventDefault()
-        
+
+        if (!wallet) {
+
+          toast("Error No Wallet Connected", {
+            icon: "📛",
+            style: {
+              borderRadius: "10px",
+              background: "#333",
+              color: "#fff",
+            },
+          });
+
+          return
+
+        }
+
         try {
 
-            console.log('SUBMIT!', {eventTitle, eventDescription, startDateTime, endDateTime, requireInvites})
+            console.log('SUBMIT!', {eventTitle, eventDescription})
 
-            const { data } = await axios.post(`https://pow.co/api/v1/meetings/new`, {
-                title: eventTitle,
-                description: eventDescription,
-                start: startDateTime.getTime(),
-                end: endDateTime.getTime(),
-                owner: wallet?.publicKey?.toString() || '034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8',
-                organizer: wallet?.publicKey?.toString() || '034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8',
-                url: ' ',
-                status: ' ',
-                location: ' ',
-                inviteRequired: requireInvites,
-            })
+            const erc721 = new Erc721(
+              PubKey(wallet?.publicKey?.toString() || ''),
+              new HashedMap<bigint, PubKey>(),
+              toByteString(eventTitle, true),
+              toByteString(eventDescription, true),
+              toByteString(base64CoverImage, true),
+              toByteString('{}', true)
+            )
 
-            const script = bsv.Script.fromASM(data.scriptASM)
+            toast("Publishing New NFT Origin Funding Transaction", {
+              icon: "⛏️",
+              style: {
+                borderRadius: "10px",
+                background: "#333",
+                color: "#fff",
+              },
+            });
 
-            const tx = await wallet?.createTransaction({
-                outputs: [
-                    new bsv.Transaction.Output({
-                        script,
-                        satoshis: 10
-                    })
-                ]
-            })
+            await erc721.connect(wallet.signer)
 
-            if (!tx) { return }
+            const result = await erc721.deploy(10)
 
-            console.log('meeting.created', tx.hash)
+            console.log(result)
 
-            router.push(`/${tx.hash}`)
-    
-            console.log('meeting.new', data)
+            window.open(`https://whatsonchain.com/tx/${result.hash}`, '_blank')
+
+            router.push(`/scrypt/erc721/${result.hash}`)
+
 
         } catch(error) {
 
@@ -234,11 +255,11 @@ const NewCalendarEventPage = () => {
 
   return (
     <>
-    <Meta title='Calendar | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
+    <Meta title='Create NFT 721| POWCO' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
         <div className='mt-5 sm:mt-10 min-h-screen'>
             <div className='flex flex-col bg-primary-100 dark:bg-primary-700/20 sm:rounded-xl py-5'>
-                <h2 className='text-2xl text-center font-bold'>Create an event</h2>
+                <h2 className='text-2xl text-center font-bold'>Create an NFT</h2>
                 <section>
                     {base64CoverImage.length === 0 ? (
                     <div {...getRootProps()} className='relative my-5 h-44 w-full bg-primary-200 dark:bg-primary-600/20'>
@@ -261,7 +282,7 @@ const NewCalendarEventPage = () => {
                     </div>
                     <div className='flex flex-col grow'>
                         <h3 className='text-lg font-semibold'>{userName}</h3>
-                        <p className='text-sm opacity-50'>Host (you)</p>
+                        <p className='text-sm opacity-50'>Minter (you)</p>
                     </div>
                 </div>
                 <div className='px-5 mt-5'>
@@ -272,39 +293,13 @@ const NewCalendarEventPage = () => {
                         className="w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-gray-900 outline-none focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
                         value={eventTitle}
                         onChange={handleChangeEventTitle}
-                        placeholder='Title of the event'
+                        placeholder='Name of the collection'
                     />
                 </div>
                 <div className='px-5 my-5'>
-                    <textarea id="nft-description" placeholder='Describe your event' maxLength={500} rows={4} value={eventDescription} onChange={handleChangeEventDescription} className="w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-gray-900 outline-none focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
+                    <textarea id="nft-description" placeholder='Describe your NFT' maxLength={500} rows={4} value={eventDescription} onChange={handleChangeEventDescription} className="w-full rounded-lg border border-gray-300 bg-gray-50 p-3 text-gray-900 outline-none focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" />
                 </div>
-                <p className='px-5 font-semibold mb-2'>Start date and time</p>
-                <div className='px-5 flex relative'>
-                    <Datepicker options={options} onChange={handleChangeStartDate} show={showStartDatePicker} setShow={handleCloseStartDatePicker} />
-                    <input type="time" value={startTime} onChange={handleChangeStartTime} className="ml-2 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 text-gray-900 outline-none focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"/>
-                </div>
-                <div onClick={handleAddEndDate} className='px-5 my-5 flex text-primary-500 cursor-pointer hover:underline'>
-                    {!addEndDate ? <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m6-6H6" />
-                    </svg> : <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 12H6" />
-                    </svg>
-                    }
-
-                    <p className=''>Add an end date/time</p>
-                </div>
-                {addEndDate && <>
-                <p className='px-5 font-semibold mb-2'>End date and time</p>
-                <div className='px-5 flex relative mb-5'>
-                    <Datepicker options={options} onChange={handleChangeEndDate} show={showEndDatePicker} setShow={handleCloseEndDatePicker} />
-                    <input type="time" value={endTime} onChange={handleChangeEndTime} className="ml-2 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 text-gray-900 outline-none focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"/>
-                </div>
-                </>}
-                <div className='px-5'>
-                    <input checked={requireInvites} id="require-invite" type="checkbox" onClick={(e:any) => setRequireInvites(!requireInvites)} className="w-4 h-4 accent-primary-500 bg-gray-100 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"/>
-                    <label htmlFor='require-invite' className='ml-4 '>Require Invites?</label>
-                </div>
-                <button disabled={!isContractReady} onClick={handleSubmitEvent} className='mt-5 mx-5 py-3 bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer text-white font-semibold rounded-lg transition duration-500 transform hover:-translate-y-1 hover:disabled:translate-y-0 disabled:opacity-60 disabled:cursor-default'>Create Event</button>
+                <button disabled={!isContractReady} onClick={handleSubmitEvent} className='mt-5 mx-5 py-3 bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer text-white font-semibold rounded-lg transition duration-500 transform hover:-translate-y-1 hover:disabled:translate-y-0 disabled:opacity-60 disabled:cursor-default'>Create NFT</button>
             </div>
 
 

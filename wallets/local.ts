@@ -1,7 +1,8 @@
-import { bsv } from 'scrypt-ts';
+import { DefaultProvider, Provider, ScryptProvider, Signer, bsv } from 'scrypt-ts';
 import Wallet from './base';
 import * as bip39 from 'bip39'
 import axios from 'axios'
+
 
 export default class LocalWallet extends Wallet {
 
@@ -14,6 +15,8 @@ export default class LocalWallet extends Wallet {
     return new LocalWallet({ seed: bip39.mnemonicToSeedSync(phrase) })
 
   }
+
+
 
   constructor({ seed }: { seed: Buffer }) {
 
@@ -34,8 +37,11 @@ export default class LocalWallet extends Wallet {
     }
 
     this.privateKey = hdPrivateKey.deriveChild(derivationPaths.sensiletDefault).privateKey
+    this.publicKey = this.privateKey?.publicKey
 
     this.paymail = `${this.address.toString()}@pow.co`
+
+    this.provider = new DefaultProvider()
 
   }
 

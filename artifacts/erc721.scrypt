@@ -1,0 +1,46 @@
+
+contract Erc721 {
+  PubKey minter;
+  @state HashedMap<int,PubKey> owners;
+  VarIntReader __scrypt_ts_accessPathReaderForProp__owners;
+  @state bytes name;
+  @state bytes description;
+  @state bytes image;
+  @state bytes metadata;
+  constructor(PubKey minter, HashedMap<int,PubKey> owners, bytes name, bytes description, bytes image, bytes metadata) {
+    this.minter = minter;
+    this.owners = owners;
+    this.name = name;
+    this.description = description;
+    this.image = image;
+    this.metadata = metadata;
+  }
+  public function mint(int tokenId, PubKey mintTo, Sig minterSig, SigHashPreimage __scrypt_ts_txPreimage, bytes __scrypt_ts_accessPathForProp__owners) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'43')));
+    this.__scrypt_ts_accessPathReaderForProp__owners = new VarIntReader(__scrypt_ts_accessPathForProp__owners);
+    require(!this.owners.has({tokenId, this.__scrypt_ts_accessPathReaderForProp__owners.readInt()}));
+    require(checkSig(minterSig, this.minter));
+    require(this.owners.set({tokenId, this.__scrypt_ts_accessPathReaderForProp__owners.readInt()}, mintTo));
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(this.buildStateOutput(SigHash.value(__scrypt_ts_txPreimage))));
+  }
+  public function burn(int tokenId, PubKey sender, Sig sig, SigHashPreimage __scrypt_ts_txPreimage, bytes __scrypt_ts_accessPathForProp__owners) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'43')));
+    this.__scrypt_ts_accessPathReaderForProp__owners = new VarIntReader(__scrypt_ts_accessPathForProp__owners);
+    require(this.owners.canGet({tokenId, this.__scrypt_ts_accessPathReaderForProp__owners.readInt()}, sender));
+    require(checkSig(sig, sender));
+    require(this.owners.delete({tokenId, this.__scrypt_ts_accessPathReaderForProp__owners.readInt()}));
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(this.buildStateOutput(SigHash.value(__scrypt_ts_txPreimage))));
+  }
+  public function transferFrom(int tokenId, PubKey sender, Sig sig, PubKey receiver, SigHashPreimage __scrypt_ts_txPreimage, bytes __scrypt_ts_accessPathForProp__owners) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'43')));
+    this.__scrypt_ts_accessPathReaderForProp__owners = new VarIntReader(__scrypt_ts_accessPathForProp__owners);
+    require(this.owners.canGet({tokenId, this.__scrypt_ts_accessPathReaderForProp__owners.readInt()}, sender));
+    require(checkSig(sig, sender));
+    require(this.owners.set({tokenId, this.__scrypt_ts_accessPathReaderForProp__owners.readInt()}, receiver));
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(this.buildStateOutput(SigHash.value(__scrypt_ts_txPreimage))));
+  }
+    function buildStateOutput(int amount): bytes {
+      bytes script = this.getStateScript();
+      return Utils.buildOutput(script, amount);
+    }
+}
