@@ -1,9 +1,23 @@
 
-import { bsv } from 'scrypt-ts'
+import { Provider, Signer, bsv } from 'scrypt-ts'
 
 import Wallet from './abstract'
 
 import axios from 'axios';
+
+import { Scrypt, TestWallet, DefaultProvider } from 'scrypt-ts'
+
+Scrypt.init({
+  apiKey: String(process.env.NEXT_PUBLIC_SCRYPT_API_KEY),
+  network: bsv.Networks.livenet,
+})
+
+class LivenetWallet extends TestWallet {
+
+  get network() {
+    return bsv.Networks.mainnet
+  }
+}
 
 export interface BaseWallet {
 
@@ -50,6 +64,13 @@ export class BaseWallet extends Wallet {
         return tx
     
       }
+
+      get signer(): Signer {
+        const signer = new LivenetWallet(this.privateKey as bsv.PrivateKey, this.provider)
+        return signer
+      }
+    
+      provider?: Provider;
 }
 
 export default BaseWallet
