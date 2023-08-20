@@ -36,6 +36,8 @@
     "@typescript-eslint/no-use-before-define": "off",
     "class-methods-use-this": "off",
     "import/no-named-as-default": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "no-plusplus": "off",
+    "import/prefer-default-export": "off"
   }
 }
