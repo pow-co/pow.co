@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "errors": [],
+  "scryptfile": "scryptNextjsDemo.scrypt",
+  "sourceMapFile": "scryptNextjsDemo.scrypt.map",
+  "ctxMethods": [
+    "increment"
+  ]
+}

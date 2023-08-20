@@ -231,7 +231,6 @@ const NewCalendarEventPage = () => {
         
         
     }
-  };
 
   return (
     <>
@@ -416,7 +415,10 @@ const NewCalendarEventPage = () => {
             </button>
           </div>
       </ThreeColumnLayout>
+
+
     </>
+
   );
 };
 

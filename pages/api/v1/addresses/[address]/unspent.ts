@@ -4,9 +4,22 @@ require("dotenv").config();
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Scrypt, bsv } from "scrypt-ts";
 
-type Data = {
-  name: string;
+interface Unspent {
+  txId: string;
+  outputIndex: number;
+  satoshis: number;
+  script: string;
+  address: string;
+}
+
+type AddressUnspent = {
+  address: string;
+  unspent: Unspent[];
 };
+
+type ErrorResponse = {
+  error: string;
+}
 
 Scrypt.init({
   apiKey: String(process.env.SCRYPT_API_KEY),
@@ -15,19 +28,21 @@ Scrypt.init({
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<AddressUnspent | ErrorResponse>
 ) {
   try {
-    const address = req.query.address as string;
+    const address = String(req.query.address);
 
-    const unspent = await Scrypt.bsvApi.listUnspent(new bsv.Address(address));
+    const unspent = await Scrypt.bsvApi.listUnspent(new bsv.Address(address)) as Unspent[];
 
     console.log(unspent);
 
     res.status(200).json({ address, unspent });
-  } catch (error) {
+
+  } catch (error: any) {
+
     console.error(error);
 
-    res.status(500).json({ error });
+    res.status(500).json({ error: error.message });
   }
 }

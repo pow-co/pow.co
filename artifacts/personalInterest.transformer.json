@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "errors": [],
+  "scryptfile": "personalInterest.scrypt",
+  "sourceMapFile": "personalInterest.scrypt.map",
+  "ctxMethods": [
+    "setWeight"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "errors": [],
+  "scryptfile": "meeting.scrypt",
+  "sourceMapFile": "meeting.scrypt.map",
+  "ctxMethods": [
+    "uncancel",
+    "invite",
+    "decline",
+    "attend",
+    "cancel"
+  ]
+}
