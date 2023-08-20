@@ -24,6 +24,7 @@ import LoveOrdButton from "./LoveOrdButton";
 import { useRelay } from "../context/RelayContext";
 
 import { Meeting, getMeeting } from '../services/meetings'
+import ContentText from "./ContentText";
 
 const Markdown = require("react-remarkable");
 
@@ -583,18 +584,7 @@ const BoostContentCardV2 = ({
               </Tooltip>
             </div>
             {contentText && (
-              <article
-                onClick={(e: any) => e.stopPropagation()}
-                className="prose break-words dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-pirmary-400"
-              >
-                <Markdown
-                  options={RemarkableOptions}
-                  source={contentText.replace(
-                    BFILE_REGEX,
-                    "https://dogefiles.twetch.app/$1"
-                  )}
-                />
-              </article>
+              <ContentText content={contentText}/>
             )}
             {postMedia.length > 0 && (
               <div
