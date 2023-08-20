@@ -1,17 +1,9 @@
 {
   "compilerOptions": {
-    "typeRoots": [
-      "./node_modules/@types",
-      "./types"
-    ],
-    "downlevelIteration": true,
+    "typeRoots": ["./node_modules/@types", "./types"],
     "experimentalDecorators": true,
     "target": "ESNext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -23,25 +15,24 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
+    ".next/types/**/*.ts",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "pages/faq.js"
   ],
-  "exclude": [
-    "node_modules",
-    "contracts"
-  ],
-  "plugins": [
-    {
-      "transform": "scrypt-ts/dist/transformation/transformer",
-      "outDir": "./artifacts",
-      "transformProgram": true
-    }
-  ],
+  "exclude": ["node_modules", "contracts"],
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"

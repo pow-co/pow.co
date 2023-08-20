@@ -5,13 +5,13 @@ import {
   hash256,
   assert,
   SigHash,
-} from 'scrypt-ts';
+} from "scrypt-ts";
 
-import type { ByteString } from 'scrypt-ts';
+import type { ByteString } from "scrypt-ts";
 
 export class NextPowCo extends SmartContract {
   @prop(true)
-    count: bigint;
+  count: bigint;
 
   constructor(count: bigint) {
     super(count);
@@ -27,6 +27,6 @@ export class NextPowCo extends SmartContract {
     // output containing the latest state
     const output: ByteString = this.buildStateOutput(amount);
     // verify current tx has this single output
-    assert(this.ctx.hashOutputs === hash256(output), 'hashOutputs mismatch');
+    assert(this.ctx.hashOutputs === hash256(output), "hashOutputs mismatch");
   }
 }
