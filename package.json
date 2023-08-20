@@ -1,6 +1,6 @@
 {
-  "name": "next.pow.co",
-  "version": "0.1.0",
+  "name": "pow.co",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,9 +9,10 @@
     "lint": "next lint",
     "prepare": "husky install",
     "build:contract": "npx scrypt-cli compile",
-    "deploy:contract": "npx ts-node --project tsconfig-scryptTS.json ./scripts/deploy.ts",
+    "deploy:contract": "npx ts-node ./scripts/deploy.ts",
     "verify:contract": "npx scrypt-cli verify $(cat .scriptHash) ./src/contracts/nextPowCo.ts",
-    "genprivkey": "npx ts-node --project tsconfig-scryptTS.json ./scripts/privateKey.ts"
+    "genprivkey": "npx ts-node ./scripts/privateKey.ts",
+    "pretest": "npx scrypt-cli compile"
   },
   "dependencies": {
     "@dhaiwat10/react-link-preview": "^1.14.2",
@@ -42,7 +43,6 @@
     "bsocial": "^0.0.1",
     "bsv": "^1.5.6",
     "delay": "^6.0.0",
-    "dotenv": "^10.0.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "13.1.1",
     "graphql": "^16.6.0",
@@ -89,6 +89,7 @@
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
     "autoprefixer": "^10.4.14",
+    "dotenv": "^10.0.0",
     "eslint": "^8.38.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.8.0",
@@ -99,7 +100,6 @@
     "lint-staged": "^13.2.1",
     "postcss": "^8.4.21",
     "prettier": "^2.8.7",
-    "scrypt-cli": "^0.1.13",
     "tailwindcss": "^3.2.4"
   },
   "lint-staged": {

@@ -79,7 +79,23 @@ export default class LocalWallet extends Wallet {
 
   async listUnspent(): Promise<Utxo[]> {
 
-    const { data } = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/address/${this.address}/unspent`)
+    const { data } = await axios.get(`/api/v1/addresses/${this.address}/unspent`)
+
+    return data.unspent.map((unspent: any) => {
+
+      return {
+
+        scriptPubKey: unspent.script,
+
+        satoshis: unspent.satoshis,
+
+        txId: unspent.txId,
+
+        outputIndex: unspent.outputIndex
+
+      }
+
+    })
 
     return Promise.all(data.map(async (unspent: WhatsonchainUtxo) => {
 

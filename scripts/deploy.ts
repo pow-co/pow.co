@@ -5,16 +5,10 @@ import { bsv, TestWallet, DefaultProvider, sha256 } from 'scrypt-ts'
 
 function getScriptHash(scriptPubKeyHex: string) {
     const res = sha256(scriptPubKeyHex).match(/.{2}/g)
-    if(!res) {
+    if (!res) {
         throw new Error('scriptPubKeyHex is not of even length')
     }
     return res.reverse().join('')
-}
-
-class Wallet extends TestWallet {
-  get network() {
-    return bsv.Networks.mainnet
-  }
 }
 
 async function main() {
@@ -22,8 +16,8 @@ async function main() {
 
     // Prepare signer. 
     // See https://scrypt.io/docs/how-to-deploy-and-call-a-contract/#prepare-a-signer-and-provider
-    const signer = new Wallet(privateKey, new DefaultProvider({
-        network: bsv.Networks.mainnet
+    const signer = new TestWallet(privateKey, new DefaultProvider({
+        network: bsv.Networks.testnet
     }))
 
     // TODO: Adjust the amount of satoshis locked in the smart contract:
@@ -36,7 +30,7 @@ async function main() {
 
     // Connect to a signer.
     await instance.connect(signer)
-    
+
     // Contract deployment.
     const deployTx = await instance.deploy(amount)
 
