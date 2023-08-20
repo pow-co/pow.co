@@ -248,12 +248,14 @@ const BoostContentCardV2 = ({
   const parseContent = async (content: any) => {
 
     if (content.content_type === 'text/calendar') {
-
+      console.log(content)
+      setTimestamp(moment(content.createdAt).unix())
       const meeting = await getMeeting({ txid: content_txid })
 
       console.log('calendar event', meeting)
       
       setMeeting(meeting)
+
     }
 
     fetchVideo({ txid: content.txid }).then(async (video) => {
@@ -626,29 +628,37 @@ const BoostContentCardV2 = ({
               </div>
             )}
             {meeting && (
-                  <div className="border rounded p-4 shadow-md max-w-lg m-2">
-                      <h2 className="text-xl font-semibold mb-2">{meeting.title}</h2>
-                      <p className="text-gray-700 mb-2">{meeting.description}</p>
-                      <div className="mb-2">
-                          <span className="font-semibold">Start:</span> {new Date(meeting.start * 1000).toLocaleString()}
+                  <div className="mt-2 bg-primary-100 dark:bg-primary-600/20 border rounded shadow-md">
+                      <div className="flex bg-primary-500 text-white p-4 rounded-t mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                          <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+                          <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clipRule="evenodd" />
+                        </svg>
+                        <h2 className="ml-4 text-xl font-semibold">{meeting.title}</h2>
                       </div>
-                      <div className="mb-2">
-                          <span className="font-semibold">End:</span> {new Date(meeting.end * 1000).toLocaleString()}
-                      </div>
-                      <div className="mb-2">
-                          <span className="font-semibold">Location:</span> {meeting.location}
-                      </div>
-                      <div className="mb-2">
-                          <span className="font-semibold">Status:</span> {meeting.status}
-                      </div>
-                      <a href={meeting.url?.replace('{origin}', meeting.origin)} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline mb-2 block">
-                          Event Link
-                      </a>
-                      <div className="mb-2">
-                          <span className="font-semibold">Invite Required:</span> {meeting.inviteRequired ? 'Yes' : 'No'}
-                      </div>
-                      <div className="mb-2">
-                          <span className="font-semibold">Organizer:</span> {meeting.organizer}
+                      <div className="p-2">
+                        <p className="opacity-70 mb-2">{meeting.description}</p>
+                        <div className="mb-2">
+                            <span className="font-semibold">Start:</span> {new Date(meeting.start).toLocaleString()}
+                        </div>
+                        <div className="mb-2">
+                            <span className="font-semibold">End:</span> {new Date(meeting.end).toLocaleString()}
+                        </div>
+                        <div className="mb-2">
+                            <span className="font-semibold">Location:</span> {meeting.location}
+                        </div>
+                        <div className="mb-2">
+                            <span className="font-semibold">Status:</span> {meeting.status}
+                        </div>
+                        <a href={`/meet/${meeting.origin}`} target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline mb-2 block">
+                            Event Link
+                        </a>
+                        <div className="mb-2">
+                            <span className="font-semibold">Invite Required:</span> {meeting.inviteRequired ? 'Yes' : 'No'}
+                        </div>
+                        <div className="mb-2 truncate">
+                            <span className="font-semibold">Organizer:</span> {meeting.organizer}
+                        </div>
                       </div>
                   </div>
 
