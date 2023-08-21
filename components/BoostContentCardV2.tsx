@@ -23,7 +23,18 @@ import Meta from "./Meta";
 import LoveOrdButton from "./LoveOrdButton";
 import { useRelay } from "../context/RelayContext";
 
+import { Meeting, getMeeting } from '../services/meetings'
+import ContentText from "./ContentText";
+
 const Markdown = require("react-remarkable");
+
+async function fetchVideo({ txid }: { txid: string }): Promise<{ sha256Hash: string }> {
+
+  const { data } = await axios.get(`https://hls.pow.co/api/v1/videos/${txid}`);
+
+  return data.video
+
+}
 
 const RemarkableOptions = {
   breaks: true,
@@ -182,9 +193,10 @@ const BoostContentCardV2 = ({
   const [postMedia, setPostMedia] = useState<any[]>([]);
   const [linkUnfurls, setLinkUnfurls] = useState<any[]>([]);
   const [tweetId, setTweetId] = useState<string>("");
-  const [youtubeId, setYoutubeId] = useState("");
   const [playerURLs, setPlayerURLs] = useState<string[]>([]);
   const [jig, setJig] = useState(null);
+  const [meeting, setMeeting] = useState<Meeting | null>(null)
+
   const existingTags = useMemo(
     () =>
       tags
@@ -235,7 +247,39 @@ const BoostContentCardV2 = ({
   }, [contentText]);
 
   const parseContent = async (content: any) => {
-    console.log(content);
+
+    if (content.content_type === 'text/calendar') {
+      console.log(content)
+      setTimestamp(moment(content.createdAt).unix())
+      const meeting = await getMeeting({ txid: content_txid })
+
+      console.log('calendar event', meeting)
+      
+      setMeeting(meeting)
+
+    }
+
+    fetchVideo({ txid: content.txid }).then(async (video) => {
+
+      if (!video) { return }
+
+      axios.head(`https://hls.pow.co/${video.sha256Hash}.m3u8`)
+        .then(() => setHlsVideoUrl(`https://hls.pow.co/${video.sha256Hash}.m3u8`))
+        .catch(() => setHlsVideoUrl(`https://hls.pow.co/${video.sha256Hash}.mp4`))
+
+      try {
+
+        const headResult = await axios.head(`https://hls.pow.co/${video.sha256Hash}.m3u8`)
+
+        
+
+      } catch(error) {
+
+        
+
+      }
+
+    }).catch(() => {})
 
     if (content.bmap) {
       if (content.bmap.B && content.bmap.MAP) {
@@ -498,7 +542,7 @@ const BoostContentCardV2 = ({
                         <span className="cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap font-bold  text-gray-900 hover:underline dark:text-white">
                           {userName}
                         </span>
-                        <span className="text-sm font-semibold hover:underline text-gray-400 dark:text-gray-600 ml-1">
+                        <span className="ml-1 text-sm font-semibold text-gray-400 hover:underline dark:text-gray-600">
                           {paymail}
                         </span>
                       </p>
@@ -540,18 +584,7 @@ const BoostContentCardV2 = ({
               </Tooltip>
             </div>
             {contentText && (
-              <article
-                onClick={(e: any) => e.stopPropagation()}
-                className="prose break-words dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-pirmary-400"
-              >
-                <Markdown
-                  options={RemarkableOptions}
-                  source={contentText.replace(
-                    BFILE_REGEX,
-                    "https://dogefiles.twetch.app/$1"
-                  )}
-                />
-              </article>
+              <ContentText content={contentText}/>
             )}
             {postMedia.length > 0 && (
               <div
@@ -583,6 +616,42 @@ const BoostContentCardV2 = ({
                   </div>
                 ))}
               </div>
+            )}
+            {meeting && (
+                  <div className="mt-2 bg-primary-100 dark:bg-primary-600/20 border rounded shadow-md">
+                      <div className="flex bg-primary-500 text-white p-4 rounded-t mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                          <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+                          <path fillRule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clipRule="evenodd" />
+                        </svg>
+                        <h2 className="ml-4 text-xl font-semibold">{meeting.title}</h2>
+                      </div>
+                      <div className="p-2">
+                        <p className="opacity-70 mb-2">{meeting.description}</p>
+                        <div className="mb-2">
+                            <span className="font-semibold">Start:</span> {new Date(meeting.start).toLocaleString()}
+                        </div>
+                        <div className="mb-2">
+                            <span className="font-semibold">End:</span> {new Date(meeting.end).toLocaleString()}
+                        </div>
+                        <div className="mb-2">
+                            <span className="font-semibold">Location:</span> {meeting.location}
+                        </div>
+                        <div className="mb-2">
+                            <span className="font-semibold">Status:</span> {meeting.status}
+                        </div>
+                        <a href={`/meet/${meeting.origin}`} target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline mb-2 block">
+                            Event Link
+                        </a>
+                        <div className="mb-2">
+                            <span className="font-semibold">Invite Required:</span> {meeting.inviteRequired ? 'Yes' : 'No'}
+                        </div>
+                        <div className="mb-2 truncate">
+                            <span className="font-semibold">Organizer:</span> {meeting.organizer}
+                        </div>
+                      </div>
+                  </div>
+
             )}
             {!hlsVideoUrl && linkUnfurls.map((linkUnfurl: any) => (
               <a

@@ -9,6 +9,28 @@ import { useTheme } from "next-themes";
 import { useEffect, useMemo } from "react";
 import Linkify from "linkify-react";
 
+const Markdown = require("react-remarkable");
+const RemarkableOptions = {
+  breaks: true,
+  html: true,
+  linkify: true,
+  linkTarget: "_blank",
+  typographer: true,
+  /* highlight: function (str: any, lang: any) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(lang, str).value;
+          } catch (err) {}
+        }
+  
+        try {
+          return hljs.highlightAuto(str).value;
+        } catch (err) {}
+  
+        return ''; // use external default escaping
+      } */
+};
+
 export const MessageItem = (props:any, isSide: boolean) => {
   const { wallet } = useBitcoin()
   const { bmap, createdAt } = props
@@ -69,7 +91,7 @@ export const MessageItem = (props:any, isSide: boolean) => {
             <UserIcon src={avatar} size={36}/>
           </div>
         </Link>
-        <div className="col-span-10 px-2 sm:col-span-11 flex flex-col justify-center w-full">
+        <div className="col-span-10 px-2 sm:col-span-11 flex flex-col justify-center w-full -mb-10">
           <div className='flex justify-between pr-5'>
             <Link href={`/profile/${bmap.MAP[0].paymail}`}>
               <p className='truncate cursor-pointer text-lg text-primary-600 dark:text-primary-400 font-semibold hover:underline'>{bmap.MAP[0].paymail}</p>
@@ -78,7 +100,9 @@ export const MessageItem = (props:any, isSide: boolean) => {
               <span className='text-xs text-gray-500 font-semibold'>{moment(createdAt).fromNow()}</span>
             </a>
           </div>
-          <div className='mt-1 text-gray-900 dark:text-white text-base leading-6 whitespace-pre-line break-words'><Linkify options={{target: '_blank' , className: 'linkify-hover text-primary-600 dark:text-primary-400 hover:underline'}}>{bmap.B[0].content}</Linkify></div>
+          <article className='mt-1 whitespace-pre-line break-words prose dark:prose-invert prose-a:text-primary-600 dark:prose-a:text-pirmary-400'>
+            <Markdown options={RemarkableOptions} source={bmap.B[0].content}/>
+          </article>
         </div>
         <div className='hidden col-span-12 group-hover:grid grid-col-12 justify-end'>
           <div className='col-span-11'/>

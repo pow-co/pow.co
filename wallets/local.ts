@@ -1,8 +1,8 @@
-import { bsv } from 'scrypt-ts';
-import Wallet from './abstract';
-import { listUnspent } from '../services/whatsonchain'
+import { DefaultProvider, Provider, ScryptProvider, Signer, bsv } from 'scrypt-ts';
+import Wallet from './base';
 import * as bip39 from 'bip39'
 import axios from 'axios'
+
 
 export default class LocalWallet extends Wallet {
 
@@ -16,34 +16,38 @@ export default class LocalWallet extends Wallet {
 
   }
 
+
+
   constructor({ seed }: { seed: Buffer }) {
 
     super()
 
     this.seed = seed
 
-  }
-
-  get privateKey(): bsv.PrivateKey { 
-
     const hdPrivateKey = bsv.HDPrivateKey.fromSeed(this.seed.toString('hex'))
-
 
     const derivationPaths = {
       sensiletDefault:        `m/44'/0'/0'/0/0`,
       relayxBsv:              `m/44'/236'/0'/0/0`,
       relayxChange:           `m/44'/236'/0'/1/0`,
       relayxRunOwner:         `m/44'/236'/0'/2/0`,
-      relayxMarketOrderCancel:`m/44'/236'/0'/3/0`
+      relayxMarketOrderCancel:`m/44'/236'/0'/3/0`,
+      twetchAccount: `m/0/0`,
+      twetchWallet: `m/44'/0'/0'/0`
     }
 
-    return hdPrivateKey.deriveChild(derivationPaths.sensiletDefault).privateKey
+    this.privateKey = hdPrivateKey.deriveChild(derivationPaths.sensiletDefault).privateKey
+    this.publicKey = this.privateKey?.publicKey
+
+    this.paymail = `${this.address.toString()}@pow.co`
+
+    this.provider = new DefaultProvider()
 
   }
 
   get address(): bsv.Address {
   
-    return this.privateKey.publicKey.toAddress()
+    return (this.privateKey as bsv.PrivateKey).publicKey.toAddress()
   }
 
   async createTransaction({ outputs }: {outputs: bsv.Transaction.Output[]}):  Promise<bsv.Transaction> {
@@ -82,27 +86,23 @@ export default class LocalWallet extends Wallet {
 
   async listUnspent(): Promise<Utxo[]> {
 
-    const { data } = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/address/${this.address}/unspent`)
+    const { data } = await axios.get(`/api/v1/addresses/${this.address}/unspent`)
 
-    return Promise.all(data.map(async (unspent: WhatsonchainUtxo) => {
-
-      const { data: txData } = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/hash/${unspent.tx_hash}`)
-
-      const scriptPubKey = txData.vout[unspent.tx_pos].scriptPubKey.hex
+    return data.unspent.map((unspent: any) => {
 
       return {
 
-        scriptPubKey,
+        scriptPubKey: unspent.script,
 
-        satoshis: unspent.value,
+        satoshis: unspent.satoshis,
 
-        txId: unspent.tx_hash,
+        txId: unspent.txId,
 
-        outputIndex: unspent.tx_pos
+        outputIndex: unspent.outputIndex
 
       }
 
-    }))
+    })
 
   }
 

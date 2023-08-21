@@ -23,7 +23,7 @@ export default function MeetingPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, tokenBalance, relayxAuthToken } = useRelay()
 
     const { isConnected, socket } = useTokenMeetLiveWebsocket()
 

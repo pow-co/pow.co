@@ -1,0 +1,15 @@
+
+contract ScryptNextjsDemo {
+  @state int count;
+  public function increment(SigHashPreimage __scrypt_ts_txPreimage) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'43')));
+    this.count++;
+    int amount = SigHash.value(__scrypt_ts_txPreimage);
+    bytes output = this.buildStateOutput(amount);
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(output));
+  }
+    function buildStateOutput(int amount): bytes {
+      bytes script = this.getStateScript();
+      return Utils.buildOutput(script, amount);
+    }
+}

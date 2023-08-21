@@ -39,7 +39,7 @@ export default function VideoPage() {
 
     const { query } = useRouter()
 
-    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayAuthToken } = useRelay()
+    const { relayxAuthenticate, relayxAuthenticated, relayxPaymail, relayxAuthToken } = useRelay()
 
     const [video, setVideo] = useState<Video | null>(null)
 

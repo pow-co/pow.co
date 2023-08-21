@@ -6,7 +6,7 @@ const dotenvConfigPath = '.env'
 dotenv.config({ path: dotenvConfigPath })
 
 // Read the private key from the .env file.
-// The default private key inside the .env file is meant to be used for the Bitcoin.
+// The default private key inside the .env file is meant to be used for the Bitcoin testnet.
 // See https://scrypt.io/docs/bitcoin-basics/bsv/#private-keys
 let privKey = process.env.PRIVATE_KEY || ''
 if (!privKey) {
@@ -16,7 +16,7 @@ if (!privKey) {
 }
 
 export function genPrivKey() {
-    const newPrivKey = bsv.PrivateKey.fromRandom()
+    const newPrivKey = bsv.PrivateKey.fromRandom('testnet')
     console.log(`Missing private key, generating a new one ...
 Private key generated: '${newPrivKey.toWIF()}'
 You can fund its address '${newPrivKey.toAddress()}' from the sCrypt faucet https://scrypt.io/faucet`)

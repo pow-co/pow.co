@@ -12,6 +12,7 @@ import { useLocalWallet } from "./LocalWalletContext";
 type BitcoinContextValue = {
     wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet' | 'local';
     avatar: string | undefined;
+    balance: number; // in sats
     paymail: string | undefined;
     userName: string | undefined;
     setWallet: (wallet: 'relayx' | 'twetch' | 'handcash' | 'sensilet' | 'local' | null) => void;
@@ -33,7 +34,9 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
     const { twetchAuthenticate, twetchAuthenticated, twetchLogout, twetchAvatar, twetchPaymail, twetchUserName } = useTwetch()
     const { handcashAuthenticate, handcashAuthenticated, handcashLogout, handcashAvatar, handcashPaymail, handcashUserName} = useHandCash()
     const { sensiletAuthenticate, sensiletAuthenticated, sensiletLogout, sensiletAvatar, sensiletPaymail, sensiletUserName} = useSensilet()
-    const { localWalletAuthenticate, localWalletAuthenticated, localWalletLogout, localWalletAvatar, localWalletPaymail, localWalletUserName, seedPhrase } = useLocalWallet()
+    const { localWalletAuthenticate, localWalletAuthenticated, localWalletLogout, localWalletAvatar, localWalletPaymail, localWalletUserName, localWallet, seedPhrase } = useLocalWallet()
+    const [balance, setBalance] = useState(0)
+    
 
     useEffect(() => {
         axios.get('https://api.whatsonchain.com/v1/bsv/main/exchangerate').then((resp:AxiosResponse) => {
@@ -119,6 +122,30 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
 
     const authenticated = useMemo(()=> wallet === "relayx" && relayxAuthenticated || wallet === "twetch" && twetchAuthenticated || wallet === "handcash" && handcashAuthenticated || wallet === "sensilet" && sensiletAuthenticated || wallet === "local" && localWalletAuthenticated, [wallet, relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated, localWalletAuthenticated])
 
+    useEffect(() => {
+        if(authenticated){
+            switch (wallet){
+                case "relayx":
+                    break;
+                case "twetch":
+                    break;
+                case "handcash":
+                    break;
+                case "sensilet": 
+                    break;
+                case "local":
+                    localWallet?.listUnspent().then((utxos) => {
+                        let satoshis = utxos.map(utxo => utxo.satoshis).reduce((acc, val) => acc + val, 0)
+                        console.log("bitcoin.wallet.balance", satoshis)
+                        setBalance(satoshis)
+                    })
+                    break;
+                default: 
+                    break;                
+            }
+        }
+    },[authenticated, wallet])
+
     const logout = () => {
         setWallet("")
         relayxLogout()
@@ -132,6 +159,7 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
     const value = useMemo(
         () => ({
             avatar,
+            balance,
             paymail,
             userName,
             wallet,
@@ -145,6 +173,7 @@ const BitcoinProvider = (props: { children: React.ReactNode }) => {
         }),
         [
             avatar,
+            balance,
             wallet,
             paymail,
             userName,
