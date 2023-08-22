@@ -1,0 +1,14 @@
+{
+  "success": true,
+  "errors": [],
+  "scryptfile": "issue.scrypt",
+  "sourceMapFile": "issue.scrypt.map",
+  "ctxMethods": [
+    "close",
+    "complete",
+    "assign",
+    "addBounty",
+    "addComment",
+    "reopen"
+  ]
+}
