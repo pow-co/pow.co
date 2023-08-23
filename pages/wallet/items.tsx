@@ -15,7 +15,7 @@ import { useRelay } from '../../context/RelayContext'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 
-interface OrdinalsProps {
+export interface OrdinalsProps {
     content: string;
     contentType: string;
     bsv20: boolean;
@@ -24,6 +24,9 @@ interface OrdinalsProps {
     origin: string;
     txid: string;
     name?: string;
+    collectionName?: string;
+    collectionId?: string;
+    attributes?: any[]
 }
 
 interface OrdinalsPreviewProps {
@@ -75,7 +78,7 @@ const OrdinalItemPreview = ({origin}: OrdinalsPreviewProps) => {
     const viewItem = (e:any) => {
         e.preventDefault()
         if(ordinals){
-            router.push(`/item/${ordinals.origin}`)
+            router.push(`/ordinals/${ordinals.origin}`)
         }
     }
 
