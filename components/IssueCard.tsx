@@ -6,6 +6,7 @@ import useWallet from '../hooks/useWallet';
 import { addBounty, completeIssue } from '../services/issues';
 import { useRouter } from 'next/router';
 import { TxOutputRef } from 'scrypt-ts';
+import axios from 'axios';
 
 
 export interface Signer {
@@ -27,6 +28,9 @@ interface IssueCardProps {
   onAddBounty: (issue: Issue) => Promise<void>;
   onLeaveComment: (issue: Issue) => Promise<void>;
   onMarkAsComplete: (issue: Issue) => Promise<void>;
+  refresh: () => void;
+  origin: any;
+  methodCalls: any[];
 }
 
 const IssueCard: React.FC<IssueCardProps> = (props: {
@@ -34,6 +38,9 @@ const IssueCard: React.FC<IssueCardProps> = (props: {
     onAddBounty: (issue: Issue) => Promise<void>,
     onLeaveComment: (issue: Issue) => Promise<void>,
     onMarkAsComplete: (issue: Issue) => Promise<void>,
+    refresh: () => void,
+    origin: any,
+    methodCalls: any[],
 }) => {
   const [isOwner, setIsOwner] = useState(false); // You can set this based on the user's public key
 
@@ -45,7 +52,7 @@ const IssueCard: React.FC<IssueCardProps> = (props: {
   const [origin, setOrigin] = useState<string | null>(null);
   const [completionStatus, setCompletionStatus] = useState<'incomplete' | 'posting' | 'complete'>('incomplete');
 
-    const router = useRouter();
+  const router = useRouter();
 
   const wallet = useWallet()
 
@@ -83,9 +90,13 @@ const IssueCard: React.FC<IssueCardProps> = (props: {
         issue,
     });
 
+    
+    
+    const result = await axios.get(`https://pow.co/api/v1/issues/${(newIssue.from as TxOutputRef)?.tx?.hash}`);
+    console.log({ result })
     setIssue(newIssue);
-    setNewBounty(BigInt(newIssue.balance));
-    router.push(`/issues/${(newIssue.from as TxOutputRef)?.tx?.hash}`);
+    setNewBounty(BigInt(newIssue.balance - 1));
+    props.refresh();
 
   };
   
@@ -95,7 +106,10 @@ const IssueCard: React.FC<IssueCardProps> = (props: {
     // Simulate async operation like posting a transaction
     // eslint-disable-next-line no-promise-executor-return
     const [newIssue, tx] = await completeIssue({ issue, signer: wallet.signer });
+    const { data } = await axios.get(`https://pow.co/api/v1/issues/${(newIssue.from as TxOutputRef)?.tx?.hash}`);
+    console.log('complete', data)
     setIssue(newIssue)
+    props.refresh();
     setCompletionStatus('complete');
   };
 
@@ -105,13 +119,16 @@ const IssueCard: React.FC<IssueCardProps> = (props: {
   const organization = Buffer.from(issue.organization, 'hex').toString('utf8');
   const repo = Buffer.from(issue.repo, 'hex').toString('utf8');
 
+  console.log('ORIGIN', props.origin)
+
   return (
     <div className="border p-4 rounded-md space-y-2">
       <h2 className="text-xl font-bold">{title}</h2>
       <p className="text-gray-600">{organization}/{repo}</p>
       <p>{description}</p>
       <p className="text-sm text-gray-400">Bounty: {newBounty.toString()}</p>
-      <p className="text-sm text-gray-400">Location: {(issue.from as TxOutputRef)?.tx?.hash}</p>
+      <p className="text-sm text-gray-400">Location: {props.origin.location}</p>
+      <p className="text-sm text-gray-400">Origin: {props.origin.origin}</p>
       
       <div className="space-x-2">
         

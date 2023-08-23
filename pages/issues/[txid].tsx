@@ -8,6 +8,25 @@ import { fetchTransaction } from "../../services/whatsonchain";
 import {useRouter} from "next/router";
 import { bsv } from "scrypt-ts";
 
+import useSWR from 'swr';
+import axios from 'axios';
+
+const fetcher = (url: string) => axios.get(url).then(res => res.data);
+
+function useIssue(origin: string) {
+  const url = `https://pow.co/api/v1/issues/${origin}`;
+  console.log({ url });
+  const { data, error, mutate } = useSWR(url, fetcher);
+
+  return {
+    origin: data?.origin,
+    methodCalls: data?.methodCalls,
+    isLoading: !error && !data,
+    isError: error,
+    refresh: () => mutate() // Refresh function
+  };
+}
+
 Issue.loadArtifact(artifact);
 
 const IssuePage = () => {
@@ -27,23 +46,42 @@ const IssuePage = () => {
 
     const router = useRouter();
 
+    var txid = String(router.query.txid);
+
+    if (!txid.match('_')) {
+      txid = `${txid}_0`
+
+    }
+
+    const { origin, methodCalls, refresh } = useIssue(txid);
+
+    if (origin) {
+      console.log('origin', origin);
+    }
+
+    if (methodCalls) {
+      console.log('methodCalls', methodCalls);
+    }
+
+    console.log({ refresh });
+
     useEffect(() => {
 
-      console.log("router.query", router.query)
+      if (!origin) { return; }
 
-      if (!router.query.txid) return;
+      const [txid, vout] = (origin.location as string).split('_');
 
-      fetchTransaction({ txid: router.query.txid as string }).then((tx: bsv.Transaction) => {
+      fetchTransaction({ txid }).then((tx: bsv.Transaction) => {
 
-        console.log('tx', tx);
+        const issue = Issue.fromTx(tx, vout ? parseInt(vout, 10) : 0);
 
-        const issue = Issue.fromTx(tx, 0);
+        console.log('issue', issue);
 
         setIssue(issue);
 
-      });
+      }).catch(console.error)
 
-    }, [router.query.txid]);
+    }, [origin]);
 
     if (!issue) {
       return (
@@ -65,7 +103,10 @@ const IssuePage = () => {
           issue={issue}
           onAddBounty={onAddBounty}
           onLeaveComment={onLeaveComment}
-          onMarkAsComplete={onMarkAsComplete}          
+          onMarkAsComplete={onMarkAsComplete}
+          refresh={refresh}
+          origin={origin}
+          methodCalls={methodCalls}
         />
 
       </ThreeColumnLayout>
