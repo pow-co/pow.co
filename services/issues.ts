@@ -13,6 +13,8 @@ export async function addComment(args: {
   signer: Signer
 }): Promise<[Issue, bsv.Transaction]> {
 
+  console.log('addComment', args.issue, args.comment, args.signer)
+
   const signingPubkey = await args.signer.getDefaultPubKey();
 
   args.issue.bindTxBuilder('addComment', (
@@ -45,11 +47,17 @@ export async function addComment(args: {
 
   });
 
+  console.log('did bind')
+
+  await args.issue.connect(args.signer)
+
   const { tx } = await args.issue.methods.addComment(
     toByteString(args.comment, true),
     PubKey(signingPubkey.toString()),
     (sigResponses: any) => findSig(sigResponses, signingPubkey),
   );
+
+  console.log('addComment', tx);
 
   const newIssue = Issue.fromTx(tx, 0);
 
@@ -102,6 +110,9 @@ export async function addBounty(args: { issue: Issue, satoshis: bigint, signer: 
 
   export async function assignIssue(args: { issue: Issue, assignee: bsv.PublicKey, signer: Signer }): Promise<[Issue, bsv.Transaction]> {
 
+
+    await args.issue.connect(args.signer)
+    
     args.issue.bindTxBuilder('assign', async (
       current: Issue,
       options: MethodCallOptions<Issue>,
