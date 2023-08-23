@@ -20,7 +20,7 @@ export const WalletHeader = () => {
         }))
     }
     return (
-        <div className='flex flex-col justify-center items-center'>
+        <div className='flex flex-col justify-center items-center  bg-primary-100 dark:bg-primary-700/20 sm:rounded-t-xl p-5'>
             <button onClick={handleCopyPaymail} id="wallet_paymail" className='cursor-pointer opacity-50'>{paymail}</button>
             <Tooltip
                 anchorSelect='#wallet_paymail'

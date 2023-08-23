@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Meta from '../../components/Meta'
 import ThreeColumnLayout from '../../components/ThreeColumnLayout'
 import { useBitcoin } from '../../context/BitcoinContext'
@@ -11,6 +11,101 @@ import { WalletHeader } from '.'
 import { useAPI } from '../../hooks/useAPI'
 import Loader from '../../components/Loader'
 import BoostPopup from '../../components/BoostpowButton/BoostPopup'
+import { useRelay } from '../../context/RelayContext'
+import axios from 'axios'
+import { useRouter } from 'next/router'
+
+interface OrdinalsProps {
+    content: string;
+    contentType: string;
+    bsv20: boolean;
+    listing: boolean;
+    number: number;
+    origin: string;
+    txid: string;
+    name?: string;
+}
+
+interface OrdinalsPreviewProps {
+    origin: string;
+}
+const OrdinalItemPreview = ({origin}: OrdinalsPreviewProps) => {
+    const router = useRouter()
+    const [isLoading, setIsLoading] = useState(false)
+    const [ordinals, setOrdinals] = useState<OrdinalsProps>()
+
+    useEffect(() => {
+        setIsLoading(true)
+        getData(origin).then((res) => {
+            if(res){
+                console.log(res)
+                setOrdinals({
+                    content: res.file,
+                    contentType: res.ordinalsData.file.type,
+                    bsv20: res.ordinalsData.bsv20,
+                    listing: res.ordinalsData.listing,
+                    number: res.ordinalsData.num,
+                    origin: res.ordinalsData.origin,
+                    txid: res.ordinalsData.txid,
+                    name: res.ordinalsData.MAP?.name,
+                })
+            }
+            setIsLoading(false)
+        })
+    },[])
+
+    const getData = async (origin:string) => {
+        try {
+            const [fileResult, dataResult] = await Promise.all([
+                axios.get(`https://ordinals.gorillapool.io/api/files/inscriptions/${origin}`),
+                axios.get(`https://ordinals.gorillapool.io/api/inscriptions/origin/${origin}`)
+            ])
+            const file = fileResult.data
+            const ordinalsData = dataResult.data[0]
+    
+            return {file, ordinalsData}
+            
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+
+    }
+
+    const viewItem = (e:any) => {
+        e.preventDefault()
+        if(ordinals){
+            router.push(`/item/${ordinals.origin}`)
+        }
+    }
+
+
+    if (ordinals){
+        return (
+            <div onClick={viewItem} className='grid grid-cols-12 h-24 rounded-xl bg-primary-200 dark:bg-primary-600/20 hover:bg-primary-300/80 hover:dark:bg-primary-600/50 cursor-pointer'>
+                <div className='col-span-4'>
+                    {ordinals.contentType.includes("image") && <img className='h-full w-full object-cover rounded-l-xl' src={`https://ordinals.gorillapool.io/api/files/inscriptions/${ordinals.origin}`}/>}
+                    {ordinals.contentType.includes("text") && <div className='rounded-l-xl flex h-full w-full text-center items-center'>{ordinals.content}</div>}
+                </div>
+                <div className='flex flex-col justify-center col-span-6 ml-2'>
+                    {ordinals.name && <h2 className='truncate text-lg font-bold'>{ordinals.name}</h2>}
+                    <p className='opacity-70'>Inscription #{ordinals.number}</p>
+                </div>
+                <div className='col-span-2 flex items-center justify-center'>
+                    {ordinals.listing && 
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-6 h-6 fill-green-500">
+                        <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 01-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004zM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 01-.921.42z" />
+                        <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v.816a3.836 3.836 0 00-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 01-.921-.421l-.879-.66a.75.75 0 00-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 001.5 0v-.81a4.124 4.124 0 001.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 00-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 00.933-1.175l-.415-.33a3.836 3.836 0 00-1.719-.755V6z" clipRule="evenodd" />
+                    </svg>                  
+                    }
+                </div>
+            </div>
+        )
+    } else  {
+        return <></>
+    }
+
+}
 
 interface WalletItem {
     itemId: string;
@@ -28,12 +123,23 @@ const WalletItemPage = () => {
     const [boostPopupOpen, setBoostPopupOpen] = useState(false)
     const [walletPopupOpen, setWalletPopupOpen] = useState(false)
     const { wallet, authenticated, paymail } = useBitcoin()
+    const { runOwner } = useRelay()
     const { data, error, loading } = useAPI(`wallet/${paymail}/items`, '')
+    const [ordinalsItems, setOrdinalsItems] = useState([])
 
     const { items } = data || []
 
+    useEffect(() => {
+        if(wallet === "relayx"){
+            console.log(runOwner)
+            axios.get(`https://ordinals.gorillapool.io/api/utxos/address/${runOwner}`).then((res) => {
+                setOrdinalsItems(res.data)
+            })
+        }
+    },[wallet])
 
-    if(!authenticated && wallet!= "local"){
+
+    /* if(!authenticated && wallet!= "local"){
         return (
             <>
             <Meta title='Wallet | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
@@ -60,7 +166,7 @@ const WalletItemPage = () => {
             </Drawer>
             </>
         )
-    }
+    } */
 
     
   return (
@@ -68,69 +174,28 @@ const WalletItemPage = () => {
        <Meta title='Wallet | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
         <ThreeColumnLayout>
             <div className='mt-5 sm:mt-10 min-h-screen'>
-                <div className=' bg-primary-100 dark:bg-primary-700/20 sm:rounded-xl p-5'>
-                    <WalletHeader/>
-                    <div className='flex flex-col w-full'>
-                        <div className='flex items-start gap-2 sm:gap-5'>
-                            <Link href="/wallet/items">
-                                <button className="cursor-pointer whitespace-nowrap rounded-md bg-primary-200 px-5 py-2 text-sm font-medium leading-4 text-gray-900 dark:bg-primary-600/20 dark:text-white">My items</button>
-                            </Link>
-                            <Link href='/wallet/tokens'>
-                                <button className="cursor-pointer whitespace-nowrap rounded-md px-5 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">My tokens</button>
-                            </Link>
-                            <Link href="/wallet/history">
-                                <button className="cursor-pointer whitespace-nowrap rounded-md px-5 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">Wallet history</button>
-                            </Link>
+                <WalletHeader/>
+                <div className='mt-0.5 flex flex-col w-full'>
+                    <div className='flex items-start gap-2 sm:gap-5  bg-primary-100 dark:bg-primary-700/20 sm:rounded-b-xl p-5'>
+                        <Link href="/wallet/items">
+                            <button className="cursor-pointer whitespace-nowrap rounded-md bg-primary-200 px-5 py-2 text-sm font-medium leading-4 text-gray-900 dark:bg-primary-600/20 dark:text-white">My items</button>
+                        </Link>
+                        <Link href='/wallet/tokens'>
+                            <button className="cursor-pointer whitespace-nowrap rounded-md px-5 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">My tokens</button>
+                        </Link>
+                        <Link href="/wallet/history">
+                            <button className="cursor-pointer whitespace-nowrap rounded-md px-5 py-2 text-sm font-normal leading-4 text-gray-700 dark:text-gray-300">Wallet history</button>
+                        </Link>
+                    </div>
+                    <div className='mt-5 bg-primary-100 dark:bg-primary-700/20 sm:rounded-xl p-5'>
+                        <div className='mb-5 flex justify-between'>
+                            <h2 className='text-xl font-bold'>1Sat Ordinals</h2>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
                         </div>
-                        {/* <div className='mt-5'>
-                            {loading && <Loader/>}
-                            {error && (<div className=''>Error, something happened</div>)}
-                            <div className='grid grid-cols-2 gap-1'>
-                                {items?.map((item: WalletItem) => {
-                                    return (
-                                        <>
-                                        {item.collectionItems && item.collectionItems.length > 0 ? (
-                                            <div className='grid grid-cols-12'>
-                                                <img 
-                                                    alt={`${item.itemCollectionName} Collection Image`} 
-                                                    src={item.itemCollectionImage}
-                                                    className='col-span-4'
-                                                />
-                                                <div className='col-span-8 flex flex-col items-center justify-end'>
-                                                    <p className='text-lg font-bold'>{item.itemCollectionName}</p>
-                                                    <p className='opacity-50'>Amount owned: {item.collectionItems.length}</p>
-                                                </div>
-                                            </div>
-                                        ): (
-                                            <div className='grid grid-cols-12'>
-                                                <img 
-                                                    alt={`${item.itemName} Image`}
-                                                    src={item.itemImage}
-                                                    className='col-span-4'
-                                                />
-                                                <div className='col-span-8 flex flex-col items-center justify-end'>
-                                                    <p className='text-lg font-bold'>{item.itemName}</p>
-                                                    {item.itemRarity && item.itemRank && <div className={`rounded-full px-3 py-2 
-                                                    ${item.itemRarity === "common" && "bg-gray-500/80 text-gray-500"}
-                                                    ${item.itemRarity === "uncommon" && "bg-blue-500/80 text-blue-500"}
-                                                    ${item.itemRarity === "rare" && "bg-green-500/80 text-green-500"}
-                                                    ${item.itemRarity === "epic" && "bg-pink-500/80 text-pink-500"}
-                                                    ${item.itemRarity === "legendary" && "bg-yellow-500/80 text-yellow-500"}
-                                                    ${item.itemRarity === "exotic" && "bg-violet-500/80 text-violet-500"}
-                                                    `}>{item.itemRarity} - #{item.itemRank}</div>}
-                                                </div>
-                                            </div>
-                                        )}
-                                        </>
-                                    )
-                                }
-                                )}
-                            </div>
-                        </div> */}
-                        <div className='mt-5 flex flex-col justify-center text-center'>
-                            <p className='text-5xl mb-3'>🚧</p>
-                            <p className='text-lg italic opacity-80 px-10'>This feature is not available yet. Help us know it is important for you by boosting this 👇</p>
-                            <button onClick={() => setBoostPopupOpen(true)} className='mt-5 mx-auto text-white font-semibold border-none rounded-md bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer items-center text-center justify-center py-2 px-5 transition duration-500 transform hover:-translate-y-1'>wen wallet items?</button>
+                        <div className='grid grid-cols-2 gap-2'>
+                            {ordinalsItems.map((item:any) => <OrdinalItemPreview key={item.txid} origin={item.origin}/>)}
                         </div>
                     </div>
                 </div>
