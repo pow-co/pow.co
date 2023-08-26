@@ -41,6 +41,10 @@ const OneHourDetail = () => {
     },
   };
 
+  const handleRedeem = (e:any) => {
+    e.preventDefault()
+  }
+
   const handleChangeListAmount = (e: any) => {
     e.preventDefault();
     setListAmount(e.target.value);
@@ -94,6 +98,20 @@ const OneHourDetail = () => {
             </div>
             <div className="bg-primary-100 dark:bg-primary-600/20 sm:rounded-b-lg p-5">
               {wallet?.publicKey?.toString() === oneHourContract.owner?.player.xpub ? (<>
+                <button 
+                    onClick={handleRedeem} 
+                    className={`mb-5 flex w-full justify-between bg-primary-200 dark:bg-primary-800/20 px-5 py-3 rounded-lg cursor-pointer`}
+                >
+                    <div className="flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="ml-2 font-bold">Redeem</p>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </button>
                 <div
                   onClick={() => setExpandList(!expandList)}
                   className={`flex justify-between bg-primary-200 dark:bg-primary-800/20 px-5 py-3 ${
