@@ -104,7 +104,7 @@ const OneHourIndex = () => {
                 <div className='mt-5 text-center'>
                     <p className='p-2'>By minting the 1Hour contract you create a tradeable one hour of your time.</p>
                     <p className='p-2'>The max number of 1Hour contracts that can be emitted for one person is 218 per year.</p>
-                    <p className='p-2'>The price discovery mechanism of the 1Hour contracts is the following: your 1Hour contract is automatically listed on the 1Hour market at a starting price of $1, doubling for every 1Hour contract minted.</p>
+                    <p className='p-2'>The price discovery mechanism of the 1Hour contracts is the following: your 1Hour contract is automatically listed on the 1Hour market at a starting price of 3 693 693 satoshis (~0.037BSV), doubling for every 1Hour contract minted.</p>
                 </div>
                 <div className='mt-5 px-5 flex items-center w-full'>
                     <p className='mr-3'>1</p>
