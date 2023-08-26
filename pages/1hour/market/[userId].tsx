@@ -2,14 +2,21 @@ import React from 'react'
 import Meta from '../../../components/Meta'
 import PanelLayout from '../../../components/PanelLayout'
 import UserProfileCard, { UserProfileCardProps } from '../../../components/UserProfileCard'
+import { OneHourPlayer } from '.';
 
+export interface PowCoPlayer {
+    xpub: string;
+    name: string;
+    avatar: string;
+}
 export interface OneHour{
     txid: string;
     name: string;
     listed: boolean;
     redeemed: boolean;
     price?: number; // in satoshis
-    owner?: string;
+    creator: OneHourPlayer;
+    owner?: OneHourPlayer;
 }
 
 const OneHourUser = () => {
