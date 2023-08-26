@@ -47,7 +47,7 @@ const SideBar = () => {
     <div className='py-6 xl:p-6 items-center bg-primary-200 dark:bg-primary-800/20 w-full h-full flex flex-col'>
         <div className='w-fit xl:w-full flex mb-2.5 items-center '>
             {authenticated ? (<>
-            <Link className='cursor-pointer' href={`/settings`}>
+            <Link className='cursor-pointer' href={`/profile/${paymail}`}>
                     <UserIcon src={avatar!} size={36}/>
             </Link>
             <div className='ml-3 hidden xl:block'>
