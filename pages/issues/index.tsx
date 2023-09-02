@@ -13,12 +13,12 @@ import { NewIssue, createIssue } from "../../services/issues";
 import { TxOutputRef, bsv } from 'scrypt-ts'
 import { useRouter } from 'next/router'
 
-interface IssueRanking {
+export interface ScryptRanking {
     origin: string;
     totaldifficulty: number;
 }
 
-const RankedIssueCard = ({origin, totaldifficulty}: IssueRanking) => {
+const RankedIssueCard = ({origin, totaldifficulty}: ScryptRanking) => {
     const [issue, setIssue] = useState<Issue | null>(null)
     const wallet = useWallet()
 
@@ -125,7 +125,7 @@ const IssuesPage = () => {
         <div className="col-span-12 min-h-screen lg:col-span-6">
             <div className='my-5 lg:my-10'>
                 {loading && <Loader/>} 
-                {rankings?.map(async (rankedIssue: IssueRanking) => {
+                {rankings?.map((rankedIssue: ScryptRanking) => {
                     return <RankedIssueCard key={rankedIssue.origin} origin={rankedIssue.origin} totaldifficulty={rankedIssue.totaldifficulty} />
                 }
                 )}
