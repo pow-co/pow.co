@@ -106,7 +106,7 @@ const IssuesPage = () => {
     <Meta title='Issues | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
         <div className='mt-5 sm:mt-10'>
-            <div className='bg-primary-100 dark:bg-primary-600/20 rounded-lg p-5'>
+            <div className='hidden lg:block bg-primary-100 dark:bg-primary-600/20 rounded-lg p-5'>
                 <div onClick={() => setExpandCreate(!expandCreate)} className='flex justify-between cursor-pointer'>
                     <h2 className='text-2xl font-bold'>Create Issue</h2>
                     {expandCreate ? (

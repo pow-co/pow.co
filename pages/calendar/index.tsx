@@ -145,7 +145,7 @@ const { rankings } = data || []
       />
       <ThreeColumnLayout>
         <div className="mt-5 sm:mt-10">
-          <div className="hidden lg:blockbg-primary-100 dark:bg-primary-600/20 rounded-lg p-5">
+          <div className="hidden lg:block bg-primary-100 dark:bg-primary-600/20 rounded-lg p-5">
             <div onClick={() => setExpandCreate(!expandCreate)} className="flex justify-between cursor-pointer">
               <h2 className="text-2xl font-bold">Create Event</h2>
               {expandCreate ? (
