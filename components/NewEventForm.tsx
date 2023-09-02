@@ -210,7 +210,7 @@ const NewEventForm = ({onSubmit}: NewEventFormProps) => {
         
     }
   return (
-    <div>
+    <div className='flex flex-col'>
         <section>
             {base64CoverImage.length === 0 ? (
             <div {...getRootProps()} className='relative my-5 h-44 w-full bg-primary-200 dark:bg-primary-600/20'>
@@ -232,7 +232,7 @@ const NewEventForm = ({onSubmit}: NewEventFormProps) => {
                 <UserIcon src={avatar!} size={46}/>
             </div>
             <div className='flex flex-col grow'>
-                <h3 className='text-lg font-semibold'>{userName}</h3>
+                <h3 className='text-lg font-semibold truncate'>{userName}</h3>
                 <p className='text-sm opacity-50'>Host (you)</p>
             </div>
         </div>
