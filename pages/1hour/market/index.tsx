@@ -56,6 +56,8 @@ export const player2: PowCoPlayer = {
   xpub: "1",
       name:"Jack",
       avatar:"https://a.relayx.com/u/jack@relayx.io",
+      bio: "energy frequency & vibration",
+      urls: ["https://relayx.com"]
 }
 
 export const player3: PowCoPlayer = {

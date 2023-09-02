@@ -8,6 +8,8 @@ export interface PowCoPlayer {
     xpub: string;
     name: string;
     avatar: string;
+    bio?: string;
+    urls?: string[];
 }
 export interface OneHour{
     txid: string;
