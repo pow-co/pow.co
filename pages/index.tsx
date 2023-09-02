@@ -37,7 +37,11 @@ export default function Home() {
   if (error) {
     return (
       <ThreeColumnLayout>
-        Error, something happened
+        <div className='h-screen'>
+         <p>
+            Error, something happened
+        </p>   
+        </div>
       </ThreeColumnLayout>
     );
   }

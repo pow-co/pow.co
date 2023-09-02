@@ -2,6 +2,7 @@ import {
  ContractTransaction, MethodCallOptions, PubKey, Signer, TxOutputRef, bsv, buildPublicKeyHashScript, findSig, hash160, toByteString,
 } from "scrypt-ts";
 import { Issue } from "../src/contracts/issue";
+import axios from "axios";
 
 import artifact from "../artifacts/issue.json";
 
@@ -241,3 +242,21 @@ export interface NewIssue {
   
     return issue;
   }
+
+  export async function getIssue({ txid }: {txid: string}): Promise<Issue | null> {
+
+    try {
+
+        const { data } = await axios.get(`https://pow.co/api/v1/issues/${txid}`)
+
+        return data.issue as Issue
+
+    } catch(error) {
+
+        return null
+
+    }
+
+
+
+}

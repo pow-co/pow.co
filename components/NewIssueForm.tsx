@@ -38,7 +38,6 @@ const NewIssueForm: React.FC<NewIssueFormProps> = ({ onSubmit }) => {
 
   return (
     <div className="border p-4 rounded-md space-y-2">
-      <h2 className="text-xl font-bold">Create New Issue</h2>
       <input type="text" onChange={(e) => setOrganization(e.target.value)} className="border p-2 w-full rounded" placeholder="Organization" />
       <input type="text" onChange={(e) => setRepo(e.target.value)} className="border p-2 w-full rounded" placeholder="Repository" />
       <input type="text" onChange={(e) => setTitle(e.target.value)} className="border p-2 w-full rounded" placeholder="Title" />
