@@ -42,6 +42,8 @@ const SideBarDrawer = () => {
   const watchPath = subdomain ? `/watch/${subdomain}` : `/watch/powco`
   const marketPath = subdomain ? `/market/${subdomain}` : `/market/powco`;
   const walletPath = subdomain ? `/wallet/${subdomain}`: `/wallet`
+  const issuePath = subdomain ? `/issues/${subdomain}` : `/issues`
+  const calendarPath = subdomain ? `/calendar` : `/calendar`
 
   return (
     <div className="fixed inset-0 w-9/12 h-screen">
@@ -80,7 +82,7 @@ const SideBarDrawer = () => {
                 </div>
                 </div>
             )}
-            <div className='flex flex-col w-full'>
+            <div className='my-5 overflow-y-scroll flex flex-col w-full'>
                 <Link href="/">
                     <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8'>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
@@ -122,22 +124,36 @@ const SideBarDrawer = () => {
                         <div className='text-base leading-4 grow'>Meet</div>
                     </div>
                 </Link>
-                <Link href={`/watch`}>
+                <Link href={calendarPath}>
+                <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-6 h-6 mr-2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+                        </svg>
+                        <div className='text-base leading-4 grow'>Events</div>
+                    </div>
+                </Link>
+                {/* <Link href={`/watch`}>
                     <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 mr-2.5">
                             <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 2c5.514 0 10 4.486 10 10 0 .685-.07 1.354-.201 2h-.973c-.975 0-1.129-.507-1.656-2.461-.381-1.414-1.014-3.551-2.408-3.551-1.42 0-1.969 2.215-2.48 4.006-.278.973-.446 1.561-.695 1.561-.24 0-.353-.588-.635-1.563-.528-1.822-1.132-4.003-2.541-4.003-1.463 0-2.088 2.387-2.507 3.908-.304 1.105-.399 1.659-.669 1.659-.229 0-.303-.449-.566-1.344-.602-2.04-.793-4.208-3.48-4.208h-.35c1.546-3.53 5.068-6.004 9.161-6.004zm0 20c-5.514 0-10-4.486-10-10 0-.685.07-1.354.201-2h1.073c.94 0 1.032.471 1.552 2.435.351 1.328.996 3.551 2.408 3.551 1.43 0 2.033-2.26 2.579-4.132.296-1.015.36-1.436.597-1.436.254 0 .328.467.618 1.491.524 1.851 1.13 4.076 2.558 4.076 1.28 0 1.892-1.836 2.336-3.311.508-1.686.582-2.312.84-2.312.264 0 .312.546.768 2.074.735 2.463 1.204 3.564 3.173 3.564h.456c-1.547 3.527-5.067 6-9.159 6z"/>
                         </svg>
                         <div className='text-base leading-4 grow'>Videos</div>
                     </div>
-                </Link>
+                </Link> */}
                 <Link href={`https://pow.vision`} target='_blank'>
                     <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="h-6 w-6 mr-2.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-6 h-6 mr-2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
                         </svg>
-
                         <div className='text-base leading-4 grow'>Vision</div>
+                    </div>
+                </Link>
+                <Link href={issuePath}>
+                <div className='mt-4 flex items-center cursor-pointer px-5 rounded-none hover:transition-all hover:bg-primary-300 hover:dark:bg-primary-700/20 h-8 xl:h-[48px]'>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-6 h-6 mr-2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44.125 2.104.52 4.136 1.153 6.06M12 12.75a2.25 2.25 0 002.248-2.354M12 12.75a2.25 2.25 0 01-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 00-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.734 3.734 0 01.4-2.253M12 8.25a2.25 2.25 0 00-2.248 2.146M12 8.25a2.25 2.25 0 012.248 2.146M8.683 5a6.032 6.032 0 01-1.155-1.002c.07-.63.27-1.222.574-1.747m.581 2.749A3.75 3.75 0 0115.318 5m0 0c.427-.283.815-.62 1.155-.999a4.471 4.471 0 00-.575-1.752M4.921 6a24.048 24.048 0 00-.392 3.314c1.668.546 3.416.914 5.223 1.082M19.08 6c.205 1.08.337 2.187.392 3.314a23.882 23.882 0 01-5.223 1.082" />
+                    </svg>
+                    <div className='text-base leading-4 grow'>Issues</div>
                     </div>
                 </Link>
                 {/* <Link href={marketPath}>
