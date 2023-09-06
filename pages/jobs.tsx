@@ -11,7 +11,6 @@ import TwetchWeb3 from '@twetch/web3'
 import { toast } from 'react-hot-toast'
 
 import { Script } from '@runonbitcoin/nimble'
-import Meta from '../components/Meta'
 
 interface Job {
     difficulty: number; //0.000010000047413057635,
@@ -176,8 +175,6 @@ const JobsPage = () => {
         return 0;
       });
   return (
-    <>
-    <Meta title='Boost Jobs | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
         {/* <div className="flex mt-5 mx-0 px-4">
             <Link href={`/`}>
@@ -201,7 +198,6 @@ const JobsPage = () => {
         </div>
 
     </ThreeColumnLayout>
-    </>
   )
 }
 

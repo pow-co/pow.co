@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Meta from "../../components/Meta";
 import ThreeColumnLayout from "../../components/ThreeColumnLayout";
 import { useBitcoin } from "../../context/BitcoinContext";
 import UserIcon from "../../components/UserIcon";
@@ -250,12 +249,6 @@ const NewCalendarEventPage = () => {
   };
 
   return (
-    <>
-      <Meta
-        title="Calendar | The Proof of Work Cooperative"
-        description="People Coordinating Using Costly Signals"
-        image="https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557"
-      />
       <ThreeColumnLayout>
         <div className="mt-5 sm:mt-10 min-h-screen">
           <div className="flex flex-col bg-primary-100 dark:bg-primary-700/20 sm:rounded-xl py-5">
@@ -375,7 +368,6 @@ const NewCalendarEventPage = () => {
           </div>
         </div>
       </ThreeColumnLayout>
-    </>
   );
 };
 

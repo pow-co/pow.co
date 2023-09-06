@@ -2,7 +2,6 @@ import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import Header from '../../components/Header'
 import ChannelList from '../../components/ChannelList'
-import Meta from '../../components/Meta'
 
 const Chat = () => {
     const router = useRouter()
@@ -20,8 +19,6 @@ const Chat = () => {
         return () => window.removeEventListener('resize', handleResize)
       }, [])
   return (
-    <>
-    <Meta title={`Chat | The Proof of Work Cooperative`} description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <div className='bg-primary-300 dark:bg-primary-700/20 h-screen'>
         <Header/>
         <div className='h-12'/>
@@ -31,7 +28,6 @@ const Chat = () => {
         </div>
       </div>
     </div>
-    </>
   )
 }
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Meta from "../../components/Meta";
 import ThreeColumnLayout from "../../components/ThreeColumnLayout";
 import NewEventForm, { NewEvent } from "../../components/NewEventForm";
 import axios from "axios";
@@ -137,12 +136,6 @@ const { rankings } = data || []
     }
   }
   return (
-    <>
-      <Meta
-        title="Calendar | The Proof of Work Cooperative"
-        description="People Coordinating Using Costly Signals"
-        image="https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557"
-      />
       <ThreeColumnLayout>
         <div className="mt-5 sm:mt-10">
           <div className="hidden lg:block bg-primary-100 dark:bg-primary-600/20 rounded-lg p-5">
@@ -182,7 +175,6 @@ const { rankings } = data || []
             </div>
         </Link>
       </ThreeColumnLayout>
-    </>
   );
 };
 

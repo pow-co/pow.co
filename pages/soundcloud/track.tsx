@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Meta from "../../components/Meta";
 import ThreeColumnLayout from "../../components/ThreeColumnLayout";
 
 
@@ -170,18 +169,11 @@ const SoundcloudTrackPage = () => {
   if (!track) return <></>
 
   return (
-    <>
-      <Meta
-        title={track.Title}
-        description={track.Description}
-        image={track.ImageUrl}
-      />
       <ThreeColumnLayout>
 
         <SoundcloudTrackCard track={track} />
 
       </ThreeColumnLayout>
-    </>
   );
 };
 

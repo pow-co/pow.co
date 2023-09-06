@@ -8,7 +8,6 @@ import FindOrCreate from '../components/FindOrCreate';
 import { useBitcoin } from '../context/BitcoinContext';
 import { getLatestFeed, getLatestFeedPagination } from '../services/twetch';
 import { TwetchCard } from '../components/Twetch';
-import Meta from '../components/Meta';
 
 export default function TwetchFeed() {
   const [posts, setPosts] = useState([]);
@@ -47,8 +46,6 @@ export default function TwetchFeed() {
   };
 
   return (
-    <>
-    <Meta title='Twetch | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
       {authenticated && (
       <div className="mt-5 sm:mt-10">
@@ -119,6 +116,5 @@ export default function TwetchFeed() {
       </Link>
       )}
     </ThreeColumnLayout>
-    </>
   );
 }

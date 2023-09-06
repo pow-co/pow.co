@@ -22,10 +22,59 @@ import { LocalWalletProvider } from '../context/LocalWalletContext';
 import 'react-tooltip/dist/react-tooltip.css';
 
 import { useSubdomain } from '../hooks/subdomain'
-import Meta from '../components/Meta';
+
+export const getStaticProps = async () => {
+  const openGraphData = [
+    {
+      property: "og:image",
+      content:
+        "https://dogefiles.twetch.app/c3775f42d22ba9a68b5e134fd7b59b0c6060bf00a45e8890853b20e167e73a25",
+      key: "ogimage",
+    },
+    {
+      property: "og:image:width",
+      content: "1200",
+      key: "ogimagewidth",
+    },
+    {
+      property: "og:image:height",
+      content: "630",
+      key: "ogimageheight",
+    },
+    {
+      property: "og:url",
+      content: `https://pow.co`,
+      key: "ogurl",
+    },
+    {
+      property: "og:image:secure_url",
+      content:
+        "https://dogefiles.twetch.app/c3775f42d22ba9a68b5e134fd7b59b0c6060bf00a45e8890853b20e167e73a25",
+      key: "ogimagesecureurl",
+    },
+    {
+      property: "og:title",
+      content: "The Proof of Work Cooperative",
+      key: "ogtitle",
+    },
+    {
+      property: "og:description",
+      content: "People coordinating using costly signal",
+      key: "ogdesc",
+    },
+    {
+      property: "og:type",
+      content: "website",
+      key: "website",
+    },
+  ]
+  return { props: {
+    openGraphData: openGraphData
+  } }
+}
 
 export default function App({ Component, pageProps }: AppProps) {
-
+  const { openGraphData = [] } = pageProps;
   const { subdomain } = useSubdomain()
 
   useEffect(() => {
@@ -38,13 +87,11 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      {/* <Meta title='The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' /> */}
-      {/* <Head>
-        <title>{config.title}</title>
-        <meta name="description" content={config.description} />
-        <meta name="keywords" content={config.keywords} />
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
-      </Head> */}
+      <Head>
+        {openGraphData.map((og: any) => (
+          <meta {...og} />
+        ))}
+      </Head>
       <Script
         src="https://one.relayx.io/relayone.js"
         strategy="beforeInteractive"

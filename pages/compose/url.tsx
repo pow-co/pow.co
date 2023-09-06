@@ -4,14 +4,11 @@ import ThreeColumnLayout from "../../components/ThreeColumnLayout";
 import Composer from "../../components/Composer";
 import { useRouter } from "next/router";
 import FindOrCreate from "../../components/FindOrCreate";
-import Meta from "../../components/Meta";
 
 export default function FindOrCreateUrl() {
   const router = useRouter();
   
   return (
-    <>
-    <Meta title={`Share URL | The Proof of Work Cooperative`} description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
       <div className="col-span-12 lg:col-span-6 min-h-screen">
         <svg
@@ -34,6 +31,5 @@ export default function FindOrCreateUrl() {
         </div>
       </div>
     </ThreeColumnLayout>
-    </>
   );
 }

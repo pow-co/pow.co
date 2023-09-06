@@ -2,7 +2,6 @@ import { useRouter } from 'next/router'
 import React from 'react'
 import Dropzone from '../../components/UploadDropzone'
 import ThreeColumnLayout from '../../components/ThreeColumnLayout'
-import Meta from '../../components/Meta'
 import useSWR from 'swr'
 import Link from 'next/link'
 import axios from 'axios'
@@ -62,8 +61,6 @@ const ComposeImage = () => {
   
 
   return (
-    <>
-    <Meta title={`Video Uploader | POWCO`} description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
       <div className="col-span-12 min-h-screen lg:col-span-6">
         <svg
@@ -92,7 +89,6 @@ const ComposeImage = () => {
         </div>
       </div>
     </ThreeColumnLayout>
-    </>
   )
 }
 
