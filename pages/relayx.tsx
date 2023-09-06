@@ -14,7 +14,6 @@ import { useBitcoin } from "../context/BitcoinContext"
 import { relayFeedQuery } from "./profile/[paymail]"
 import InfiniteScroll from "react-infinite-scroll-component"
 import { RelayClubCard } from "../components/RelayClub"
-import Meta from "../components/Meta"
 
 export default function RelayXFeed() {
   const [posts, setPosts] = useState([]);
@@ -33,8 +32,6 @@ export default function RelayXFeed() {
   
   
   return (
-    <>
-    <Meta title='Relay Club | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
       {authenticated && <div className="mt-5 sm:mt-10">
         <FindOrCreate/>
@@ -105,6 +102,5 @@ export default function RelayXFeed() {
             </Link>
         )}
     </ThreeColumnLayout>
-    </>
   )
 }

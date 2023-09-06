@@ -13,7 +13,7 @@ import { config } from "../template_config"
 
 import LocalWallet from '../wallets/local'
 
-import { DefaultProvider, TestWallet, bsv } from 'scrypt-ts'
+import { Provider, TestWallet, bsv } from 'scrypt-ts'
 
 class ScryptWallet extends TestWallet {
 
@@ -35,7 +35,7 @@ type LocalWalletContextValue = {
    localWallet: LocalWallet | null | undefined;
    web3Account: string | undefined | null;
    ready: boolean;
-   provider: DefaultProvider | undefined | null;
+   provider: Provider | undefined | null;
    signer: ScryptWallet | undefined | null;
 };
 
@@ -50,7 +50,7 @@ const LocalWalletProvider = (props: { children: React.ReactNode }) => {
   const [localWalletPublicKey, setLocalWalletPublicKey] = useState<string | null>()
   const [seedPhrase, setSeedPhrase] = useLocalStorage(seedStorageKey);
 
-  const [provider, setProvider] = useState<DefaultProvider | null>();
+  const [provider, setProvider] = useState<Provider | null>();
   const [signer, setSigner] = useState<ScryptWallet | null>();
 
   const localWalletAvatar = useMemo(() => `https://api.dicebear.com/6.x/pixel-art/svg?seed=${localWalletUserName}`, [localWalletUserName])

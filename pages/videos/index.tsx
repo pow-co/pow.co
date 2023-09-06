@@ -9,7 +9,6 @@ import TuningPanel from "../../components/TuningPanel"
 import { useBitcoin } from "../../context/BitcoinContext"
 import axios from "axios"
 import { useEffect, useState } from "react"
-import Meta from "../../components/Meta"
 
 async function listVideos(): Promise<LiveapiVideo[]> {
 
@@ -42,8 +41,6 @@ export default function Videos() {
 
   
   return (
-    <>
-    <Meta title='Videos | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <PanelLayout>
       <div className="mb-[200px] min-h-screen ">
         <div className="p-5 flex">
@@ -65,6 +62,5 @@ export default function Videos() {
 
 
     </PanelLayout>
-    </>
   )
 }

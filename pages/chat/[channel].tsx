@@ -16,7 +16,6 @@ import { MessageItem } from '../../components/MessageItem'
 import useWebSocket from 'react-use-websocket'
 
 import axios from 'axios'
-import Meta from '../../components/Meta'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -99,8 +98,6 @@ const Chat = () => {
 
 
   return (
-    <>
-    <Meta title={`${capitalizeFirstChar(query.channel?.toString() || "")} Channel | The Proof of Work Cooperative`} description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <div className='bg-primary-300 dark:bg-primary-700/20 overflow-hidden h-screen'>
       <div className={`${query.channel && "hidden sm:block"}`}>
         <Header/>
@@ -152,7 +149,6 @@ const Chat = () => {
         </div> */}
       </div>
     </div>
-    </>
   )
 }
 

@@ -15,7 +15,6 @@ import { SideChat } from '../../components/SideChat'
 import { channels } from '../live/[channelId]'
 
 import { getLivestream, Livestream } from '../live/[channelId]'
-import Meta from '../../components/Meta'
 
 export default function MeetingPage() {
 
@@ -42,12 +41,9 @@ export default function MeetingPage() {
     }
 
   return (
-    <>
-        <Meta title={`Arcade | The Proof of Work Cooperative`} description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
         <PanelLayout>
           <h1>Flutter Arcade Game (Placeholder Page)</h1>
         </PanelLayout>
-    </>
   )
 }
 

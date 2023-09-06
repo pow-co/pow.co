@@ -6,7 +6,6 @@ import Link from "next/link"
 import { useTuning } from "../../context/TuningContext"
 import { useAPI } from "../../hooks/useAPI"
 import BoostContentCard from "../../components/BoostContentCard";
-import Meta from "../../components/Meta"
 
 export function cleanString(input: string) {
     var output = "";
@@ -74,20 +73,15 @@ export default function TopicList() {
 
   if (loading){
     return (
-      <>
-      <Meta title='Topics | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
       <ThreeColumnLayout>
         <div className="mt-5 lg:mt-10">
           <Loader/>
         </div>
       </ThreeColumnLayout>
-      </>
     )
   }
   
   return (
-    <>
-    <Meta title='Topics | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <ThreeColumnLayout>
     <div className="col-span-12 lg:col-span-6 min-h-screen">
         <div className="mt-5 lg:mt-10 mb-[200px]">
@@ -116,6 +110,5 @@ export default function TopicList() {
         </div>
     </div>
     </ThreeColumnLayout>
-    </>
   )
 }

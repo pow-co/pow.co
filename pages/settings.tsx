@@ -17,7 +17,6 @@ import { useBitcoin } from "../context/BitcoinContext";
 import { useLocalWallet } from "../context/LocalWalletContext";
 import WalletSelect from "../components/WalletSelect";
 import { useTuning } from "../context/TuningContext";
-import Meta from "../components/Meta";
 
 function capitalizeFirstLetter(s: string) {
     return s.charAt(0).toUpperCase() + s.slice(1);
@@ -274,8 +273,6 @@ export default function Settings() {
   }
 
   return (
-    <>
-    <Meta title='Settings | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <PanelLayout>
       <div className="mx-auto max-w-xl col-span-12 lg:col-span-6 min-h-screen flex flex-col ">
         <div className="mt-7  p-4  ">
@@ -557,6 +554,5 @@ export default function Settings() {
         <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
       </Drawer>
     </PanelLayout>
-    </>
   );
 }

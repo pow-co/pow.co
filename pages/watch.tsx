@@ -15,7 +15,6 @@ import { youtubePlayerOpts } from "../components/YoutubeMetadataOnchain"
 import VideoCard from "../components/VideoCard"
 import TuningPanel from "../components/TuningPanel"
 import { useBitcoin } from "../context/BitcoinContext"
-import Meta from "../components/Meta"
 
 
 export default function Watch() {
@@ -48,8 +47,6 @@ export default function Watch() {
   
   
   return (
-    <>
-    <Meta title='Watch | The Proof of Work Cooperative' description='People Coordinating Using Costly Signals' image='https://dogefiles.twetch.app/e4d59410185b2bc440c0702a414729a961c61b573861677e2dbf39c77681e557' />
     <PanelLayout>
       <div className="mb-[200px] min-h-screen ">
         <div className="p-5 flex">
@@ -74,6 +71,5 @@ export default function Watch() {
 
 
     </PanelLayout>
-    </>
   )
 }

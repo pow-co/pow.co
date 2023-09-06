@@ -1,0 +1,92 @@
+
+contract Issue {
+  @state bytes title;
+  @state bytes description;
+  @state bytes organization;
+  @state bytes repo;
+  @state PubKey assignee;
+  @state PubKey owner;
+  @state bool closed;
+  @state bool completed;
+  constructor(bytes title, bytes description, bytes repo, bytes organization, PubKey owner, PubKey assignee) {
+    this.title = title;
+    this.description = description;
+    this.repo = repo;
+    this.organization = organization;
+    this.owner = owner;
+    this.assignee = assignee;
+    this.closed = false;
+    this.completed = false;
+  }
+  public function close(bool completed, Sig sig, SigHashPreimage __scrypt_ts_txPreimage, int __scrypt_ts_changeAmount, Ripemd160 __scrypt_ts_changeAddress) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'41')));
+    require(checkSig(sig, this.owner));
+    this.closed = true;
+    this.completed = completed;
+    bytes outputs = this.buildStateOutput(SigHash.value(__scrypt_ts_txPreimage));
+    if(__scrypt_ts_changeAmount > 0) {
+        outputs += (__scrypt_ts_changeAmount > 0 ? Utils.buildOutput(Utils.buildPublicKeyHashScript(__scrypt_ts_changeAddress), __scrypt_ts_changeAmount) : b'');
+      }
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(outputs));
+  }
+  public function complete(Sig sig, SigHashPreimage __scrypt_ts_txPreimage, int __scrypt_ts_changeAmount, Ripemd160 __scrypt_ts_changeAddress) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'41')));
+    require(checkSig(sig, this.owner));
+    this.closed = true;
+    this.completed = true;
+    
+    int currentBalance = SigHash.value(__scrypt_ts_txPreimage);
+    int bountyAmount = currentBalance - 1;
+    bytes outputs = this.buildStateOutput(1);
+    bytes bounty = Utils.buildOutput(Utils.buildPublicKeyHashScript(hash160(this.assignee)), bountyAmount);
+    outputs += bounty;
+    if(__scrypt_ts_changeAmount > 0) {
+        outputs += (__scrypt_ts_changeAmount > 0 ? Utils.buildOutput(Utils.buildPublicKeyHashScript(__scrypt_ts_changeAddress), __scrypt_ts_changeAmount) : b'');
+      }
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(outputs));
+  }
+  public function assign(PubKey assignee, Sig sig, SigHashPreimage __scrypt_ts_txPreimage, int __scrypt_ts_changeAmount, Ripemd160 __scrypt_ts_changeAddress) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'41')));
+    require(checkSig(sig, this.owner));
+    this.assignee = assignee;
+    bytes outputs = this.buildStateOutput(SigHash.value(__scrypt_ts_txPreimage));
+    if(__scrypt_ts_changeAmount > 0) {
+        outputs += (__scrypt_ts_changeAmount > 0 ? Utils.buildOutput(Utils.buildPublicKeyHashScript(__scrypt_ts_changeAddress), __scrypt_ts_changeAmount) : b'');
+      }
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(outputs));
+  }
+  public function addBounty(int contribution, SigHashPreimage __scrypt_ts_txPreimage, int __scrypt_ts_changeAmount, Ripemd160 __scrypt_ts_changeAddress) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'41')));
+    require(!this.closed);
+    int bounty = SigHash.value(__scrypt_ts_txPreimage) + contribution;
+    bytes outputs = this.buildStateOutput(bounty);
+    if(__scrypt_ts_changeAmount > 0) {
+        outputs += (__scrypt_ts_changeAmount > 0 ? Utils.buildOutput(Utils.buildPublicKeyHashScript(__scrypt_ts_changeAddress), __scrypt_ts_changeAmount) : b'');
+      }
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(outputs));
+  }
+  public function addComment(bytes comment, PubKey commenter, Sig sig, SigHashPreimage __scrypt_ts_txPreimage, int __scrypt_ts_changeAmount, Ripemd160 __scrypt_ts_changeAddress) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'41')));
+    require(checkSig(sig, commenter));
+    bytes outputs = this.buildStateOutput(SigHash.value(__scrypt_ts_txPreimage));
+    if(__scrypt_ts_changeAmount > 0) {
+        outputs += (__scrypt_ts_changeAmount > 0 ? Utils.buildOutput(Utils.buildPublicKeyHashScript(__scrypt_ts_changeAddress), __scrypt_ts_changeAmount) : b'');
+      }
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(outputs));
+  }
+  public function reopen(Sig sig, SigHashPreimage __scrypt_ts_txPreimage, int __scrypt_ts_changeAmount, Ripemd160 __scrypt_ts_changeAddress) {
+    require(Tx.checkPreimageSigHashType(__scrypt_ts_txPreimage, SigHashType(b'41')));
+    require(checkSig(sig, this.owner));
+    this.closed = false;
+    this.completed = false;
+    bytes outputs = this.buildStateOutput(SigHash.value(__scrypt_ts_txPreimage));
+    if(__scrypt_ts_changeAmount > 0) {
+        outputs += (__scrypt_ts_changeAmount > 0 ? Utils.buildOutput(Utils.buildPublicKeyHashScript(__scrypt_ts_changeAddress), __scrypt_ts_changeAmount) : b'');
+      }
+    require(SigHash.hashOutputs(__scrypt_ts_txPreimage) == hash256(outputs));
+  }
+    function buildStateOutput(int amount): bytes {
+      bytes script = this.getStateScript();
+      return Utils.buildOutput(script, amount);
+    }
+}
