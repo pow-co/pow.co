@@ -39,7 +39,7 @@ const SideBar = () => {
   const livePath = subdomain ? `/live/${subdomain}` : `/live/powco`
   const interestsPath = subdomain ? `/interests` : `/interests`
   const videosPath = subdomain ? `/watch` : `/watch`
-  const calendarPath = subdomain ? `/calendar` : `/calendar`
+  const calendarPath = subdomain ? `/events` : `/events`
   const watchPath = subdomain ? `/watch/${subdomain}` : `/watch/powco`
   const marketPath = subdomain ? `/market/${subdomain}` : `/market`
   const walletPath = subdomain ? `/wallet/${subdomain}`: `/wallet`
