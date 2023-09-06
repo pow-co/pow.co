@@ -23,7 +23,10 @@ import 'react-tooltip/dist/react-tooltip.css';
 
 import { useSubdomain } from '../hooks/subdomain'
 
-export const getStaticProps = async () => {
+export default function App({ Component, pageProps }: AppProps) {
+  //const { openGraphData = [] } = pageProps;
+  const { subdomain } = useSubdomain()
+
   const openGraphData = [
     {
       property: "og:image",
@@ -68,14 +71,6 @@ export const getStaticProps = async () => {
       key: "website",
     },
   ]
-  return { props: {
-    openGraphData: openGraphData
-  } }
-}
-
-export default function App({ Component, pageProps }: AppProps) {
-  const { openGraphData = [] } = pageProps;
-  const { subdomain } = useSubdomain()
 
   useEffect(() => {
     const MATOMO_URL = String(process.env.NEXT_PUBLIC_MATOMO_URL);
@@ -88,6 +83,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
+        <title>The Proof of Work Cooperative</title>
         {openGraphData.map((og: any) => (
           <meta {...og} />
         ))}
