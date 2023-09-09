@@ -123,6 +123,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
 
     // Limit the number of files to 4
     if (files.length > 4) {
+      // @ts-ignore
       alert('Please select up to 4 images.');
       return;
     }
@@ -130,6 +131,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (!file.type.startsWith('image/')) {
+        // @ts-ignore
         alert('Please select only image files.');
         return;
       }

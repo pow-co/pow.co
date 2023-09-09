@@ -38,11 +38,11 @@ const NewIssueForm: React.FC<NewIssueFormProps> = ({ onSubmit }) => {
 
   return (
     <div className="border p-4 rounded-md space-y-2">
-      <input type="text" onChange={(e) => setOrganization(e.target.value)} className="border p-2 w-full rounded" placeholder="Organization" />
-      <input type="text" onChange={(e) => setRepo(e.target.value)} className="border p-2 w-full rounded" placeholder="Repository" />
-      <input type="text" onChange={(e) => setTitle(e.target.value)} className="border p-2 w-full rounded" placeholder="Title" />
-      <textarea onChange={(e) => setDescription(e.target.value)} className="border p-2 w-full rounded" placeholder="Description"></textarea>
-      <input type="number" onChange={(e) => setBounty(e.target.value)} className="border p-2 w-full rounded" placeholder="Bounty in Satoshis" />
+      <input type="text" onChange={(e: any) => setOrganization(e.target.value)} className="border p-2 w-full rounded" placeholder="Organization" />
+      <input type="text" onChange={(e: any) => setRepo(e.target.value)} className="border p-2 w-full rounded" placeholder="Repository" />
+      <input type="text" onChange={(e: any) => setTitle(e.target.value)} className="border p-2 w-full rounded" placeholder="Title" />
+      <textarea onChange={(e: any) => setDescription(e.target.value)} className="border p-2 w-full rounded" placeholder="Description"></textarea>
+      <input type="number" onChange={(e: any) => setBounty(e.target.value)} className="border p-2 w-full rounded" placeholder="Bounty in Satoshis" />
       <button  className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSubmit}>Submit</button>
     </div>
   );

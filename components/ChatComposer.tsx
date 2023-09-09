@@ -212,7 +212,7 @@ const ChatComposer = ({
 
   const handleChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
     event.preventDefault();
-    setInputValue((event.target as HTMLTextAreaElement).value);
+    setInputValue((event.target as any).value);
   };
 
   return (
