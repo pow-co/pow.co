@@ -184,11 +184,13 @@ function PersonalInterestsPage() {
 
       console.log('interest.remove', interest)
 
-      const result = await interest.methods.remove((sigResponses: any) => findSig(sigResponses, new bsv.PublicKey(sensiletPublicKey)));
+      const publicKey = new bsv.PublicKey(sensiletPublicKey as string);
 
-      console.log('interest.remove.result', result)
+      const result = await interest.methods.remove((sigResponses: any) => findSig(sigResponses, publicKey));
 
-      setInterestRemoved(true)
+      console.log('interest.remove.result', result);
+
+      setInterestRemoved(true);
 
       try {
 
