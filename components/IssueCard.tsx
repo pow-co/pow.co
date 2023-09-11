@@ -265,7 +265,7 @@ useEffect(() => {
         
         {addingBounty ? (
           <div className="flex space-x-2">
-            <input type="number" onChange={(e) => setSatoshis(Number(e.target.value))} className="border p-2 rounded" placeholder="Enter Satoshis" />
+            <input type="number" onChange={(e) => setSatoshis(Number((e.target as any).value))} className="border p-2 rounded" placeholder="Enter Satoshis" />
             <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleConfirmClick}>Confirm</button>
           </div>
         ) : (
@@ -284,7 +284,7 @@ useEffect(() => {
             <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
               <div className="bg-white p-4 rounded shadow-lg">
                 <label htmlFor="publicKey" className="block text-sm font-medium text-gray-600">Enter BSV Public Key:</label>
-                <input type="text" id="publicKey" value={publicKeyInput} onChange={(e) => setPublicKeyInput(e.target.value)} className="mt-1 p-2 w-full border rounded-md"/>
+                <input type="text" id="publicKey" value={publicKeyInput} onChange={(e) => setPublicKeyInput((e.target as any).value)} className="mt-1 p-2 w-full border rounded-md"/>
                 <button onClick={handleAssignSubmit} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2">
                   Submit
                 </button>

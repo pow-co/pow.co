@@ -1,17 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import type { AppProps } from 'next/app';
-import Head from 'next/head';
 import Script from 'next/script';
-import { SensiletProvider } from '../context/SensiletContext'
-
-import { GetServerSideProps } from 'next'
 
 import '../styles/globals.css';
+import 'react-tooltip/dist/react-tooltip.css';
+
+import Head from 'next/head';
+
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'react-hot-toast';
 import { init } from '@socialgouv/matomo-next';
 import { useEffect } from 'react';
-import { config } from '../template_config';
 import { RelayProvider } from '../context/RelayContext';
 import { HandCashProvider } from '../context/HandCashContext';
 import { TuneProvider } from '../context/TuningContext';
@@ -19,13 +18,37 @@ import Locales from '../context/LocalContext';
 import { BitcoinProvider } from '../context/BitcoinContext';
 import { TwetchProvider } from '../context/TwetchContext';
 import { LocalWalletProvider } from '../context/LocalWalletContext';
-import 'react-tooltip/dist/react-tooltip.css';
 
-import { useSubdomain } from '../hooks/subdomain'
+import { SensiletProvider } from '../context/SensiletContext';
+
+import { useContractsWebSocket } from '../services/contracts/websocket';
 
 export default function App({ Component, pageProps }: AppProps) {
-  //const { openGraphData = [] } = pageProps;
-  const { subdomain } = useSubdomain()
+
+  const { socket, subscribeContract, unsubscribeContract } = useContractsWebSocket();
+  
+  /*
+  The following is an example of how to subscribe and unsubscribe to a contract
+  via the contracts websocket connection. This may be done in any page or component
+  that calls useContractsWebSocket(), and each component should call unsubscribe
+  when it is unmounted, as in the example below.
+  */
+  useEffect(() => {
+
+    if (socket?.readyState === WebSocket.OPEN) {
+
+      const exampleOrigin = '41eccb6160786c94fe4ca2c29f933a8014af9dc723a210870c5a69b9172ca90a_0';
+
+      subscribeContract({ origin: exampleOrigin });
+
+      return () => {
+
+        unsubscribeContract({ origin: exampleOrigin });
+
+      };
+   
+    }
+  }, [socket?.readyState]);
 
   const openGraphData = [
     {
@@ -70,7 +93,7 @@ export default function App({ Component, pageProps }: AppProps) {
       content: "website",
       key: "website",
     },
-  ]
+  ];
 
   useEffect(() => {
     const MATOMO_URL = String(process.env.NEXT_PUBLIC_MATOMO_URL);

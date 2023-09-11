@@ -80,14 +80,14 @@ const BoostPopup = ({ content, onClose, tagList, defaultTag }: BoostPopupProps) 
   };
 
   const handleChangeDifficulty = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault()
-    setDifficulty(parseFloat(e.target.value))
-    setPosition(0.5)
+    e.preventDefault();
+    setDifficulty(parseFloat((e.target as any).value));
+    setPosition(0.5);
   }
 
   const handleChangePosition = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault()
-    setPosition(parseFloat(e.target.value))
+    e.preventDefault();
+    setPosition(parseFloat((e.target as any).value));
   }
 
   const wallet = useWallet()

@@ -12,7 +12,7 @@ const BitcoinBrowser = () => {
 
     const navigate = (txid: string) => {
         router.prefetch(`/${txid}`);
-        window.location.replace(`/${txid}`)
+        router.push(`/${txid}`)
       };
 
     const handleKeyUp = (e: any) => {
