@@ -1,16 +1,17 @@
+'use client'
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { usePathname, useRouter } from "next/navigation";
 import UserIcon from "./UserIcon";
 import moment from "moment";
 import { Tooltip } from "react-tooltip";
-import { useBitcoin } from "../context/BitcoinContext";
+import { useBitcoin } from "../v13_context/BitcoinContext";
 import { toast } from "react-hot-toast";
-import BoostButton from "./BoostpowButton/BoostButton";
+import BoostButton from "./v13_BoostpowButton/BoostButton";
 import axios from "axios";
-import { BASE } from "../hooks/useAPI";
+import { BASE } from "../hooks/v13_useAPI";
 import { useTheme } from "next-themes";
-import { useTuning } from "../context/TuningContext";
+import { useTuning } from "../v13_context/TuningContext";
 import { FormattedMessage } from "react-intl";
 import Linkify from "linkify-react";
 import { TwitterTweetEmbed } from "react-twitter-embed";
@@ -20,7 +21,7 @@ import { twetchDetailQuery } from "./Twetch";
 import { NFTJig, relayDetailQuery } from "./RelayClub";
 import ReactPlayer from "react-player/lazy";
 import LoveOrdButton from "./LoveOrdButton";
-import { useRelay } from "../context/RelayContext";
+import { useRelay } from "../v13_context/RelayContext";
 
 import { Meeting, getMeeting } from '../services/meetings'
 import ContentText from "./ContentText";
@@ -142,6 +143,7 @@ const BoostContentCardV2 = ({
   defaultTag,
 }: Ranking) => {
   const router = useRouter();
+  const pathname = usePathname()
   const { wallet } = useBitcoin();
   const { hasTwetchPrivilege } = useRelay();
   const theme = useTheme();
@@ -474,7 +476,7 @@ const BoostContentCardV2 = ({
           <span className="ml-1">⛏️</span>
         </p>
       </div>
-      {inReplyTo.length > 0 && router.pathname === "/" && (
+      {inReplyTo.length > 0 && pathname === "/" && (
         <p className="col-span-12 overflow-hidden text-ellipsis px-4 pt-3 text-sm italic text-gray-600 dark:text-gray-400">
           in reply to{" "}
           <span className="text-xs text-primary-600 dark:text-primary-400 hover:underline">

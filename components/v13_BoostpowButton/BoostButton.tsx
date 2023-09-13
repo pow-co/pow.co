@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import Drawer from '../Drawer'
+import Drawer from '../v13_Drawer'
 import BoostPopup from './BoostPopup';
-import { useBitcoin } from '../../context/BitcoinContext';
+import { useBitcoin } from '../../v13_context/BitcoinContext';
 import WalletProviderPopUp from '../WalletProviderPopUp';
 
 interface BoostButtonProps {

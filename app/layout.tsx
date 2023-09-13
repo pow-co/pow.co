@@ -11,7 +11,7 @@ export const metadata = {
     description: 'People corrdinating using costly signals',
     openGraph: {
         title: 'The Proof of Work Wooperative',
-        description: 'People corrdinating using costly signals',
+        description: 'People coordinating using costly signals',
         url: 'https://pow.co',
         siteName: 'PoW.co',
         images: [
