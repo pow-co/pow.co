@@ -64,7 +64,14 @@ export default class LocalWallet extends Wallet {
 
     tx.change(this.address)
 
-    tx.sign(this.privateKey)
+    if (this.privateKey !== undefined){
+
+      tx.sign(this.privateKey)
+
+    } else {
+      
+      throw new Error("Private Key not found")
+    }
 
     await this.broadcastTransaction({ tx })
 
