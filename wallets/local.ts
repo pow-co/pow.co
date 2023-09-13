@@ -84,7 +84,7 @@ export default class LocalWallet extends Wallet {
 
   }
 
-  async listUnspent(): Promise<Utxo[]> {
+  async listUnspent(): Promise<bsv.Transaction.IUnspentOutput[]> {
 
     const { data } = await axios.get(`/api/v1/addresses/${this.address}/unspent`)
 
@@ -92,7 +92,7 @@ export default class LocalWallet extends Wallet {
 
       return {
 
-        scriptPubKey: unspent.script,
+        script: unspent.script,
 
         satoshis: unspent.satoshis,
 
