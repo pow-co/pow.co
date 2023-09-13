@@ -24,7 +24,7 @@ export default class LocalWallet extends Wallet {
 
     this.seed = seed
 
-    const hdPrivateKey = bsv.HDPrivateKey.fromSeed(this.seed.toString('hex'))
+    const hdPrivateKey = bsv.HDPrivateKey.fromSeed(this.seed.toString('hex'), bsv.Networks.mainnet)
 
     const derivationPaths = {
       sensiletDefault:        `m/44'/0'/0'/0/0`,
