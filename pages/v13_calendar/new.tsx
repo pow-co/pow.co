@@ -61,7 +61,7 @@ const NewCalendarEventPage = () => {
     
             console.log('meeting.created', tx.hash)
     
-            router.push(`/${tx.hash}`)
+            router.push(`/events/${tx.hash}`)
     
             console.log('meeting.new', data)
     
