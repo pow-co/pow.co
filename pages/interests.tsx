@@ -209,7 +209,7 @@ function PersonalInterestsPage() {
 
       const instance = new PersonalInterest(
         toByteString(topic, true),
-        PubKey(sensiletPublicKey),
+        PubKey(toByteString(sensiletPublicKey.toString())),
         BigInt(weight)
       ) 
 
@@ -263,7 +263,7 @@ function PersonalInterestsPage() {
     <ThreeColumnLayout>
       <div className="col-span-12 min-h-screen lg:col-span-6">
         <div className="mb-[200px] w-full">
-          <small>sensilet pubkey: {sensiletPublicKey}</small>
+          <small>sensilet pubkey: {sensiletPublicKey.toString()}</small>
           <p><small>Owner: {owner}</small></p>
           <ul style={{"listStyle": "none"}}>
           <h2>My Personal Interests</h2>

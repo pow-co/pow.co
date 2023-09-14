@@ -1,4 +1,4 @@
-import { GraphQLClient, gql } from 'graphql-request';
+import { GraphQLClient, gql, request } from 'graphql-request';
 
 const graphqlAPI = 'https://gw.twetch.app';
 const authToken = '';
@@ -8,6 +8,77 @@ const graphqlClient = new GraphQLClient(graphqlAPI, {
     Authorization: `Bearer ${authToken}`,
   },
 });
+
+export const twetchDetailQuery = async (txid: string | undefined) => {
+  
+  const query = `
+  query postDetailQuery($txid: String!) {
+    allPosts(condition: { transaction: $txid }) {
+      edges {
+        node {
+          bContent
+          bContentType
+          createdAt
+          files
+          id
+          numBranches
+          numLikes
+          postsByReplyPostId {
+            totalCount
+            edges {
+              node {
+                bContent
+                bContentType
+                createdAt
+                files
+                id
+                numBranches
+                numLikes
+                postsByReplyPostId {
+                  totalCount
+                }
+                replyPostId
+                transaction
+                type
+                youBranchedCalc
+                youLikedCalc
+                userId
+                userByUserId {
+                  icon
+                  name
+                }
+              }
+            }
+          }
+          replyPostId
+          postByReplyPostId {
+            transaction
+          }
+          transaction
+          type
+          youBranchedCalc
+          youLikedCalc
+          userId
+          userByUserId {
+            icon
+            name
+          }
+        }
+      }
+    }
+  }
+  
+  `;
+
+  //const result = await graphqlClient.request(query, { txid });
+  const result : any = await request(graphqlAPI, query, { txid });
+
+  if (!result?.allPosts?.edges || result?.allPosts?.edges.length === 0) {
+    return null
+  }
+
+  return result.allPosts.edges[0].node;
+};
 
 export const getLocalFeed = async () => {
   const result : any = await fetch('/api/local', {

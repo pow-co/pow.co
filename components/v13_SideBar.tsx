@@ -1,14 +1,15 @@
+'use client'
 import React, { useContext, useState, useEffect } from 'react'
 import Link from 'next/link';
 import { useTheme } from "next-themes";
 import UserIcon from './UserIcon';
-import Drawer from './Drawer';
+import Drawer from './v13_Drawer';
 import WalletProviderPopUp from './WalletProviderPopUp';
 import { useRelay } from '../context/RelayContext';
-import LocaleSelect from './LocaleSelect';
+import LocaleSelect from './v13_LocaleSelect';
 
 import { FormattedMessage } from 'react-intl';
-import { useBitcoin } from '../context/BitcoinContext';
+import { useBitcoin } from '../v13_context/BitcoinContext';
 
 import { useSubdomain } from '../hooks/subdomain'
 

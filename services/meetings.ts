@@ -2,6 +2,7 @@ import axios from "axios";
 
 export interface Meeting {
     title: string;
+    cover?: string;
     description: string;
     start: number;
     end: number;
@@ -11,6 +12,9 @@ export interface Meeting {
     inviteRequired: boolean;
     organizer: string;
     origin: string;
+    attendees?: any[];
+    invitees?: any[];
+    ticketPrice: number;
 }
 
 export async function getMeeting({ txid }: {txid: string}): Promise<Meeting | null> {

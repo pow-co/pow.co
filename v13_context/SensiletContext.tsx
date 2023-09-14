@@ -1,3 +1,4 @@
+'use client'
 import axios from "axios";
 import React, {
   createContext,
@@ -23,7 +24,7 @@ type SensiletContextValue = {
    sensiletAvatar: string | undefined;
    sensiletPaymail: string | undefined;
    sensiletUserName: string | undefined;
-   sensiletPublicKey: string | bsv.PublicKey | bsv.crypto.Point;
+   sensiletPublicKey: string | undefined | null;
    web3: any;
    web3Account: string | undefined | null;
    ready: boolean;
@@ -39,7 +40,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
   const [web3Account, setWeb3Account] = useState<string | null>()
   const [sensiletPaymail, setSensiletPaymail] = useState<string>()
   const [sensiletUserName, setSensiletUserName] = useState<string>()
-  const [sensiletPublicKey, setSensiletPublicKey] = useState<string>("")
+  const [sensiletPublicKey, setSensiletPublicKey] = useState<string | null>()
   const [sensiletWallet, setSensiletWallet] = useState<SensiletWallet | null | undefined>()
 
   const [provider, setProvider] = useState<DefaultProvider>(new DefaultProvider({
@@ -172,7 +173,7 @@ const SensiletProvider = (props: { children: React.ReactNode }) => {
 
     setSensiletUserName(undefined)
 
-    setSensiletPublicKey("")
+    setSensiletPublicKey(undefined)
 
   }, [web3]);
     

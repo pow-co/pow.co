@@ -43,7 +43,7 @@ const SideBarDrawer = () => {
   const marketPath = subdomain ? `/market/${subdomain}` : `/market/powco`;
   const walletPath = subdomain ? `/wallet/${subdomain}`: `/wallet`
   const issuePath = subdomain ? `/issues/${subdomain}` : `/issues`
-  const calendarPath = subdomain ? `/calendar` : `/calendar`
+  const calendarPath = subdomain ? `/events` : `/events`
 
   return (
     <div className="fixed inset-0 w-9/12 h-screen">

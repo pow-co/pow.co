@@ -267,7 +267,7 @@ function PersonalInterestsPage() {
     <ThreeColumnLayout>
       <div className="col-span-12 min-h-screen lg:col-span-6">
         <div className="mb-[200px] w-full">
-          <small>sensilet pubkey: {sensiletPublicKey}</small>
+          <small>sensilet pubkey: {sensiletPublicKey.toString()}</small>
           {interest && (
             <>
             <p>Personal Interest Found In {router.query.txid}</p>
