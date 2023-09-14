@@ -234,7 +234,7 @@ export async function generateMetadata({params}: Props, parent: ResolvingMetadat
             type: 'website',
         },
         twitter: {
-            title: txDetails?.author ? `${txDetails?.author.name} @${txDetails?.author.id} on Bitcoin` : 'PoW observer on Bitcoin',
+            title: txDetails?.author ? `${txDetails?.author.name} on Bitcoin` : 'PoW observer on Bitcoin',
             description:txDetails?.textContent ? txDetails.textContent : "This post lives forever on Bitcoin. Create a wallet and start discussing ideas now at pow.co",
             //images: [txDetails?.files![0].base64Content || "https://dogefiles.twetch.app/c3775f42d22ba9a68b5e134fd7b59b0c6060bf00a45e8890853b20e167e73a25", ...previousImages]
             images: ["https://dogefiles.twetch.app/c3775f42d22ba9a68b5e134fd7b59b0c6060bf00a45e8890853b20e167e73a25", ...previousImages]
