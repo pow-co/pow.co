@@ -80,16 +80,20 @@ export class CalendarEventOperator extends ContractOperator<Meeting> {
         return this;
     }
 
-    async invite({ pubkey }: { pubkey: string }): Promise<CalendarEventOperator> {
+    async invite({ pubkey }: { pubkey: string }): Promise<CalendarEventOperator | null> {
+
+        return null
 
     }
 
-    async cancel(): Promise<CalendarEventOperator> {
+    async cancel(): Promise<CalendarEventOperator | null> {
 
+        return null 
     }
 
-    async decline(): Promise<CalendarEventOperator> {
+    async decline(): Promise<CalendarEventOperator | null> {
 
+        return null 
     }
 
 }
