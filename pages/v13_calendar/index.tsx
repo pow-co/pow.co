@@ -12,12 +12,13 @@ import { ScryptRanking } from "../issues";
 import { getMeeting } from "../../services/meetings";
 import SimpleEventCard from "../../components/v13_SimpleEventCard";
 import Link from "next/link";
+import { CalendarEventOperator } from "../../services/calendar_event_operator";
 
 
 const RankedMeetingCard = ({origin, totaldifficulty}: ScryptRanking) => {
   const [cardLoading, setCardLoading] = useState(true)
   const [meeting, setMeeting] = useState<any | null>(null)
-  const wallet = useWallet()
+
 
   const getMeetingData = () => {
       getMeeting({txid: origin}).then((data) => {

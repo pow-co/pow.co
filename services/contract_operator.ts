@@ -29,7 +29,9 @@ export default class ContractOperator<T> {
 
         const { data } = await axios.get(`https://pow.co/api/v1/contracts/${origin}`);
 
-        return data as ContractRecord;
+        const contract = data.contract
+
+        return contract as ContractRecord;
     }
 
 }

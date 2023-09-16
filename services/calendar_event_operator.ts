@@ -1,10 +1,13 @@
 
-import { MethodCallOptions, Signer, findSig } from 'scrypt-ts';
+import { HashedSet, MethodCallOptions, PubKey, Signer, findSig, hash160 } from 'scrypt-ts';
 import { Meeting } from '../src/contracts/meeting';
 
 import ContractOperator from "./contract_operator";
 import { fetchTransaction } from './whatsonchain';
+import { Meeting as MeetingContract } from "../src/contracts/meeting"
+import artifact from "../artifacts/meeting.json";
 
+MeetingContract.loadArtifact(artifact);
 
 export class CalendarEventOperator extends ContractOperator<Meeting> {
 
@@ -12,13 +15,42 @@ export class CalendarEventOperator extends ContractOperator<Meeting> {
         
         // load record from server to get current location and pre-image of hashed props
 
-        const { location } = await ContractOperator.loadRecord({ origin });
+        const { location, props } = await ContractOperator.loadRecord({ origin });
     
         // load current location transaction from blockchain
 
-        const tx = await fetchTransaction({ txid: location.split('_')[0] });
+        //const tx = await fetchTransaction({ txid: location.split('_')[0] });
+        //temporary hack
+        const tx = await fetchTransaction({ txid: origin});
 
-        const contract = Meeting.fromTx(tx, 0);
+        // initialize all HashSet / HashedMap props
+        const invitees = new HashedSet<PubKey>()
+        const attendees = new HashedSet<PubKey>()
+
+        // fill values based on props (pre-images) from server
+        if (props.invitees){
+            props.invitees.forEach((str: string) => {
+                invitees.add(PubKey(str))
+            });
+        }
+        if (props.attendees){
+            props.attendees.forEach((str: string) => {
+                attendees.add(PubKey(str))
+            });
+        }
+        
+        let contract
+        try {
+            contract = Meeting.fromTx(tx, 0, {
+                invitees,
+                attendees
+            });
+    
+            console.log("contract",contract)
+            
+        } catch (error) {
+            throw error
+        }
 
         return new CalendarEventOperator({ origin, contract, signer });
     }
@@ -31,7 +63,7 @@ export class CalendarEventOperator extends ContractOperator<Meeting> {
 
         const publicKey = await this.signer.getDefaultPubKey();
 
-        const { tx } = await this.contract.methods.attend((sigResponses: any) => {
+        const { tx } = await this.contract.methods.attend(PubKey(publicKey.toString()), (sigResponses: any) => {
             return findSig(sigResponses, publicKey)
         }, {
             pubKeyOrAddrToSign: publicKey,
@@ -43,7 +75,7 @@ export class CalendarEventOperator extends ContractOperator<Meeting> {
 
         this.contract = Meeting.fromTx(tx, 0);
 
-        await this.contract.connect(signer);
+        await this.contract.connect(this.signer);
 
         return this;
     }
