@@ -21,6 +21,7 @@ import { useRouter } from "next/router";
 import { Meeting } from "../../src/contracts/meeting";
 import artifact from "../../artifacts/meeting.json";
 import { fetchTransaction } from "../../services/whatsonchain";
+import { CalendarEventOperator } from "../../services/calendar_event_operator";
 
 Meeting.loadArtifact(artifact);
 
@@ -114,9 +115,35 @@ const NewCalendarEventPage = () => {
   const [requireInvites, setRequireInvites] = useState(false);
   const isContractReady = useMemo(() => eventTitle.length > 0, [eventTitle]);
 
+  const [contractOperator, setContractOperator] = useState<CalendarEventOperator | null>(null);
+
   const wallet = useWallet();
 
   const router = useRouter();
+
+  useEffect(() => {
+
+    CalendarEventOperator.load({ origin, signer }).then((operator) => {
+
+      setContractOperator(operator);
+    });
+  
+  }, []);
+
+  useEffect(() => {
+    if (contractOperator) {
+      console.log("contractOperator loaded", contractOperator);
+    }
+  }, [contractOperator]);
+
+  async function attend() {
+
+    if (!contractOperator) return;
+
+    const tx = await contractOperator.attend();
+
+    console.log("attending!", tx);
+  }
 
   useEffect(() => {
     if (!router.query.txid) return;
