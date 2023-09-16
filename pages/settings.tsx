@@ -8,6 +8,7 @@ import { useRelay } from "../context/RelayContext";
 import { useSensilet } from "../context/SensiletContext";
 import { useHandCash } from "../context/HandCashContext";
 import { useTwetch } from "../context/TwetchContext";
+
 import useWallet from "../hooks/useWallet";
 import TuningPanel from "../components/TuningPanel";
 
@@ -18,12 +19,13 @@ import { useLocalWallet } from "../context/LocalWalletContext";
 import WalletSelect from "../components/WalletSelect";
 import { useTuning } from "../context/TuningContext";
 
+import ColorSchemeSelector from "../components/ColorSchemeSelector";
+
 function capitalizeFirstLetter(s: string) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
-    
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 const ConnectedWallet = () => {
-  const { wallet } = useBitcoin()
+  const { wallet } = useBitcoin();
   switch (wallet) {
     case "relayx":
       return (
@@ -66,7 +68,7 @@ const ConnectedWallet = () => {
             />
           </svg>
         </div>
-      )
+      );
     case "twetch":
       return (
         <div className="relative flex h-8 w-full cursor-pointer items-center justify-around rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 py-5 px-1 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1">
@@ -99,11 +101,14 @@ const ConnectedWallet = () => {
             />
           </svg>
         </div>
-      )
+      );
     case "handcash":
       return (
         <div className="relative flex h-8 w-full cursor-pointer items-center justify-around rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 py-5 px-1 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1">
-          <img src="/handcash_green_icon.webp" className="rounded-full h-6 w-6" />
+          <img
+            src="/handcash_green_icon.webp"
+            className="rounded-full h-6 w-6"
+          />
           <p className=" ml-2.5 ">Handcash</p>
           <div className="grow" />
           <svg
@@ -121,13 +126,13 @@ const ConnectedWallet = () => {
             />
           </svg>
         </div>
-      )
+      );
     case "sensilet":
       return (
         <div className="relative flex h-8 w-full cursor-pointer items-center justify-around rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 py-5 px-1 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1">
-          <img src="/sensilet.png" className="h-6 w-6"/>
+          <img src="/sensilet.png" className="h-6 w-6" />
           <p className=" ml-2.5 ">Sensilet</p>
-          <div className="grow"/>
+          <div className="grow" />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
@@ -143,13 +148,23 @@ const ConnectedWallet = () => {
             />
           </svg>
         </div>
-      )
+      );
     case "local":
       return (
         <div className="relative flex h-8 w-full cursor-pointer items-center justify-around rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 py-5 px-1 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1">
-          <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 2499.6 2500" viewBox="0 0 2499.6 2500" className="h-6 w-6">
-            <path d="m2499.6 1250c0 690.2-559.6 1249.8-1250.1 1249.9-690 0-1249.6-559.7-1249.5-1250-.2-690.3 559.4-1249.9 1249.7-1249.9s1249.9 559.7 1249.9 1250z" fill="#eab300"/><g fill="#fff"><path d="m1741.5 943.8c-16.1-167.4-160.6-223.5-343.2-239.5v-232.3h-141.3v226.1c-37.1 0-75.1.7-112.8 1.5v-227.6h-141.3l-.1 232.1c-30.6.6-60.7 1.2-90 1.2v-.7l-194.9-.1v151s104.4-2 102.6-.1c57.3 0 75.9 33.2 81.3 61.9v264.6c4 0 9.1.2 14.9 1h-14.9l-.1 370.7c-2.5 18-13.1 46.7-53.1 46.8 1.8 1.6-102.7 0-102.7 0l-28.1 168.8h184c34.2 0 67.9.6 100.9.8l.1 234.9h141.2v-232.4c38.7.8 76.2 1.1 112.9 1.1l-.1 231.3h141.3v-234.4c237.6-13.6 404.1-73.5 424.7-296.7 16.7-179.7-67.8-260-202.7-292.4 82.1-41.6 133.4-115.1 121.4-237.6zm-197.8 502.2c0 175.5-300.5 155.6-396.4 155.6v-311.3c95.9.2 396.4-27.3 396.4 155.7zm-65.8-439.1c0 159.7-250.8 141-330.6 141.1v-282.2c79.9 0 330.7-25.4 330.6 141.1z"/>
-            <path d="m902 1175.7h21v15.5h-21z"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            enable-background="new 0 0 2499.6 2500"
+            viewBox="0 0 2499.6 2500"
+            className="h-6 w-6"
+          >
+            <path
+              d="m2499.6 1250c0 690.2-559.6 1249.8-1250.1 1249.9-690 0-1249.6-559.7-1249.5-1250-.2-690.3 559.4-1249.9 1249.7-1249.9s1249.9 559.7 1249.9 1250z"
+              fill="#eab300"
+            />
+            <g fill="#fff">
+              <path d="m1741.5 943.8c-16.1-167.4-160.6-223.5-343.2-239.5v-232.3h-141.3v226.1c-37.1 0-75.1.7-112.8 1.5v-227.6h-141.3l-.1 232.1c-30.6.6-60.7 1.2-90 1.2v-.7l-194.9-.1v151s104.4-2 102.6-.1c57.3 0 75.9 33.2 81.3 61.9v264.6c4 0 9.1.2 14.9 1h-14.9l-.1 370.7c-2.5 18-13.1 46.7-53.1 46.8 1.8 1.6-102.7 0-102.7 0l-28.1 168.8h184c34.2 0 67.9.6 100.9.8l.1 234.9h141.2v-232.4c38.7.8 76.2 1.1 112.9 1.1l-.1 231.3h141.3v-234.4c237.6-13.6 404.1-73.5 424.7-296.7 16.7-179.7-67.8-260-202.7-292.4 82.1-41.6 133.4-115.1 121.4-237.6zm-197.8 502.2c0 175.5-300.5 155.6-396.4 155.6v-311.3c95.9.2 396.4-27.3 396.4 155.7zm-65.8-439.1c0 159.7-250.8 141-330.6 141.1v-282.2c79.9 0 330.7-25.4 330.6 141.1z" />
+              <path d="m902 1175.7h21v15.5h-21z" />
             </g>
           </svg>
           <p className=" ml-2.5 ">Seed</p>
@@ -169,29 +184,59 @@ const ConnectedWallet = () => {
             />
           </svg>
         </div>
-      )
+      );
     default:
-        return <></>
+      return <></>;
   }
-}
+};
 
 export default function Settings() {
   const { theme, setTheme } = useTheme();
-  const { logout, authenticated, setWallet, setWalletPopupOpen, walletPopupOpen } = useBitcoin();
+  const {
+    logout,
+    authenticated,
+    setWallet,
+    setWalletPopupOpen,
+    walletPopupOpen,
+  } = useBitcoin();
   const { signPosts, setSignPosts } = useTuning();
-  const { web3, web3Account, sensiletLogout, sensiletAuthenticate, sensiletAuthenticated } = useSensilet()
+  const {
+    web3,
+    web3Account,
+    sensiletLogout,
+    sensiletAuthenticate,
+    sensiletAuthenticated,
+  } = useSensilet();
   const [isDark, setIsDark] = useState(theme === "dark");
-  const [sensiletChecked, setSensiletChecked] = useState(!!web3Account)
+  const [sensiletChecked, setSensiletChecked] = useState(!!web3Account);
 
-  const { handcashAuthenticated, handcashAuthenticate, handcashPaymail, handcashLogout } = useHandCash()
-  const { relayxWallet, relayxLogout, relayxAuthenticated } = useRelay()
-  const { localWalletLogout, localWallet, localWalletAuthenticated } = useLocalWallet()
-  const { twetchWallet, twetchLogout, twetchAuthenticated } = useTwetch()
+  const {
+    handcashAuthenticated,
+    handcashAuthenticate,
+    handcashPaymail,
+    handcashLogout,
+  } = useHandCash();
+  const { relayxWallet, relayxLogout, relayxAuthenticated } = useRelay();
+  const { localWalletLogout, localWallet, localWalletAuthenticated } =
+    useLocalWallet();
+  const { twetchWallet, twetchLogout, twetchAuthenticated } = useTwetch();
   const walletConnected = useMemo(() => {
-    const wallets = [relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated, localWalletAuthenticated];
-    return wallets.filter(wallet => wallet).length;
-  },[relayxAuthenticated, twetchAuthenticated, handcashAuthenticated, sensiletAuthenticated, localWalletAuthenticated])
-  const wallet = useWallet()
+    const wallets = [
+      relayxAuthenticated,
+      twetchAuthenticated,
+      handcashAuthenticated,
+      sensiletAuthenticated,
+      localWalletAuthenticated,
+    ];
+    return wallets.filter((wallet) => wallet).length;
+  }, [
+    relayxAuthenticated,
+    twetchAuthenticated,
+    handcashAuthenticated,
+    sensiletAuthenticated,
+    localWalletAuthenticated,
+  ]);
+  const wallet = useWallet();
 
   useEffect(() => {
     if (theme === "dark") {
@@ -203,16 +248,12 @@ export default function Settings() {
   }, [theme]);
 
   async function connectSensilet() {
-
-    sensiletAuthenticate()
-
+    sensiletAuthenticate();
   }
 
   useEffect(() => {
-
-    setSensiletChecked(!!web3Account)
-
-  }, [web3Account])
+    setSensiletChecked(!!web3Account);
+  }, [web3Account]);
 
   const toggleTheme = () => {
     if (theme === "dark") {
@@ -223,53 +264,43 @@ export default function Settings() {
     }
   };
 
-  const handleHandcashLogin = (e:any) => {
+  const handleHandcashLogin = (e: any) => {
     e.preventDefault();
-    setWallet("handcash")
-    handcashAuthenticate()
-  }
-    
+    setWallet("handcash");
+    handcashAuthenticate();
+  };
+
   function handleLogout(walletName: string) {
+    switch (walletName) {
+      case "relayx":
+        relayxLogout();
 
-    switch(walletName) {
+        break;
 
-    case 'relayx':
+      case "handcash":
+        handcashLogout();
 
-      relayxLogout()
+        break;
 
-      break;
+      case "twetch":
+        twetchLogout();
 
-    case 'handcash':
+        break;
 
-      handcashLogout()
+      case "local":
+        localWalletLogout();
 
-      break;
+        break;
 
-    case 'twetch':
+      case "sensilet":
+        sensiletLogout();
 
-      twetchLogout()
-
-      break;
-
-    case 'local':
-
-      localWalletLogout()
-
-      break;
-
-    case 'sensilet':
-
-      sensiletLogout()
-
-      break;
-
+        break;
     }
 
     if (wallet?.name === walletName) {
-
-      setWallet(null)
+      setWallet(null);
     }
-
   }
 
   return (
@@ -330,8 +361,16 @@ export default function Settings() {
                     checked={isDark}
                     onChange={toggleTheme}
                   />
-                  <div className={`w-10 toggle h-4 ${isDark ? "bg-primary-500" : "bg-gray-400"} rounded-full shadow-inner`}></div>
-                  <div className={`dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${isDark ? 'transform translate-x-6' : ''}`}></div>
+                  <div
+                    className={`w-10 toggle h-4 ${
+                      isDark ? "bg-primary-500" : "bg-gray-400"
+                    } rounded-full shadow-inner`}
+                  ></div>
+                  <div
+                    className={`dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${
+                      isDark ? "transform translate-x-6" : ""
+                    }`}
+                  ></div>
                 </div>
               </label>
             </div>
@@ -354,12 +393,21 @@ export default function Settings() {
                     type="checkbox"
                     className="sr-only"
                     checked={signPosts}
-                    onChange={()=>setSignPosts(!signPosts)}
+                    onChange={() => setSignPosts(!signPosts)}
                   />
-                  <div className={`w-10 toggle h-4 ${signPosts ? "bg-primary-500" : "bg-gray-400"} rounded-full shadow-inner`}></div>
-                  <div className={`dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${signPosts ? 'transform translate-x-6' : ''}`}></div>
+                  <div
+                    className={`w-10 toggle h-4 ${
+                      signPosts ? "bg-primary-500" : "bg-gray-400"
+                    } rounded-full shadow-inner`}
+                  ></div>
+                  <div
+                    className={`dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition ${
+                      signPosts ? "transform translate-x-6" : ""
+                    }`}
+                  ></div>
                 </div>
               </label>
+              <ColorSchemeSelector />
             </div>
           </div>
           <div className="bg-primary-100 dark:bg-primary-600/20 p-5 flex items-center min-h-[78px] cursor-pointer my-4 rounded-lg">
@@ -384,34 +432,38 @@ export default function Settings() {
             <div className="flex flex-col max-w-[144px] sm:max-w-[333px]">
               <p className="text-base font-semibold my-0.5 text-gray-700 dark:text-white">
                 {/* <FormattedMessage id="Language settings" /> */}
-                Select Wallet {walletConnected > 0 && `(${walletConnected} connected)`}
+                Select Wallet{" "}
+                {walletConnected > 0 && `(${walletConnected} connected)`}
               </p>
               <p className="text-gray-400 dark:text-gray-300 text-sm tracking-normal	text-left my-0.5">
                 {/* <FormattedMessage id="Interact with this app in your language" /> */}
                 Chose the BitCoin wallet you want to interact this app with
               </p>
-
             </div>
             <div className="grow" />
-              <div className="relative flex items-center">
-                  <button
-                    onClick={()=>setWalletPopupOpen(true)}
-                    type="button"
-                    onKeyDown={()=>setWalletPopupOpen(true)}
-                    >
-                    {!authenticated ? (
-                      <div className="relative ml-4 flex h-8 w-fit cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 p-5 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1">
-                        <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
-                          <path d="M2.16197 13.2675H13.838C15.2698 13.2675 16 12.5445 16 11.1271V2.86576C16 1.45546 15.2698 0.732422 13.838 0.732422H2.16197C0.730201 0.732422 0 1.44831 0 2.86576V11.1271C0 12.5445 0.730201 13.2675 2.16197 13.2675ZM1.18121 2.9445C1.18121 2.25725 1.54631 1.91363 2.20492 1.91363H13.7951C14.4465 1.91363 14.8188 2.25725 14.8188 2.9445V3.9539H1.18121V2.9445ZM2.20492 12.0863C1.54631 12.0863 1.18121 11.7356 1.18121 11.0483V5.50737H14.8188V11.0483C14.8188 11.7356 14.4465 12.0863 13.7951 12.0863H2.20492Z" fill="white" />
-                        </svg>
-                        <span className="ml-4"><FormattedMessage id="Connect" /></span>
-                      </div>
-                    ):(
-                        <ConnectedWallet />
-                    )}
-                  </button>
-              </div>
-  
+            <div className="relative flex items-center">
+              <button
+                onClick={() => setWalletPopupOpen(true)}
+                type="button"
+                onKeyDown={() => setWalletPopupOpen(true)}
+              >
+                {!authenticated ? (
+                  <div className="relative ml-4 flex h-8 w-fit cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 p-5 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1">
+                    <svg viewBox="0 0 16 14" fill="#000" width="16" height="14">
+                      <path
+                        d="M2.16197 13.2675H13.838C15.2698 13.2675 16 12.5445 16 11.1271V2.86576C16 1.45546 15.2698 0.732422 13.838 0.732422H2.16197C0.730201 0.732422 0 1.44831 0 2.86576V11.1271C0 12.5445 0.730201 13.2675 2.16197 13.2675ZM1.18121 2.9445C1.18121 2.25725 1.54631 1.91363 2.20492 1.91363H13.7951C14.4465 1.91363 14.8188 2.25725 14.8188 2.9445V3.9539H1.18121V2.9445ZM2.20492 12.0863C1.54631 12.0863 1.18121 11.7356 1.18121 11.0483V5.50737H14.8188V11.0483C14.8188 11.7356 14.4465 12.0863 13.7951 12.0863H2.20492Z"
+                        fill="white"
+                      />
+                    </svg>
+                    <span className="ml-4">
+                      <FormattedMessage id="Connect" />
+                    </span>
+                  </div>
+                ) : (
+                  <ConnectedWallet />
+                )}
+              </button>
+            </div>
           </div>
 
           {/* {handcashPaymail && (
@@ -537,12 +589,18 @@ export default function Settings() {
             </div>
           )} */}
 
-          {authenticated && <button
-            onClick={logout}
-            className="h-[52px] p-5 flex bg-red-500 text-white text-base font-semibold my-4 w-full border-none rounded-lg cursor-pointer items-center justify-center transition duration-500 transform hover:-translate-y-1 hover:bg-red-600"
-          >
-            {walletConnected <2 ? <FormattedMessage id="Log out" />: "Log out all wallets"}
-          </button>}
+          {authenticated && (
+            <button
+              onClick={logout}
+              className="h-[52px] p-5 flex bg-red-500 text-white text-base font-semibold my-4 w-full border-none rounded-lg cursor-pointer items-center justify-center transition duration-500 transform hover:-translate-y-1 hover:bg-red-600"
+            >
+              {walletConnected < 2 ? (
+                <FormattedMessage id="Log out" />
+              ) : (
+                "Log out all wallets"
+              )}
+            </button>
+          )}
         </div>
         <div className="grow" />
       </div>
