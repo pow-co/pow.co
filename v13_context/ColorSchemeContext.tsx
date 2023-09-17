@@ -25,7 +25,7 @@ interface ColorSchemeProviderProps {
 export const ColorSchemeProvider: React.FC<ColorSchemeProviderProps> = ({
   children,
 }) => {
-  const [colorScheme, setColorScheme] = useState<string>("chrome");
+  const [colorScheme, setColorScheme] = useState<string>("classic");
 
   return (
     <ColorSchemeContext.Provider value={{ colorScheme, setColorScheme }}>
