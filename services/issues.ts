@@ -249,7 +249,7 @@ export interface NewIssue {
 
         const { data } = await axios.get(`https://pow.co/api/v1/issues/${txid}`)
 
-        return data.issue as Issue
+        return data.origin as Issue
 
     } catch(error) {
 

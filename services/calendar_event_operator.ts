@@ -6,10 +6,19 @@ import ContractOperator from "./contract_operator";
 import { fetchTransaction } from './whatsonchain';
 import { Meeting as MeetingContract } from "../src/contracts/meeting"
 import artifact from "../artifacts/meeting.json";
+import axios from 'axios';
 
 MeetingContract.loadArtifact(artifact);
 
 export class CalendarEventOperator extends ContractOperator<Meeting> {
+
+    get attendees() {
+        return [...this.contract.attendees];
+    }
+
+    get invitees() {
+        return [...this.contract.invitees];
+    }
 
     static async load({ origin, signer }: { origin: string, signer: Signer }): Promise<CalendarEventOperator> {
         
@@ -63,6 +72,8 @@ export class CalendarEventOperator extends ContractOperator<Meeting> {
 
         const publicKey = await this.signer.getDefaultPubKey();
 
+        nextInstance.attendees.add(PubKey(publicKey.toString()));
+
         const { tx } = await this.contract.methods.attend(PubKey(publicKey.toString()), (sigResponses: any) => {
             return findSig(sigResponses, publicKey)
         }, {
@@ -73,7 +84,32 @@ export class CalendarEventOperator extends ContractOperator<Meeting> {
             },
         } as MethodCallOptions<Meeting>);
 
-        this.contract = Meeting.fromTx(tx, 0);
+        console.log('attend.tx', tx);
+
+        const props = {
+            invitees: [],
+            attendees: [],
+        };
+
+        nextInstance.invitees.forEach((pubkey: PubKey) => {
+            props.invitees.push(pubkey.toString());            
+        });
+
+        nextInstance.attendees.forEach((pubkey: PubKey) => {
+            props.attendees.push(pubkey.toString());
+        });
+
+        const { data } = await await axios.put(`https://hls.pow.co/api/v1/contracts/${this.origin}`, {
+            transaction: tx.toString(),
+            props,            
+        });
+
+        console.log('attend.ingest.result', data);
+
+        this.contract = Meeting.fromTx(tx, 0, {
+            invitees: nextInstance.invitees,
+            attendees: nextInstance.attendees
+        });
 
         await this.contract.connect(this.signer);
 

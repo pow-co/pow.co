@@ -22,15 +22,15 @@ const EventDetailCard = ({meeting}:EventDetailCardProps) => {
     const ticketPrice = 0;
 
     useEffect(() => {
-        CalendarEventOperator.load({ origin: meeting.origin, signer: wallet!.signer }).then(setContractOperator)
-    },[wallet])
+        CalendarEventOperator.load({ origin: meeting.origin, signer: wallet!.signer }).then(setContractOperator);
+    }, [wallet]);
 
     useEffect(() => {
         console.log("contract operator loaded", contractOperator)
-    },[])
+    },[]);
 
     const attend = async () => {
-        const opResponse = await contractOperator?.attend()
+        const opResponse = await contractOperator?.attend();
         console.log(opResponse)
     }
 
@@ -43,6 +43,8 @@ const EventDetailCard = ({meeting}:EventDetailCardProps) => {
         e.preventDefault()
         setBoostPopupOpen(true)
     }
+
+
   return (
     <>
     <div className='grid grid-cols-2 gap-5 min-h-screen mt-5 mb-24 sm:mb-0'>
@@ -213,11 +215,11 @@ const EventDetailCard = ({meeting}:EventDetailCardProps) => {
                 </div>
                 <div className='flex justify-between mb-1'>
                     <p className='font-semibold'>Attendees</p>
-                    <p className='opacity-70 '>{meeting.attendees}</p>
+                    <p className='opacity-70 '>{contractOperator?.attendees.length || 0}</p>
                 </div>
                 <div className='flex justify-between mb-1'>
                     <p className='font-semibold'>Invitees</p>
-                    <p className='opacity-70 '>{meeting.invitees}</p>
+                    <p className='opacity-70 '>{contractOperator?.invitees.length || 0}</p>
                 </div>            
             </div>
             {/* <div className='mt-5 bg-primary-100 dark:bg-primary-600/20 p-5 sm:rounded-lg'>

@@ -24,13 +24,14 @@ const RankedIssueCard = ({origin, totaldifficulty}: ScryptRanking) => {
 
     const getIssueData = () => {
         getIssue({txid: origin}).then((data) => {
-            console.log(data)
+            console.log('got issue', data)
             setIssue(data)
          })
     }
 
     useEffect(() => {
-         getIssueData()
+        if (!origin) return;
+        getIssueData()
     },[origin])
 
     const handleRefresh = () => {
@@ -54,7 +55,10 @@ const RankedIssueCard = ({origin, totaldifficulty}: ScryptRanking) => {
     }
     return (
         <div className=''>
-            <IssueCard origin={origin} refresh={handleRefresh} methodCalls={[]} issue={issue!} onAddBounty={handleAddBounty} onLeaveComment={handleComment} onMarkAsComplete={handleComplete}/>
+            {issue && (
+                <IssueCard origin={origin} refresh={handleRefresh} methodCalls={[]} issue={issue!} onAddBounty={handleAddBounty} onLeaveComment={handleComment} onMarkAsComplete={handleComplete}/>
+            )}
+            
         </div>
     )
 }
@@ -76,7 +80,11 @@ const IssuesPage = () => {
           </ThreeColumnLayout>
         );
     }
-    const { rankings } = data || []
+    var { rankings } = data || {};
+
+    rankings = rankings || []
+
+    console.log("RANKINGS", rankings)
 
     const handleSubmitIssue = async (newIssue: any) => {
         if (!wallet) return;

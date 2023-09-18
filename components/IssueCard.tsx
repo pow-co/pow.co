@@ -53,7 +53,7 @@ const IssueCard: React.FC<IssueCardProps> = (props: {
 
   const [addingBounty, setAddingBounty] = useState(false);
   const [satoshis, setSatoshis] = useState<number | null>(null);
-  const [newBounty, setNewBounty] = useState<bigint>(BigInt(props.issue.balance -1));
+  const [newBounty, setNewBounty] = useState<bigint>(BigInt(props.issue.balance || 1 -1));
   const [issue, setIssue] = useState<Issue>(props.issue);
   const [location, setLocation] = useState<string | null>((props.issue.from as TxOutputRef)?.tx?.hash);
   const [origin, setOrigin] = useState<string | null>(null);
@@ -245,10 +245,10 @@ useEffect(() => {
     }
   };
 
-  const title = Buffer.from(issue.title, 'hex').toString('utf8');
-  const description = Buffer.from(issue.description, 'hex').toString('utf8');
-  const organization = Buffer.from(issue.organization, 'hex').toString('utf8');
-  const repo = Buffer.from(issue.repo, 'hex').toString('utf8');
+  const title = Buffer.from(issue.props.title, 'hex').toString('utf8');
+  const description = Buffer.from(issue.props.description, 'hex').toString('utf8');
+  const organization = Buffer.from(issue.props.organization, 'hex').toString('utf8');
+  const repo = Buffer.from(issue.props.repo, 'hex').toString('utf8');
 
   console.log('ORIGIN', props.origin)
 
@@ -269,13 +269,13 @@ useEffect(() => {
             <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleConfirmClick}>Confirm</button>
           </div>
         ) : (
-            (!issue.closed && (
+            (!issue.props.closed && (
 <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleAddBountyClick}>Add Bounty</button>
             ))
           
         )}
 
-        {isOwner && !issue.closed && (
+        {isOwner && !issue.props.closed && (
           <>
           <button onClick={handleAssignButtonClick} className={`bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded ${assigning ? 'animate-pulse' : ''}`}>
             {assigning ? 'Assigning...' : assignSuccess ? 'Assign Issue' : 'Assign Issue'}
@@ -305,7 +305,7 @@ useEffect(() => {
               </button>
             </div>
           )}
-        {isOwner && !issue.closed && (
+        {isOwner && !issue.props.closed && (
         <button
         className={`px-4 py-2 rounded transition-all ease-in-out duration-300 ${
           completionStatus === 'incomplete'
@@ -322,7 +322,7 @@ useEffect(() => {
       
         )}
 
-        {issue.closed && (
+        {issue.props.closed && (
             <button className={`px-4 py-2 rounded transition-all ease-in-out duration-300 bg-green-500 text-white`}>
 
                 Complete ✔️
