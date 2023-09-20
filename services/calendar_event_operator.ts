@@ -4,10 +4,9 @@ import { Meeting } from '../src/contracts/meeting';
 
 import ContractOperator from "./contract_operator";
 import { fetchTransaction } from './whatsonchain';
-import { Meeting as MeetingContract } from "../src/contracts/meeting"
 import artifact from "../artifacts/meeting.json";
 
-MeetingContract.loadArtifact(artifact);
+Meeting.loadArtifact(artifact);
 
 export class CalendarEventOperator extends ContractOperator<Meeting> {
 

@@ -106,6 +106,7 @@ const IssuePage = () => {
           onMarkAsComplete={onMarkAsComplete}
           refresh={refresh}
           origin={origin}
+          contractLocation={origin}
           methodCalls={methodCalls}
         />
 

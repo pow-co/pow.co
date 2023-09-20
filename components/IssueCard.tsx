@@ -9,6 +9,11 @@ import { TxOutputRef } from 'scrypt-ts';
 import axios from 'axios';
 import { parse } from 'path';
 
+import artifact from "../artifacts/issue.json";
+import Link from 'next/link';
+
+Issue.loadArtifact(artifact)
+
 
 export interface Signer {
   // Define the properties of the Signer interface as per your requirement
@@ -32,6 +37,7 @@ interface Comment {
 
 interface IssueCardProps {
   issue: Issue;
+  contractLocation: string;
   onAddBounty: (issue: Issue) => Promise<void>;
   onLeaveComment: (issue: Issue) => Promise<void>;
   onMarkAsComplete: (issue: Issue) => Promise<void>;
@@ -42,6 +48,7 @@ interface IssueCardProps {
 
 const IssueCard: React.FC<IssueCardProps> = (props: {
     issue: Issue,
+    contractLocation: string,
     onAddBounty: (issue: Issue) => Promise<void>,
     onLeaveComment: (issue: Issue) => Promise<void>,
     onMarkAsComplete: (issue: Issue) => Promise<void>,
@@ -53,10 +60,10 @@ const IssueCard: React.FC<IssueCardProps> = (props: {
 
   const [addingBounty, setAddingBounty] = useState(false);
   const [satoshis, setSatoshis] = useState<number | null>(null);
-  const [newBounty, setNewBounty] = useState<bigint>(BigInt(props.issue.balance -1));
+  const [newBounty, setNewBounty] = useState<bigint>(0n);
   const [issue, setIssue] = useState<Issue>(props.issue);
-  const [location, setLocation] = useState<string | null>((props.issue.from as TxOutputRef)?.tx?.hash);
-  const [origin, setOrigin] = useState<string | null>(null);
+  const [location, setLocation] = useState<string | null>(props.contractLocation);
+  const [origin, setOrigin] = useState<string | null>(props.origin);
   const [completionStatus, setCompletionStatus] = useState<'incomplete' | 'posting' | 'complete'>('incomplete');
   const [commentBoxVisible, setCommentBoxVisible] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -65,6 +72,21 @@ const IssueCard: React.FC<IssueCardProps> = (props: {
   const [assignSuccess, setAssignSuccess] = useState(false);
   const [assignPopupVisible, setAssignPopupVisible] = useState(false);
   const [publicKeyInput, setPublicKeyInput] = useState('');
+
+  useEffect(() => {
+    
+    if(location){
+      
+      let [txid, vout] = location.split('_')
+      axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/hash/${txid}`).then((resp) => {
+        console.log("location tx", resp.data.vout[vout])
+        let amount = Math.round(resp.data.vout[vout].value * 1e8)
+        setNewBounty(BigInt(amount)  - 1n)
+      })
+
+    }
+
+  },[location])
 
   const handleAssignButtonClick = () => {
     setAssignPopupVisible(true);
@@ -105,7 +127,10 @@ const IssueCard: React.FC<IssueCardProps> = (props: {
     });
     console.log({ result })
     setIssue(newIssue);
-    setNewBounty(BigInt(newIssue.balance - 1));
+    let [txid,vout] = result.data.contract.location.split('_')
+    let newLocTx = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/hash/${txid}`)
+    let amount = Math.round(newLocTx.data.vout[vout].value * 1e8)
+    setNewBounty(BigInt(amount)- 1n)
     props.refresh();
 
     setAssignSuccess(true);
@@ -187,7 +212,10 @@ useEffect(() => {
     const result = await axios.get(`https://pow.co/api/v1/issues/${(newIssue.from as TxOutputRef)?.tx?.hash}`);
     console.log({ result })
     setIssue(newIssue);
-    setNewBounty(BigInt(newIssue.balance - 1));
+    let [txid,vout] = result.data.contract.location.split('_')
+    let newLocTx = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/hash/${txid}`)
+    let amount = Math.round(newLocTx.data.vout[vout].value * 1e8)
+    setNewBounty(BigInt(amount)- 1n)
     props.refresh();
 
   };
@@ -230,7 +258,10 @@ useEffect(() => {
       const result = await axios.get(`https://pow.co/api/v1/issues/${tx.hash}`);
       console.log({ result })
       setIssue(newIssue);
-      setNewBounty(BigInt(newIssue.balance - 1));
+      let [txid,vout] = result.data.contract.location.split('_')
+      let newLocTx = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/hash/${txid}`)
+      let amount = Math.round(newLocTx.data.vout[vout].value * 1e8)
+    setNewBounty(BigInt(amount)- 1n)
       props.refresh();
 
       // Assuming onLeaveComment is a function that posts the comment and returns the JSON response
@@ -245,21 +276,18 @@ useEffect(() => {
     }
   };
 
-  const title = Buffer.from(issue.title, 'hex').toString('utf8');
-  const description = Buffer.from(issue.description, 'hex').toString('utf8');
-  const organization = Buffer.from(issue.organization, 'hex').toString('utf8');
-  const repo = Buffer.from(issue.repo, 'hex').toString('utf8');
-
-  console.log('ORIGIN', props.origin)
 
   return (
-    <div className="border p-4 rounded-md space-y-2">
-      <h2 className="text-xl font-bold">{title}</h2>
-      <p className="text-gray-600">{organization}/{repo}</p>
-      <p>{description}</p>
-      <p className="text-sm text-gray-400">Bounty: {newBounty.toString()}</p>
-      <p className="text-sm text-gray-400">Location: {props.origin.location}</p>
-      <p className="text-sm text-gray-400">Origin: {props.origin.origin}</p>
+    <div className="border rounded-md space-y-2">
+      <Link href={`/issues/${origin?.split('_')}`}>
+        <h2 className="cursor-pointer bg-primary-500 p-4 text-xl font-bold">{issue.title}</h2>
+      </Link>
+      <div className='p-4'>
+      <p className="text-gray-600">{issue.organization}/{issue.repo}</p>
+      <p>{issue.description}</p>
+      <p className="text-sm font-semibold">Bounty: <span className='text-xl font-bold text-primary-500'>{newBounty.toString()} sats</span></p>
+      <p className="text-sm opacity-60 whitespace-pre-line break-words">Location: <a className='hover:underline' href={`https://whatsonchain.com/tx/${location?.split('_')[0]}`} target='_blank' rel='noreferrer'>{location}</a></p>
+      <p className="text-sm opacity-60 whitespace-pre-line break-words">Origin: <a className='hover:underline' href={`https://whatsonchain.com/tx/${origin?.split('_')[0]}`} target='_blank' rel='noreferrer'>{origin}</a></p>
       
       <div className="space-x-2">
         
@@ -351,6 +379,7 @@ useEffect(() => {
 
       ))}
     </ul>
+  </div>
   </div>
     </div>
   );

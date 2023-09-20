@@ -243,13 +243,13 @@ export interface NewIssue {
     return issue;
   }
 
-  export async function getIssue({ txid }: {txid: string}): Promise<Issue | null> {
+  export async function getIssue({ txid }: {txid: string}): Promise<any | null> {
 
     try {
 
         const { data } = await axios.get(`https://pow.co/api/v1/issues/${txid}`)
-
-        return data.issue as Issue
+        console.log(data)
+        return data.origin
 
     } catch(error) {
 
