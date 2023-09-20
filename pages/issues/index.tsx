@@ -19,18 +19,21 @@ export interface ScryptRanking {
 
 const RankedIssueCard = ({origin, totaldifficulty}: ScryptRanking) => {
     const [issue, setIssue] = useState<Issue | null>(null)
+    const [location, setLocation] = useState<string | null>(null)
     const wallet = useWallet()
 
 
     const getIssueData = () => {
-        getIssue({txid: origin}).then((data) => {
-            console.log(data)
-            setIssue(data)
+        getIssue({txid: origin.split('_')[0]}).then((data) => {
+            console.log("issue data", data)
+            setIssue(data.props)
+            setLocation(data.location)
          })
     }
 
     useEffect(() => {
-         getIssueData()
+        console.log(origin)
+        getIssueData()
     },[origin])
 
     const handleRefresh = () => {
@@ -54,7 +57,7 @@ const RankedIssueCard = ({origin, totaldifficulty}: ScryptRanking) => {
     }
     return (
         <div className=''>
-            <IssueCard origin={origin} refresh={handleRefresh} methodCalls={[]} issue={issue!} onAddBounty={handleAddBounty} onLeaveComment={handleComment} onMarkAsComplete={handleComplete}/>
+            {issue ? <IssueCard origin={origin} contractLocation={location!} refresh={handleRefresh} methodCalls={[]} issue={issue} onAddBounty={handleAddBounty} onLeaveComment={handleComment} onMarkAsComplete={handleComplete}/>: "loading"}
         </div>
     )
 }
