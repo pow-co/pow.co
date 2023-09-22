@@ -18,43 +18,23 @@ export interface ScryptRanking {
 }
 
 const RankedIssueCard = ({origin, totaldifficulty}: ScryptRanking) => {
-    const [issue, setIssue] = useState<Issue | null>(null)
+    const [issueData, setIssueData] = useState<any | null>(null)
+    const [loading, setLoading] = useState(true)
     const wallet = useWallet()
 
 
-    const getIssueData = () => {
-        getIssue({txid: origin}).then((data) => {
-            console.log(data)
-            setIssue(data)
-         })
-    }
 
     useEffect(() => {
-         getIssueData()
+        getIssue({txid: origin.split('_')[0]}).then((data) => {
+            console.log("issue data", data)
+            setIssueData(data)
+            setLoading(false)
+         })
     },[origin])
 
-    const handleRefresh = () => {
-        getIssueData()
-    }
-
-    const handleAddBounty = async (issue: Issue) => {
-        const [newIssue, tx ] = await addBounty({
-            issue: issue,
-            satoshis: 0n,
-            signer: wallet!.signer
-        })
-    }
-
-    const handleComment = async (issue: Issue) => {
-
-    }
-
-    const handleComplete = async (issue: Issue) => {
-
-    }
     return (
         <div className=''>
-            <IssueCard origin={origin} refresh={handleRefresh} methodCalls={[]} issue={issue!} onAddBounty={handleAddBounty} onLeaveComment={handleComment} onMarkAsComplete={handleComplete}/>
+            {!loading ? <IssueCard methodCalls={issueData.methodCalls} title={issueData.contract.title} description={issueData.contract.description} repo={issueData.contract.repo} organization={issueData.contract.organization} owner={issueData.contract.owner} assignee={issueData.contract.assignee} closed={issueData.contract.closed} completed={issueData.contract.closed} origin={issueData.origin.origin} location={issueData.origin.location} txid={issueData.origin.txid}  />: "loading"}
         </div>
     )
 }

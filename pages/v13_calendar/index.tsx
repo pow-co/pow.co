@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import ThreeColumnLayout from "../../components/v13_ThreeColumnLayout";
 import NewEventForm, { NewEvent } from "../../components/v13_NewEventForm";
 import axios from "axios";
-import { bsv } from "scrypt-ts";
+import toast from "react-hot-toast"
+import { HashedSet, PubKey, bsv, toByteString } from "scrypt-ts";
 import useWallet from "../../hooks/v13_useWallet";
 import { useRouter } from "next/navigation";
 import Loader from "../../components/Loader";
@@ -12,12 +13,17 @@ import { ScryptRanking } from "../issues";
 import { getMeeting } from "../../services/meetings";
 import SimpleEventCard from "../../components/v13_SimpleEventCard";
 import Link from "next/link";
+import { CalendarEventOperator } from "../../services/calendar_event_operator";
+import { Meeting } from "@/contracts/meeting";
+import artifact from "../../artifacts/meeting.json"
+
+Meeting.loadArtifact(artifact)
 
 
 const RankedMeetingCard = ({origin, totaldifficulty}: ScryptRanking) => {
   const [cardLoading, setCardLoading] = useState(true)
   const [meeting, setMeeting] = useState<any | null>(null)
-  const wallet = useWallet()
+
 
   const getMeetingData = () => {
       getMeeting({txid: origin}).then((data) => {
@@ -97,39 +103,48 @@ const CalendarPage = () => {
 const { rankings } = data || []
 
   const handleSubmitEvent = async (newEvent: NewEvent) => {
-      try {
+    
+        if (!wallet) {
+      
+          toast("Error No Wallet Connected", {
+            icon: "📛",
+            style: {
+              borderRadius: "10px",
+              background: "#333",
+              color: "#fff",
+            },
+          });
+          
+          return
+          
+        }
+        
+        console.log("submiting new event", newEvent)
+        try {
+        
+        const meeting = new Meeting(
+          toByteString(newEvent.title, true),
+          toByteString(newEvent.description!, true),
+          BigInt(newEvent.start),
+          BigInt(newEvent.end!),
+          toByteString(newEvent.location!, true),
+          toByteString(newEvent.url!, true),
+          toByteString(newEvent.status!, true),
+          PubKey(toByteString(wallet!.publicKey!.toString())),
+          new HashedSet<PubKey>(),
+          new HashedSet<PubKey>(),
+          newEvent.inviteRequired
+        )
 
-        const { data } = await axios.post(`https://pow.co/api/v1/meetings/new`, {
-            title: newEvent.title,
-            description: newEvent.description,
-            start: newEvent.start,
-            end: newEvent.end,
-            owner: newEvent.owner,
-            organizer: newEvent.organizer,
-            url: newEvent.url,
-            status: newEvent.status,
-            location: newEvent.location,
-            inviteRequired: newEvent.inviteRequired,
-        })
+        await meeting.connect(wallet.signer)
 
-        const script = bsv.Script.fromASM(data.scriptASM)
+        const result = await meeting.deploy(10)
 
-        const tx = await wallet?.createTransaction({
-            outputs: [
-                new bsv.Transaction.Output({
-                    script,
-                    satoshis: 10
-                })
-            ]
-        })
+        console.log(result)
 
-        if (!tx) { return }
+        console.log('meeting.created', result.hash)
 
-        console.log('meeting.created', tx.hash)
-
-        router.push(`/events/${tx.hash}`)
-
-        console.log('meeting.new', data)
+        router.push(`/events/${result.hash}`)
 
     } catch(error) {
 

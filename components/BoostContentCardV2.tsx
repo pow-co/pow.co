@@ -456,7 +456,7 @@ const BoostContentCardV2 = ({
 
   const navigate = (e: any) => {
     e.stopPropagation();
-    router.push(`/${content_txid}`);
+    router.push(`/t/${content_txid}`);
   };
 
   return (

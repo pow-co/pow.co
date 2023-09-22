@@ -1,8 +1,9 @@
+'use client'
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { IssueOperator } from "../services/issue_operator";
-import useWallet from "../hooks/useWallet";
+import useWallet from "../hooks/v13_useWallet";
 
 interface IssueCardProps {
   methodCalls: any[];
@@ -129,7 +130,7 @@ const IssueCard = (issue: IssueCardProps) => {
   }
 
   return (
-    <div className="border rounded-md space-y-2">
+    <div className="border border-primary-500 rounded-md space-y-2">
       <Link href={`/issues/${issue.txid}`}>
         <h2 className="text-white cursor-pointer bg-primary-500 p-4 text-xl font-bold">
           {issue.title}

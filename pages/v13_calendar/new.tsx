@@ -6,8 +6,8 @@ import UserIcon from '../../components/UserIcon'
 import Datepicker from "tailwind-datepicker-react"
 import { useDropzone } from 'react-dropzone';
 import { buf2hex } from '../../utils/file'
-
-import { SmartContract, Scrypt, bsv } from "scrypt-ts";
+import toast from "react-hot-toast"
+import { SmartContract, Scrypt, bsv, toByteString, PubKey, HashedSet } from "scrypt-ts";
 import axios from "axios";
 import useWallet from "../../hooks/v13_useWallet";
 import { useRouter } from "next/navigation";
@@ -31,39 +31,45 @@ const NewCalendarEventPage = () => {
     const wallet = useWallet()
     
     const handleSubmitEvent = async (newEvent: NewEvent) => {
+        if (!wallet) {
+      
+            toast("Error No Wallet Connected", {
+              icon: "📛",
+              style: {
+                borderRadius: "10px",
+                background: "#333",
+                color: "#fff",
+              },
+            });
+            
+            return
+            
+        }
         try {
-    
-            const { data } = await axios.post(`https://pow.co/api/v1/meetings/new`, {
-                title: newEvent.title,
-                description: newEvent.description,
-                start: newEvent.start,
-                end: newEvent.end,
-                owner: newEvent.owner,
-                organizer: newEvent.organizer,
-                url: newEvent.url,
-                status: newEvent.status,
-                location: newEvent.location,
-                inviteRequired: newEvent.inviteRequired,
-            })
-    
-            const script = bsv.Script.fromASM(data.scriptASM)
-    
-            const tx = await wallet?.createTransaction({
-                outputs: [
-                    new bsv.Transaction.Output({
-                        script,
-                        satoshis: 10
-                    })
-                ]
-            })
-    
-            if (!tx) { return }
-    
-            console.log('meeting.created', tx.hash)
-    
-            router.push(`/events/${tx.hash}`)
-    
-            console.log('meeting.new', data)
+            
+            const meeting = new Meeting(
+                toByteString(newEvent.title, true),
+                toByteString(newEvent.description!, true),
+                BigInt(newEvent.start),
+                BigInt(newEvent.end!),
+                toByteString(newEvent.location!, true),
+                toByteString(newEvent.url!, true),
+                toByteString(newEvent.status!, true),
+                PubKey(toByteString(wallet!.publicKey!.toString())),
+                new HashedSet<PubKey>(),
+                new HashedSet<PubKey>(),
+                newEvent.inviteRequired
+            )
+
+            await meeting.connect(wallet.signer)
+
+            const result = await meeting.deploy(10)
+
+            console.log(result)
+
+            console.log('meeting.created', result.hash)
+
+            router.push(`/events/${result.hash}`)
     
         } catch(error) {
     

@@ -70,8 +70,8 @@ function FindOrCreate() {
         });
 
         console.log(tx);
-        router.prefetch(`/${tx.hash}`);
-        router.push(`/${tx.hash}`);
+        router.prefetch(`/t/${tx.hash}`);
+        router.push(`/t/${tx.hash}`);
       } catch (error) {
         console.log(error);
         toast("Error!", {

@@ -179,7 +179,7 @@ export default function WriteNewArticle() {
 
         }
 
-        router.push(`/${tx.hash}`)
+        router.push(`/t/${tx.hash}`)
 
       } catch (error) {
         console.log(error)
