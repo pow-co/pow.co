@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { TransactionDetails, URLPreview } from '../app/t/[txid]/page'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -7,6 +7,10 @@ import UserIcon from './UserIcon'
 import moment from 'moment'
 import ContentText from './ContentText'
 import BoostButton from './v13_BoostpowButton/BoostButton'
+import SimpleEventCard from './v13_SimpleEventCard'
+import IssueCard from './v13_IssueCard'
+import ReactPlayer from 'react-player'
+import { TwitterTweetEmbed } from 'react-twitter-embed'
 
 interface PostDetailCardProps {
     details: TransactionDetails
@@ -14,7 +18,10 @@ interface PostDetailCardProps {
 const PostDetailCard = ({details}:PostDetailCardProps) => {
     const router = useRouter()
     const gradient = "from-pink-400 to-violet-600";
-    console.log(details.tags)
+    
+    useEffect(() => {
+        console.log("details",details)
+    },[])
     
   return (
     <div
@@ -27,7 +34,7 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
             </p>
         </div>
         <div className="col-span-12 max-w-screen mb-0.5 grid grid-cols-12 items-start px-4 pt-4">
-            <div className="col-span-1 flex h-full w-full flex-col justify-center">
+            <div className="col-span-1 flex h-full w-full flex-col justify-start">
                 {details.author?.paymail && (
                     <Link
                         className="justify-start"
@@ -67,6 +74,8 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
                     </a> 
                 </div>
                 {details.textContent && <ContentText content={details.textContent}/>}
+                {details.smartContractClass === "calendar" && <SimpleEventCard txid={details.txid} {...details.json}/>}
+                {details.smartContractClass === "issue" && <IssueCard methodCalls={details.json.methodCalls} title={details.json.contract.title} description={details.json.contract.description} repo={details.json.contract.repo} organization={details.json.contract.organization} owner={details.json.contract.owner} assignee={details.json.contract.assignee} closed={details.json.contract.closed} completed={details.json.contract.closed} origin={details.json.origin.origin} location={details.json.origin.location} txid={details.json.origin.txid} />}
                 {details.files && details.files?.length > 0 && (
                     <div
                     className="grid grid-gap-0.5 gap-0.5 mt-2 rounded-xl select-none overflow-hidden"
@@ -78,12 +87,12 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
                     >
                     {details.files!.map((media: any, index: number) => (
                         <div
-                        id={`media_${details.txid}_${index.toString()}`}
+                        id={`media_${media.txid? media.txid : details.txid}_${index.toString()}`}
                         className="relative rounded-xl overflow-hidden"
                         >
                             <div className="h-full">
                                 <img
-                                    src={media}
+                                    src={media.txid? `https://dogefiles.twetch.app/${media.txid}` : `data:${media.contentType};base64,${media.content}`}
                                     className="rounded-xl h-full w-full grid object-cover"
                                 />
                             </div>
@@ -118,6 +127,10 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
                         </div>
                     </div>
                     </a>
+                ))}
+                {details.tweetId && <TwitterTweetEmbed tweetId={details.tweetId} />}
+                {details.playableURLs?.map((url:string, index:number) => (
+                        <ReactPlayer key={url} width={'100%'} height={300} controls={true}  url={url} />
                 ))}
             </div>
         </div>

@@ -247,7 +247,7 @@ export const SocialEditor: FC<PropsWithChildren<SocialEditorProps>> = ({
         console.error('post.submit.powco.error', error)
       })
 
-      router.push(`/${tx.hash}`)
+      router.push(`/t/${tx.hash}`)
 
     } catch (error) {
 

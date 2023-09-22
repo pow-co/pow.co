@@ -43,6 +43,38 @@ type Props = {
     params: { txid: string }
 }
 
+const playerKeys = [
+    "youtube",
+    "youtu",
+    "soundcloud",
+    "facebook",
+    "vimeo",
+    "wistia",
+    "mixcloud",
+    "dailymotion",
+    "twitch",
+];
+
+function extractUrls(text: string) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.match(urlRegex);
+  }
+
+function normalizeUrls(urls: string[]): string[] {
+    const normalizedUrls: string[] = [];
+  
+    for (const url of urls) {
+      let normalizedUrl = url;
+  
+      // Remove the "m." subdomain from the URL
+      normalizedUrl = normalizedUrl.replace(/m\./i, "");
+  
+      normalizedUrls.push(normalizedUrl);
+    }
+  
+    return normalizedUrls;
+}
+
 interface Player {
     id?: number,
     name?: string;
@@ -55,6 +87,7 @@ interface Player {
 interface BitcoinFile {
     contentType: string;
     content: string;
+    txid?: string;
 }
 
 interface BoostTag {
@@ -75,32 +108,53 @@ export interface TransactionDetails {
     textContent?: string;
     files?: BitcoinFile[];
     urls?: URLPreview[];
+    playableURLs?: string[];
+    tweetId?: string;
     difficulty?: number;
     tags?: BoostTag[];
     inReplyToTx?: string;
     replies?: TransactionDetails[];
     app?: string;
     createdAt?: Date;
+    json?: any;
+    smartContractClass?: string;
 }
 
 async function getTransactionDetails(txid: string): Promise<TransactionDetails | null> {
-    const [twetchResult, contentResponse, repliesResponse, onchainData] = await Promise.all([
+    
+    const [twetchResult, contentResponse, repliesResponse, onchainData, issueResponse, videoResponse] = await Promise.all([
         twetchDetailQuery(txid).catch((err) => console.log(err)),
-        axios.get(`https://pow.co/api/v1/content/${txid}`),
-        axios.get(`https://pow.co/api/v1/content/${txid}/replies`),
-        axios.get(`https://onchain.sv/api/v1/events/${txid}`)
+        axios.get(`https://pow.co/api/v1/content/${txid}`).catch((err) => {
+            return { data: {}}
+        }),
+        axios.get(`https://pow.co/api/v1/content/${txid}/replies`).catch((err) => {
+            return { data: {}}
+        }),
+        axios.get(`https://onchain.sv/api/v1/events/${txid}`).catch((err) => {
+            return { data: {}}
+        }),
+        axios.get(`https://pow.co/api/v1/issues/${txid}`).catch((err) => {
+            return { data: null}
+        }),
+        axios.get(`https://hls.pow.co/api/v1/videos/${txid}`).catch((err) =>{
+            return { data: null}
+        })
     ])
 
-    let { content } = contentResponse.data
+    let { content } = contentResponse.data || {}
+    let issue = issueResponse.data
+    let video = issueResponse.data
     let { tags } = contentResponse.data
     let { events } = onchainData.data;
-    let difficulty = tags.reduce((acc: number, curr: any) => acc + curr.difficulty, 0)
+    let difficulty = tags?.reduce((acc: number, curr: any) => acc + curr.difficulty, 0) || 0
     let replies = repliesResponse.data.replies || []
     let inReplyToTx = contentResponse.data.context_txid || null
 
-    let author, textContent, app, createdAt;
+    let author, textContent, app, createdAt, json, smartContractClass, tweetId;
     let urls: string[] = []
-    let files = []
+    let playableURLs: string[] = []
+    let files: BitcoinFile[] = []
+    let previewURLs: URLPreview[] = []
     
     if (twetchResult){
         textContent = twetchResult.bContent
@@ -109,27 +163,56 @@ async function getTransactionDetails(txid: string): Promise<TransactionDetails |
             paymail: `${twetchResult.userId}@twetch.me`,
             avatar: twetchResult.userByUserId.icon,
         }
-        files = JSON.parse(twetchResult.files).map(async (fileTx:string) => {
+        twetchResult.files && JSON.parse(twetchResult.files).map(async (fileTx:string) => {
             let src = `https://dogefiles.twetch.app/${fileTx}`
             let response = await fetch(src) 
             let mime = response.headers.get("content-type")
-            return {
-                contentType: mime,
-                content: src
+            files.push({
+                contentType: mime!,
+                content: src,
+                txid: fileTx
 
-            }
+            })
         })
         urls = parseURLsFromMarkdown(textContent)
+        for (const url of urls){
+            const preview = await fetchPreview(url)
+            previewURLs.push(preview)
+        }
         inReplyToTx = twetchResult.postByReplyPostId?.transaction
-        replies = twetchResult.postsByReplyPostId?.edges?.map((node:any) => node.transaction)
+        twetchResult.postsByReplyPostId?.edges?.map((node:any) => {
+            replies.push({txid: node.node.transaction})
+        })
         app = "twetch.com"
         createdAt = twetchResult.createdAt
-    } 
-    if (content.bmap){
-        content.bmap.B.forEach((bContent: any) => {
+    } else if (issue) {
+        smartContractClass = 'issue'
+        json = issue
+        createdAt = issue.origin.createdAt
+    } else if (content.content_type?.includes("calendar")){
+        json = content.content_json
+        smartContractClass = 'calendar'
+        createdAt = content.createdAt
+    } else if (video) {
+        try {
+            await axios.head(`https://hls.pow.co/${video.sha256Hash}.m3u8`)
+            playableURLs.push(`https://hls.pow.co/${video.sha256Hash}.m3u8`) 
+        } catch (error) {
+            playableURLs.push(`https://hls.pow.co/${video.sha256Hash}.mp4`)
+        } 
+    } else if (content.bmap && content.bmap.B && content.bmap.MAP[0]){
+        //content.bmap.B.forEach(async (bContent: any) => {
+        for (const bContent of content.bmap.B){    
             if (bContent['content-type'].includes("text")){
                 textContent = bContent.content
+                urls = extractUrls(textContent) || []
                 urls = parseURLsFromMarkdown(textContent)
+                urls = normalizeUrls(urls);
+                console.log("URLS",urls)
+                for (const url of urls){
+                    const preview = await fetchPreview(url)
+                    previewURLs.push(preview)
+                }
             } else if (bContent["content-type"].includes("image")) {
                 files.push({
                     contentType: bContent["content-type"],
@@ -138,7 +221,7 @@ async function getTransactionDetails(txid: string): Promise<TransactionDetails |
             } else {
                 console.log("unsuported content type")
             }
-        });
+        };
         inReplyToTx = content.bmap.MAP[0].tx
         createdAt = content.createdAt
         let paymail = content.bmap.MAP[0].paymail
@@ -171,38 +254,44 @@ async function getTransactionDetails(txid: string): Promise<TransactionDetails |
             name
         }
         app = content.bmap.MAP[0].app
-    }
-    if (events){
-        events.forEach((evt:any) => {
-            if(evt.type === "url"){
-                urls.push(evt.content.url)
+    } else if (events){
+        createdAt = events[0].createdAt
+        for (const ev of events){
+            if (ev.type === "url") {
+            if (ev.content.url.match(/.m3u8$/)) {
+                console.log("PLAYABLE URL", ev.content.url)
+                playableURLs.push(ev.content.url as string)
+            } else if (playerKeys.some((key) => ev.content.url.includes(key))) {
+                let normalizedUrls = normalizeUrls([ev.content.url]);
+                normalizedUrls.forEach(url => {
+                    playableURLs.push(url)
+                });
+              } else if (ev.content.url.includes("twitter")) {
+                tweetId = ev.content.url.split("/").pop();
+              } else {
+                const preview = await fetchPreview(ev.content.url)
+                  previewURLs.push(preview);
+              }
             }
-        });
+        };
     }
 
-    let previewUrls
-    console.log(urls)
-    /* if(urls?.length > 0){
-        urls?.forEach(async url => {
-            
-            let preview = await fetchPreview(url)
-            previewUrls?.push(preview)
-        })
-
-    } */
     const txDetails: TransactionDetails = {
         txid,
         author,
         textContent,
         files,
-        urls: previewUrls,
+        urls: previewURLs,
+        playableURLs,
+        tweetId,
         difficulty,
         tags,
         inReplyToTx,
         replies,
         app,
-        createdAt
-        
+        createdAt,
+        json,
+        smartContractClass
     }
 
     return txDetails
@@ -247,12 +336,14 @@ const TransactionDetailPage = async ({
   }: {
     params: { txid: string }
   }) => {
+
     const details = await getTransactionDetails(txid)
+
   return (
     <ThreeColumnLayout>
         <div className='my-5 sm:my-10 min-h-screen'>
             {details?.inReplyToTx && <BoostContentCardV2 content_txid={details.inReplyToTx} />}
-            <PostDetailCard details={details!}/>
+            {<PostDetailCard details={details!}/>}
             {details?.replies?.map((reply) => <BoostContentCardV2 content_txid={reply.txid}/>)}
         </div>
     </ThreeColumnLayout>

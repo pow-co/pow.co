@@ -1,3 +1,4 @@
+'use client'
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect} from 'react'
 import useWallet from '../hooks/v13_useWallet';
@@ -17,15 +18,16 @@ interface MeetingCardProps {
 }
 const SimpleEventCard = (meeting: MeetingCardProps) => {
     const router = useRouter()
-    const [contractOperator, setContractOperator] = useState<CalendarEventOperator | null>()
+    const [contractOperator, setContractOperator] = useState<CalendarEventOperator | null>(null)
     const wallet = useWallet()
 
     useEffect(() => {
-    CalendarEventOperator.load({ origin, signer: wallet!.signer }).then(setContractOperator)
+        console.log("meeting data", meeting)
+    CalendarEventOperator.load({ origin: meeting.origin, signer: wallet!.signer }).then(setContractOperator)
     },[wallet])
 
     useEffect(() => {
-        contractOperator && console.log("contract oprator loaded", contractOperator)
+        contractOperator && console.log("contract operator loaded", contractOperator)
     },[])
 
     const handleAttend = (e:any) => {
