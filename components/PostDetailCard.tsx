@@ -7,6 +7,8 @@ import UserIcon from './UserIcon'
 import moment from 'moment'
 import ContentText from './ContentText'
 import BoostButton from './v13_BoostpowButton/BoostButton'
+import SimpleEventCard from './v13_SimpleEventCard'
+import IssueCard from './v13_IssueCard'
 
 interface PostDetailCardProps {
     details: TransactionDetails
@@ -16,7 +18,7 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
     const gradient = "from-pink-400 to-violet-600";
     
     useEffect(() => {
-        console.log(details)
+        console.log("details",details)
     },[])
     
   return (
@@ -70,7 +72,9 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
                     </a> 
                 </div>
                 {details.textContent && <ContentText content={details.textContent}/>}
-                {details.files && details.files?.length > 0 && (
+                {details.smartContractClass === "calendar" && <SimpleEventCard txid={details.txid} {...details.json}/>}
+{/*                 {details.smartContractClass === "issue" && <IssueCard />}
+ */}                {details.files && details.files?.length > 0 && (
                     <div
                     className="grid grid-gap-0.5 gap-0.5 mt-2 rounded-xl select-none overflow-hidden"
                     style={{

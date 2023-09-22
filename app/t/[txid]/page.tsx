@@ -6,6 +6,7 @@ import { userProfileCardAnonQuery } from '../../../services/twetch';
 import PostDetailCard from '../../../components/PostDetailCard';
 import ThreeColumnLayout from '../../../components/v13_ThreeColumnLayout';
 import BoostContentCardV2 from '../../../components/v13_BoostContentCardV2';
+import SimpleEventCard from '../../../components/v13_SimpleEventCard';
 
 
 function parseURLsFromMarkdown(text: string) {
@@ -82,11 +83,13 @@ export interface TransactionDetails {
     replies?: TransactionDetails[];
     app?: string;
     createdAt?: Date;
+    json?: any;
+    smartContractClass?: string;
 }
 
 async function getTransactionDetails(txid: string): Promise<TransactionDetails | null> {
     
-    const [twetchResult, contentResponse, repliesResponse, onchainData] = await Promise.all([
+    const [twetchResult, contentResponse, repliesResponse, onchainData, issuesResponse] = await Promise.all([
         twetchDetailQuery(txid).catch((err) => console.log(err)),
         axios.get(`https://pow.co/api/v1/content/${txid}`).catch((err) => {
             console.log(err)
@@ -99,17 +102,22 @@ async function getTransactionDetails(txid: string): Promise<TransactionDetails |
         axios.get(`https://onchain.sv/api/v1/events/${txid}`).catch((err) => {
             console.log(err)
             return { data: {}}
-        })
+        }),
+        axios.get(`https://pow.co/api/v1/issues/${txid}`).catch((err) => {
+            console.log(err)
+            return { data: {}}
+        }),
     ])
 
     let { content } = contentResponse.data || {}
+    console.log("issues",issuesResponse)
     let { tags } = contentResponse.data
     let { events } = onchainData.data;
     let difficulty = tags?.reduce((acc: number, curr: any) => acc + curr.difficulty, 0) || 0
     let replies = repliesResponse.data.replies || []
     let inReplyToTx = contentResponse.data.context_txid || null
 
-    let author, textContent, app, createdAt;
+    let author, textContent, app, createdAt, json, smartContractClass;
     let urls: string[] = []
     let files: BitcoinFile[] = []
     
@@ -138,6 +146,13 @@ async function getTransactionDetails(txid: string): Promise<TransactionDetails |
         })
         app = "twetch.com"
         createdAt = twetchResult.createdAt
+    } else if (issuesResponse) {
+        console.log(issuesResponse)
+        smartContractClass = 'issue'
+        json = issuesResponse.data
+    } else if (content.content_type.includes("calendar")){
+        json = content.content_json
+        smartContractClass = 'calendar'
     } else if (content.bmap){
         content.bmap.B.forEach((bContent: any) => {
             if (bContent['content-type'].includes("text")){
@@ -214,7 +229,9 @@ async function getTransactionDetails(txid: string): Promise<TransactionDetails |
         inReplyToTx,
         replies,
         app,
-        createdAt
+        createdAt,
+        json,
+        smartContractClass
         
     }
 
@@ -267,7 +284,7 @@ const TransactionDetailPage = async ({
     <ThreeColumnLayout>
         <div className='my-5 sm:my-10 min-h-screen'>
             {details?.inReplyToTx && <BoostContentCardV2 content_txid={details.inReplyToTx} />}
-            <PostDetailCard details={details!}/>
+            {<PostDetailCard details={details!}/>}
             {details?.replies?.map((reply) => <BoostContentCardV2 content_txid={reply.txid}/>)}
         </div>
     </ThreeColumnLayout>

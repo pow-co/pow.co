@@ -1,3 +1,4 @@
+'use client'
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect} from 'react'
 import useWallet from '../hooks/v13_useWallet';
@@ -21,6 +22,7 @@ const SimpleEventCard = (meeting: MeetingCardProps) => {
     const wallet = useWallet()
 
     useEffect(() => {
+        console.log("meeting data", meeting)
     CalendarEventOperator.load({ origin, signer: wallet!.signer }).then(setContractOperator)
     },[wallet])
 
