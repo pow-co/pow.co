@@ -43,7 +43,7 @@ type Props = {
     params: { txid: string }
 }
 
-export const playerKeys = [
+const playerKeys = [
     "youtube",
     "youtu",
     "soundcloud",
@@ -55,12 +55,12 @@ export const playerKeys = [
     "twitch",
 ];
 
-export function extractUrls(text: string) {
+function extractUrls(text: string) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.match(urlRegex);
   }
 
-export function normalizeUrls(urls: string[]): string[] {
+function normalizeUrls(urls: string[]): string[] {
     const normalizedUrls: string[] = [];
   
     for (const url of urls) {
