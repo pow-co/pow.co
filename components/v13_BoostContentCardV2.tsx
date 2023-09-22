@@ -20,7 +20,7 @@ import Youtube from "react-youtube";
 import { twetchDetailQuery } from "./Twetch";
 import { NFTJig, relayDetailQuery } from "./RelayClub";
 import ReactPlayer from "react-player/lazy";
-import LoveOrdButton from "./LoveOrdButton";
+import LoveOrdButton from "./v13_LoveOrdButton";
 import { useRelay } from "../v13_context/RelayContext";
 
 import { Meeting, getMeeting } from '../services/meetings'
@@ -217,14 +217,27 @@ const BoostContentCardV2 = ({
 
   useEffect(() => {
     getData().then((res) => {
-      parseContent(res.content);
+      console.log(content_txid,res)
+      if(res.twetchResult){
+        setContentText(res.twetchResult.bContent || "");
+        setPaymail(`${res.twetchResult.userId}@twetch.me`);
+        setUserName(res.twetchResult.userByUserId.name);
+        setPostMedia(JSON.parse(res.twetchResult.files) || []);
+        setInReplyTo(res.twetchResult.postByReplyPostId?.transaction || "");
+        setTimestamp(moment(res.twetchResult.createdAt).unix());
+        setCommentCount(res.twetchResult.postsByReplyPostId.totalCount);
+        setIsTwetch(true);
+      } else {
+        parseContent(res.content);
+
+      }
       setTags(res.tags);
       if (!difficulty && res.tags) {
         setComputedDiff(
           res.tags.reduce((acc: number, curr: any) => acc + curr.difficulty, 0)
         );
       }
-      setCommentCount(res.replies.length);
+      setCommentCount(commentCount + res.replies.length);
       setLoading(false);
     });
   }, []);
@@ -286,20 +299,7 @@ const BoostContentCardV2 = ({
 
     if (content.bmap) {
       if (content.bmap.B && content.bmap.MAP) {
-        if (content.bmap.MAP[0].app === "twetch") {
-          console.log("this is a twetch");
-          twetchDetailQuery(content_txid).then((res) => {
-            console.log(res);
-            setContentText(res.bContent || "");
-            setPaymail(`${res.userId}@twetch.me`);
-            setUserName(res.userByUserId.name);
-            setPostMedia(JSON.parse(res.files) || []);
-            setInReplyTo(res.postByReplyPostId?.transaction || "");
-            setTimestamp(moment(res.createdAt).unix());
-            setCommentCount(res.postsByReplyPostId.totalCount);
-            setIsTwetch(true);
-          });
-        } else if (
+        if (
           content.bmap.MAP[0].app == "relayclub" &&
           content.bmap.MAP[0].context === "club"
         ) {
@@ -417,7 +417,8 @@ const BoostContentCardV2 = ({
   };
 
   const getData = async () => {
-    const [contentResult, repliesResult] = await Promise.all([
+    const [twetchResult ,contentResult, repliesResult] = await Promise.all([
+      twetchDetailQuery(content_txid).catch((err) => console.log(err)),
       axios.get(`${BASE}/content/${content_txid}`).catch((err) => {
         console.error("api.content.fetch.error", err);
         return { data: { content: {} } };
@@ -432,7 +433,7 @@ const BoostContentCardV2 = ({
     const { tags } = contentResult.data;
     const replies = repliesResult.data.replies || [];
 
-    return { content, tags, replies };
+    return { twetchResult, content, tags, replies };
   };
 
   if (loading) {

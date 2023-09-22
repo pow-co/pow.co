@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { TransactionDetails, URLPreview } from '../app/t/[txid]/page'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -14,7 +14,10 @@ interface PostDetailCardProps {
 const PostDetailCard = ({details}:PostDetailCardProps) => {
     const router = useRouter()
     const gradient = "from-pink-400 to-violet-600";
-    console.log(details.tags)
+    
+    useEffect(() => {
+        console.log(details)
+    },[])
     
   return (
     <div
@@ -27,7 +30,7 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
             </p>
         </div>
         <div className="col-span-12 max-w-screen mb-0.5 grid grid-cols-12 items-start px-4 pt-4">
-            <div className="col-span-1 flex h-full w-full flex-col justify-center">
+            <div className="col-span-1 flex h-full w-full flex-col justify-start">
                 {details.author?.paymail && (
                     <Link
                         className="justify-start"
@@ -78,12 +81,12 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
                     >
                     {details.files!.map((media: any, index: number) => (
                         <div
-                        id={`media_${details.txid}_${index.toString()}`}
+                        id={`media_${media.txid? media.txid : details.txid}_${index.toString()}`}
                         className="relative rounded-xl overflow-hidden"
                         >
                             <div className="h-full">
                                 <img
-                                    src={media}
+                                    src={media.txid? `https://dogefiles.twetch.app/${media.txid}` : `data:${media.contentType};base64,${media.content}`}
                                     className="rounded-xl h-full w-full grid object-cover"
                                 />
                             </div>

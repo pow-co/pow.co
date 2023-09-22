@@ -55,6 +55,7 @@ interface Player {
 interface BitcoinFile {
     contentType: string;
     content: string;
+    txid?: string;
 }
 
 interface BoostTag {
@@ -84,23 +85,33 @@ export interface TransactionDetails {
 }
 
 async function getTransactionDetails(txid: string): Promise<TransactionDetails | null> {
+    
     const [twetchResult, contentResponse, repliesResponse, onchainData] = await Promise.all([
         twetchDetailQuery(txid).catch((err) => console.log(err)),
-        axios.get(`https://pow.co/api/v1/content/${txid}`),
-        axios.get(`https://pow.co/api/v1/content/${txid}/replies`),
-        axios.get(`https://onchain.sv/api/v1/events/${txid}`)
+        axios.get(`https://pow.co/api/v1/content/${txid}`).catch((err) => {
+            console.log(err)
+            return { data: {}}
+        }),
+        axios.get(`https://pow.co/api/v1/content/${txid}/replies`).catch((err) => {
+            console.log(err)
+            return { data: {}}
+        }),
+        axios.get(`https://onchain.sv/api/v1/events/${txid}`).catch((err) => {
+            console.log(err)
+            return { data: {}}
+        })
     ])
 
-    let { content } = contentResponse.data
+    let { content } = contentResponse.data || {}
     let { tags } = contentResponse.data
     let { events } = onchainData.data;
-    let difficulty = tags.reduce((acc: number, curr: any) => acc + curr.difficulty, 0)
+    let difficulty = tags?.reduce((acc: number, curr: any) => acc + curr.difficulty, 0) || 0
     let replies = repliesResponse.data.replies || []
     let inReplyToTx = contentResponse.data.context_txid || null
 
     let author, textContent, app, createdAt;
     let urls: string[] = []
-    let files = []
+    let files: BitcoinFile[] = []
     
     if (twetchResult){
         textContent = twetchResult.bContent
@@ -109,23 +120,25 @@ async function getTransactionDetails(txid: string): Promise<TransactionDetails |
             paymail: `${twetchResult.userId}@twetch.me`,
             avatar: twetchResult.userByUserId.icon,
         }
-        files = JSON.parse(twetchResult.files).map(async (fileTx:string) => {
+        twetchResult.files && JSON.parse(twetchResult.files).map(async (fileTx:string) => {
             let src = `https://dogefiles.twetch.app/${fileTx}`
             let response = await fetch(src) 
             let mime = response.headers.get("content-type")
-            return {
-                contentType: mime,
-                content: src
+            files.push({
+                contentType: mime!,
+                content: src,
+                txid: fileTx
 
-            }
+            })
         })
         urls = parseURLsFromMarkdown(textContent)
         inReplyToTx = twetchResult.postByReplyPostId?.transaction
-        replies = twetchResult.postsByReplyPostId?.edges?.map((node:any) => node.transaction)
+        twetchResult.postsByReplyPostId?.edges?.map((node:any) => {
+            replies.push({txid: node.node.transaction})
+        })
         app = "twetch.com"
         createdAt = twetchResult.createdAt
-    } 
-    if (content.bmap){
+    } else if (content.bmap){
         content.bmap.B.forEach((bContent: any) => {
             if (bContent['content-type'].includes("text")){
                 textContent = bContent.content
@@ -171,8 +184,7 @@ async function getTransactionDetails(txid: string): Promise<TransactionDetails |
             name
         }
         app = content.bmap.MAP[0].app
-    }
-    if (events){
+    } else if (events){
         events.forEach((evt:any) => {
             if(evt.type === "url"){
                 urls.push(evt.content.url)
@@ -190,6 +202,7 @@ async function getTransactionDetails(txid: string): Promise<TransactionDetails |
         })
 
     } */
+
     const txDetails: TransactionDetails = {
         txid,
         author,
@@ -247,7 +260,9 @@ const TransactionDetailPage = async ({
   }: {
     params: { txid: string }
   }) => {
+
     const details = await getTransactionDetails(txid)
+
   return (
     <ThreeColumnLayout>
         <div className='my-5 sm:my-10 min-h-screen'>
