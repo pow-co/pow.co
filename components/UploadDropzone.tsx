@@ -115,7 +115,7 @@ export default function MyDropzone({ owner }: { owner: string }) {
 
       setUploaded(true)
 
-      router.push(`/${tx.hash}`)
+      router.push(`/t/${tx.hash}`)
 
     } catch(error) {
 

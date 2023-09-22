@@ -125,7 +125,7 @@ const { rankings } = data || []
 
         console.log('meeting.created', tx.hash)
 
-        router.push(`/${tx.hash}`)
+        router.push(`/t/${tx.hash}`)
 
         console.log('meeting.new', data)
 
