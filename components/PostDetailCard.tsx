@@ -9,6 +9,8 @@ import ContentText from './ContentText'
 import BoostButton from './v13_BoostpowButton/BoostButton'
 import SimpleEventCard from './v13_SimpleEventCard'
 import IssueCard from './v13_IssueCard'
+import ReactPlayer from 'react-player'
+import { TwitterTweetEmbed } from 'react-twitter-embed'
 
 interface PostDetailCardProps {
     details: TransactionDetails
@@ -18,7 +20,7 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
     const gradient = "from-pink-400 to-violet-600";
     
     useEffect(() => {
-        console.log("details",details.json)
+        console.log("details",details)
     },[])
     
   return (
@@ -125,6 +127,10 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
                         </div>
                     </div>
                     </a>
+                ))}
+                {details.tweetId && <TwitterTweetEmbed tweetId={details.tweetId} />}
+                {details.playableURLs?.map((url:string, index:number) => (
+                        <ReactPlayer key={url} width={'100%'} height={300} controls={true}  url={url} />
                 ))}
             </div>
         </div>
