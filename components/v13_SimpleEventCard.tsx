@@ -18,16 +18,16 @@ interface MeetingCardProps {
 }
 const SimpleEventCard = (meeting: MeetingCardProps) => {
     const router = useRouter()
-    const [contractOperator, setContractOperator] = useState<CalendarEventOperator | null>()
+    const [contractOperator, setContractOperator] = useState<CalendarEventOperator | null>(null)
     const wallet = useWallet()
 
     useEffect(() => {
         console.log("meeting data", meeting)
-    CalendarEventOperator.load({ origin, signer: wallet!.signer }).then(setContractOperator)
+    CalendarEventOperator.load({ origin: meeting.origin, signer: wallet!.signer }).then(setContractOperator)
     },[wallet])
 
     useEffect(() => {
-        contractOperator && console.log("contract oprator loaded", contractOperator)
+        contractOperator && console.log("contract operator loaded", contractOperator)
     },[])
 
     const handleAttend = (e:any) => {

@@ -18,7 +18,7 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
     const gradient = "from-pink-400 to-violet-600";
     
     useEffect(() => {
-        console.log("details",details)
+        console.log("details",details.json)
     },[])
     
   return (
@@ -73,8 +73,8 @@ const PostDetailCard = ({details}:PostDetailCardProps) => {
                 </div>
                 {details.textContent && <ContentText content={details.textContent}/>}
                 {details.smartContractClass === "calendar" && <SimpleEventCard txid={details.txid} {...details.json}/>}
-{/*                 {details.smartContractClass === "issue" && <IssueCard />}
- */}                {details.files && details.files?.length > 0 && (
+                {details.smartContractClass === "issue" && <IssueCard methodCalls={details.json.methodCalls} title={details.json.contract.title} description={details.json.contract.description} repo={details.json.contract.repo} organization={details.json.contract.organization} owner={details.json.contract.owner} assignee={details.json.contract.assignee} closed={details.json.contract.closed} completed={details.json.contract.closed} origin={details.json.origin.origin} location={details.json.origin.location} txid={details.json.origin.txid} />}
+                {details.files && details.files?.length > 0 && (
                     <div
                     className="grid grid-gap-0.5 gap-0.5 mt-2 rounded-xl select-none overflow-hidden"
                     style={{
