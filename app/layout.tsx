@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
     title: 'The Proof of Work Cooperative',
-    description: 'People corrdinating using costly signals',
+    description: 'People coordinating using costly signals',
     openGraph: {
         title: 'The Proof of Work Wooperative',
         description: 'People coordinating using costly signals',
