@@ -1,48 +1,47 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { ThemeProvider } from 'next-themes'
-import { LocalWalletProvider } from '../v13_context/LocalWalletContext'
-import { RelayProvider } from '../v13_context/RelayContext'
-import { SensiletProvider } from '../v13_context/SensiletContext'
-import { TwetchProvider } from '../v13_context/TwetchContext'
-import { HandCashProvider } from '../v13_context/HandCashContext'
-import { BitcoinProvider } from '../v13_context/BitcoinContext'
-import { TuneProvider } from '../v13_context/TuningContext'
-import Locales from '../v13_context/LocalContext'
-import { Toaster } from 'react-hot-toast';
+import React from "react";
+import { ThemeProvider } from "next-themes";
+import { LocalWalletProvider } from "../v13_context/LocalWalletContext";
+import { RelayProvider } from "../v13_context/RelayContext";
+import { SensiletProvider } from "../v13_context/SensiletContext";
+import { TwetchProvider } from "../v13_context/TwetchContext";
+import { HandCashProvider } from "../v13_context/HandCashContext";
+import { BitcoinProvider } from "../v13_context/BitcoinContext";
+import { TuneProvider } from "../v13_context/TuningContext";
+import { ColorSchemeProvider } from "../v13_context/ColorSchemeContext";
+import Locales from "../v13_context/LocalContext";
+import { Toaster } from "react-hot-toast";
 
-const AppContext = ({
-    children,
-  }: {
-    children: React.ReactNode
-  }) => {
+const AppContext = ({ children }: { children: React.ReactNode }) => {
   return (
     <ThemeProvider
-        attribute="class"
-        enableSystem={false}
-        disableTransitionOnChange
+      attribute="class"
+      enableSystem={false}
+      disableTransitionOnChange
     >
+      <ColorSchemeProvider>
         <LocalWalletProvider>
-        <RelayProvider>
+          <RelayProvider>
             <SensiletProvider>
-            <TwetchProvider>
+              <TwetchProvider>
                 <HandCashProvider>
-                <BitcoinProvider>
+                  <BitcoinProvider>
                     <TuneProvider>
-                    <Locales>
+                      <Locales>
                         {children}
                         <Toaster />
-                    </Locales>
+                      </Locales>
                     </TuneProvider>
-                </BitcoinProvider>
+                  </BitcoinProvider>
                 </HandCashProvider>
-            </TwetchProvider>
+              </TwetchProvider>
             </SensiletProvider>
-        </RelayProvider>
+          </RelayProvider>
         </LocalWalletProvider>
+      </ColorSchemeProvider>
     </ThemeProvider>
-  )
-}
+  );
+};
 
-export default AppContext
+export default AppContext;
