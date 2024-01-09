@@ -2,16 +2,12 @@
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import Script from 'next/script';
-import { SensiletProvider } from '../context/SensiletContext'
-
-import { GetServerSideProps } from 'next'
 
 import '../styles/globals.css';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'react-hot-toast';
 import { init } from '@socialgouv/matomo-next';
 import { useEffect } from 'react';
-import { config } from '../template_config';
 import { RelayProvider } from '../context/RelayContext';
 import { HandCashProvider } from '../context/HandCashContext';
 import { TuneProvider } from '../context/TuningContext';
@@ -19,13 +15,12 @@ import Locales from '../context/LocalContext';
 import { BitcoinProvider } from '../context/BitcoinContext';
 import { TwetchProvider } from '../context/TwetchContext';
 import { LocalWalletProvider } from '../context/LocalWalletContext';
+import { SensiletProvider } from '../context/SensiletContext';
 import 'react-tooltip/dist/react-tooltip.css';
 
-import { useSubdomain } from '../hooks/subdomain'
-
 export default function App({ Component, pageProps }: AppProps) {
-  //const { openGraphData = [] } = pageProps;
-  const { subdomain } = useSubdomain()
+  // const { openGraphData = [] } = pageProps;
+  // const { subdomain } = useSubdomain()
 
   const openGraphData = [
     {
@@ -70,7 +65,7 @@ export default function App({ Component, pageProps }: AppProps) {
       content: "website",
       key: "website",
     },
-  ]
+  ];
 
   useEffect(() => {
     const MATOMO_URL = String(process.env.NEXT_PUBLIC_MATOMO_URL);
@@ -85,7 +80,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>The Proof of Work Cooperative</title>
         {openGraphData.map((og: any) => (
-          <meta {...og} />
+          <meta {...og} key={og} />
         ))}
       </Head>
       <Script
