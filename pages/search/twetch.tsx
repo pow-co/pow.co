@@ -14,7 +14,7 @@ import { useRelay } from '../../context/RelayContext';
 const userRegex = /from:\s*(\d+)/i;
 
 function SearchPage() {
-    const { hasTwetchPrivilege } = useRelay()
+    const  hasTwetchPrivilege  = true
   const router = useRouter();
   const { query } = router;
   const value = useMemo(() => query.v?.toString(), [query]);
