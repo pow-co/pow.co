@@ -1,125 +1,55 @@
-import { useEffect, useState } from "react"
-import ThreeColumnLayout from "../components/ThreeColumnLayout"
-import Loader from "../components/Loader"
-import { useTuning } from "../context/TuningContext"
-import BoostContentCard from "../components/BoostContentCard";
-import { toast } from "react-hot-toast"
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
-import { TwetchCard, twetchDetailQuery } from "../components/Twetch";
 import axios from "axios";
-import { useTheme } from "next-themes";
-import CommentComposer from "../components/CommentComposer";
-import { useBitcoin } from "../context/BitcoinContext";
+import ThreeColumnLayout from "../components/ThreeColumnLayout";
+import Loader from "../components/Loader";
 import ComposerV2 from "../components/ComposerV2";
 import BoostContentCardV2 from "../components/BoostContentCardV2";
 
 export default function DetailPage() {
-  const { startTimestamp } = useTuning()
-  const [loading, setLoading] = useState(false)
-  const [twetch, setTwetch] = useState<any>(null)
-  const [replies, setReplies] = useState<any>(null)
-  const [inReplyTx, setInReplyTx] = useState("")
-  const router = useRouter()
-  const theme = useTheme()
-  const query = router.query
-  const author = null
-  const { wallet } = useBitcoin()
+  const [loading, setLoading] = useState(false);
+  const [replies, setReplies] = useState<any>(null);
+  const [inReplyTx, setInReplyTx] = useState("");
+  const router = useRouter();
+  const { query } = router;
 
-  useEffect(() => {
-    setLoading(true)
-    query.txid && getData().then((res) => {
-      setTwetch(res.twetchResult)
-      setReplies(res.replies)
-      setInReplyTx(res.inReplyTx)
-      setLoading(false)
-    })
-  },[query])
-
-  
-  const getData = async () => {
+  const getData = useCallback(async () => {
     const [twetchResult, contentResponse, repliesResponse] = await Promise.all([
-      twetchDetailQuery(query.txid?.toString()).catch((err)=>console.log(err)),
-      axios.get(`https://pow.co/api/v1/content/${query.txid}`),
-      axios.get(`https://pow.co/api/v1/content/${query.txid}/replies`)
+      axios.get(`https://www.pow.co/api/v1/twetch/${query.txid}`).catch((err) => console.log(err)),
+      axios.get(`https://www.pow.co/api/v1/content/${query.txid}`),
+      axios.get(`https://www.pow.co/api/v1/content/${query.txid}/replies`),
     ]);
 
-    //setReplies(repliesResponse.data.replies)
-    const replies = repliesResponse.data.replies
-    const inReplyTx =  contentResponse.data.content.context_txid || ''
+    const { replies } = repliesResponse.data;
+    const inReplyTx = contentResponse.data.content.context_txid || '';
 
-    return { twetchResult, inReplyTx, replies } 
+    return { twetchResult, inReplyTx, replies }; 
+  }, [query.txid]);
 
-  }
-
-  let content;
-  /* from youtube Link {
-    "id": 1783,
-    "txid": "7daa300c98f5c7adda09cc48de097009059e34f78029e28c90d558b197d538e3",
-    "content_type": "application/json",
-    "content_json": {
-        "url": "https://www.youtube.com/watch?v=AaBc1MCX-Xg",
-        "_app": "pow.co",
-        "_type": "url",
-        "_nonce": "a6a6e28f-9a1a-4b79-a964-28025e8b50b7"
-    },
-    "content_text": null,
-    "content_bytes": null,
-    "map": {
-        "app": "pow.co",
-        "type": "url"
-    },
-    "createdAt": "2023-02-12T23:05:14.544Z",
-    "updatedAt": "2023-02-12T23:05:14.544Z"
-  } */
-
-
-  const handleBoostLoading = () => {
-    toast('Publishing Your Boost Job to the Network', {
-        icon: '⛏️',
-        style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-        },
+  useEffect(() => {
+    setLoading(true);
+    if (query.txid) {
+      getData().then((res) => {
+        setReplies(res.replies);
+        setInReplyTx(res.inReplyTx);
+        setLoading(false);
       });
-  };
+    }
+  }, [query, getData]);
 
-  const handleBoostSuccess = () => {
-    toast('Success!', {
-        icon: '✅',
-        style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-        },
-      });
-  };
-
-  const handleBoostError = () => {
-    toast('Error!', {
-        icon: '🐛',
-        style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-        },
-    });
-  };
-
-  if (loading){
+  if (loading) {
     return (
       <ThreeColumnLayout>
         <div className="mt-5 lg:mt-10">
-          <Loader/>
+          <Loader />
         </div>
       </ThreeColumnLayout>
-    )
+    );
   }
-
 
   return (
     <ThreeColumnLayout>
-    <div className="col-span-12 lg:col-span-6 min-h-screen">
+    <div className="col-span-12 min-h-screen lg:col-span-6">
         <svg
           onClick={() => router.back()}
           xmlns="http://www.w3.org/2000/svg"
@@ -127,7 +57,7 @@ export default function DetailPage() {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="relative top-[69px] -left-[42px] w-6 h-6 stroke-gray-700 dark:stroke-gray-300 cursor-pointer hover:opacity-70"
+          className="relative top-[69px] h-6 w-6 translate-x-[-42px] cursor-pointer stroke-gray-700 hover:opacity-70 dark:stroke-gray-300"
         >
           <path
             strokeLinecap="round"
@@ -135,18 +65,18 @@ export default function DetailPage() {
             d="M15.75 19.5L8.25 12l7.5-7.5"
           />
         </svg>
-      <div className="mt-5 lg:mt-10 pb-[200px]">
+      <div className="mt-5 pb-[200px] lg:mt-10">
         {inReplyTx && <BoostContentCardV2 content_txid={inReplyTx} />}
-        {query.txid && <BoostContentCardV2 content_txid={query.txid.toString()}/>}
-        {query.txid &&
-          <div className="mt-1 bg-primary-100 dark:bg-primary-600/20 px-4 pt-2 pb-1 sm:last:rounded-b-lg">
-            <ComposerV2 inReplyTo={query.txid?.toString()}/>
-          </div>}
-        {replies?.map((reply:any)=>{
-          return <BoostContentCardV2 key={reply.txid} content_txid={reply.txid} />
-        })}
+        {query.txid && <BoostContentCardV2 content_txid={query.txid.toString()} />}
+        {query.txid
+          && (
+<div className="mt-1 bg-primary-100 px-4 pb-1 pt-2 dark:bg-primary-600/20 sm:last:rounded-b-lg">
+            <ComposerV2 inReplyTo={query.txid?.toString()} />
+</div>
+)}
+        {replies?.map((reply:any) => <BoostContentCardV2 key={reply.txid} content_txid={reply.txid} />)}
       </div>
     </div>
     </ThreeColumnLayout>
-  )
+  );
 }

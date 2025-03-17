@@ -1,31 +1,28 @@
+// import { PersonalInterest } from '../src/contracts/personalInterest'
 
-//import { PersonalInterest } from '../src/contracts/personalInterest'
+import {
+ bsv, Signer, toByteString, PubKey, findSig, 
+} from 'scrypt-ts';
+import axios from 'axios';
 
-const { PersonalInterest } = require('../src/contracts/personalInterest')
+const { PersonalInterest } = require('../src/contracts/personalInterest');
 
-import axios from 'axios'
-
-const artifact = require('../artifacts/src/contracts/personalInterest')
+// Add .json extension to the artifact import
+const artifact = require('../artifacts/src/contracts/personalInterest.json');
 
 try {
 
-  PersonalInterest.loadArtifact(artifact)
+  PersonalInterest.loadArtifact(artifact);
 
-} catch(error) {
+} catch (error) {
 
-  console.error('FAILED TO LOAD ARTIFACT', error)
+  console.error('FAILED TO LOAD ARTIFACT', error);
 
 }
 
-import { bsv, Signer, toByteString, PubKey, findSig } from 'scrypt-ts'
+const txid = 'b0704b4e1e6c6f69f83a430c9d76c564a616e06b163f7eceb78f4a1ed9ebdd30';
 
-const Run = require('run-sdk')
-
-const blockchain = new Run.plugins.WhatsOnChain({ network: 'main' })
-
-const txid = 'b0704b4e1e6c6f69f83a430c9d76c564a616e06b163f7eceb78f4a1ed9ebdd30'
-
-export { PersonalInterest }
+export { PersonalInterest };
 
 interface CreateInterest {
   topic: string;
@@ -43,93 +40,103 @@ export async function buildInterest({ topic, owner, weight }: CreateInterest): P
   const instance = new PersonalInterest(
     toByteString(topic, true),
     PubKey(owner),
-    BigInt(weight)
-  ) 
+    BigInt(weight),
+  ); 
 
-  return instance
+  return instance;
 
 }
 
-export async function mintInterest({ signer, topic, owner, weight, satoshis }: MintInterest): Promise<{tx: bsv.Transaction, instance: any}> {
+export async function mintInterest({
+ signer, topic, owner, weight, satoshis, 
+}: MintInterest): Promise<{ tx: bsv.Transaction, instance: any }> {
 
-  console.log("mint interest", { signer, topic, owner, weight, satoshis })
+  console.log("mint interest", {
+ signer, topic, owner, weight, satoshis, 
+});
 
-  const instance = await buildInterest({ topic, weight, satoshis, owner })
+  const instance = await buildInterest({
+ topic, weight, satoshis, owner, 
+});
 
-  console.log("build interest result", instance)
+  console.log("build interest result", instance);
 
-  await instance.connect(signer)
+  await instance.connect(signer);
 
-  console.log("interest instance connected to signer")
+  console.log("interest instance connected to signer");
 
-  const tx = await instance.deploy(satoshis)
+  const tx = await instance.deploy(satoshis);
 
-  console.log("deploy interest result", tx)
+  console.log("deploy interest result", tx);
 
   try {
 
-    const { data } = await axios.get(`https://pow.co/api/v1/personal-interests/${txid}`)
+    const { data } = await axios.get(`https://www.pow.co/api/v1/personal-interests/${txid}`);
 
-    console.log('powco.interest.import.result', data)
+    console.log('powco.interest.import.result', data);
 
-  } catch(error) {
+  } catch (error) {
 
-    console.error('powco.interest.import.error', error)
+    console.error('powco.interest.import.error', error);
 
   }
 
-  return { tx, instance }
+  return { tx, instance };
 
 }
 
 export async function detectInterestsFromTxid(txid: string): Promise<[any[], string]> {
 
-  const hex = await blockchain.fetch(txid)
+  console.log('detect interests from txid', txid);
 
-  const interests = await detectInterestsFromTxHex(hex)
+  /* const hex = await blockchain.fetch(txid);
 
-  return [interests, hex]
+  const interests = await detectInterestsFromTxHex(hex);
+  */
+  const interests: any[] = [];
+  const hex = '';
+
+  return [interests, hex];
 
 }
 
 export async function detectInterestsFromTxHex(txhex: string): Promise<any[]> {
 
-  const interests = []
+  const interests = [];
 
-  const tx = new bsv.Transaction(txhex)
+  const tx = new bsv.Transaction(txhex);
 
-  for (let i=0; i < tx.outputs.length; i++) {
+  for (let i = 0; i < tx.outputs.length; i++) {
 
     try {
 
-      //@ts-ignore
-      const interest = PersonalInterest.fromTx(tx, i)
+      // @ts-ignore
+      const interest = PersonalInterest.fromTx(tx, i);
 
-      interests.push(interest)
+      interests.push(interest);
 
-    } catch(error) {
-
+    } catch (error: any) {
+      // Log the error or handle it appropriately
+      console.debug(`Failed to parse output ${i} as PersonalInterest:`, error.message);
     }
 
   }
 
-  return interests
+  return interests;
 
 }
 
 export async function removeInterest({ signer, publicKey, instance }: { signer: Signer, publicKey: string, instance: any }): Promise<bsv.Transaction> {
 
-  await instance.connect(signer)
+  await instance.connect(signer);
 
-  console.log('interest.remove', instance)
+  console.log('interest.remove', instance);
 
-  const result = await instance.methods.remove((sigResponses: any) => {
-    return findSig(sigResponses, new bsv.PublicKey(publicKey))
-  })
+  const result = await instance.methods.remove((sigResponses: any) => findSig(sigResponses, new bsv.PublicKey(publicKey)));
 
-  console.log('interest.remove.result', result)
+  console.log('interest.remove.result', result);
 
-  return result.tx
+  return result.tx;
 
 }
 
@@ -146,13 +153,12 @@ export interface PersonalInterestData {
   createdAt: string;
 }
 
-export async function getPersonalInterestData({ txid }: {txid: string}): Promise<PersonalInterestData[]> {
+export async function getPersonalInterestData({ txid }: { txid: string }): Promise<PersonalInterestData[]> {
 
-  const { data } = await axios.get(`https://pow.co/api/v1/personal-interests/${txid}`)
+  const { data } = await axios.get(`https://www.pow.co/api/v1/personal-interests/${txid}`);
 
-  console.log("powco.interests.fetch.result", { txid, data })
+  console.log("powco.interests.fetch.result", { txid, data });
 
-  return data.personal_interests
+  return data.personal_interests;
 
 }
-

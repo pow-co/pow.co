@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
 import bops from "bops";
-import { bsv } from 'scrypt-ts'
+import { bsv } from 'scrypt-ts';
 import axios from "axios";
 import moment from "moment";
 
-import Wallet from '../wallets/abstract'
+import Wallet from '../wallets/abstract';
 
-import useWallet from '../hooks/useWallet'
+import useWallet from '../hooks/useWallet';
 import Drawer from "./Drawer";
 import WalletProviderPopUp from "./WalletProviderPopUp";
 import { useBitcoin } from "../context/BitcoinContext";
@@ -23,16 +23,17 @@ interface ChatComposerProps {
 
 class BitchatClient {
   wallet: Wallet;
+
   app: string;
 
   constructor({ app, wallet }: { app: string, wallet: Wallet }) {
-    this.app = app
-    this.wallet = wallet
+    this.app = app;
+    this.wallet = wallet;
   }
 
   buildMessageScript({ content, channel }: { content: string, channel: string }): bsv.Script {
 
-    let dataPayload = [
+    const dataPayload = [
       B_PREFIX, // B Prefix
       content,
       "text/plain",
@@ -49,43 +50,43 @@ class BitchatClient {
       "context",
       "channel",
       "channel",
-      channel
+      channel,
     ];
 
     const script = bsv.Script.fromASM(
-      "OP_0 OP_RETURN " +
+      `OP_0 OP_RETURN ${ 
         dataPayload
           .map((str) => bops.to(bops.from(str, "utf8"), "hex"))
-          .join(" ")
+          .join(" ")}`,
     );
 
-    return script
+    return script;
 
   }
 
-  async sendMessage({ content, channel }: {content: string, channel:string }): Promise<bsv.Transaction> {
+  async sendMessage({ content, channel }: { content: string, channel:string }): Promise<bsv.Transaction> {
 
-    const script = this.buildMessageScript({ content, channel })
+    const script = this.buildMessageScript({ content, channel });
 
     const tx: bsv.Transaction = await this.wallet.createTransaction({
 
       outputs: [new bsv.Transaction.Output({
         script,
-        satoshis: 10
-      })]
+        satoshis: 10,
+      })],
 
-    })
+    });
 
     axios.post("https://b.map.sv/ingest", {
       rawTx: tx.toString(),
     })
-    .catch(console.error)
+    .catch(console.error);
 
-    axios.get(`https://pow.co/api/v1/content/${tx.hash}`).catch(console.error);
+    axios.get(`https://www.pow.co/api/v1/content/${tx.hash}`).catch(console.error);
 
-    axios.get(`https://pow.co/api/v1/chat/messages/${tx.hash}`).catch(console.error);
+    axios.get(`https://www.pow.co/api/v1/chat/messages/${tx.hash}`).catch(console.error);
 
-    return tx
+    return tx;
 
   }
 
@@ -99,38 +100,38 @@ const ChatComposer = ({
 
   const [inputValue, setInputValue] = useState("");
 
-  const [walletPopupOpen, setWalletPopupOpen] = useState(false)
-  const { authenticated } = useBitcoin()
+  const [walletPopupOpen, setWalletPopupOpen] = useState(false);
+  const { authenticated } = useBitcoin();
 
   const [sending, setSending] = useState(false);
 
   const [rows, setRows] = useState(1);
 
-  const wallet = useWallet()
+  const wallet = useWallet();
 
   const handleSubmit = async () => {
 
     if (!authenticated || !wallet) {
-      setWalletPopupOpen(true)
+      setWalletPopupOpen(true);
       return;
     }
 
     const content = inputValue;
 
-    console.log({ content, wallet })
+    console.log({ content, wallet });
 
     if (content !== "" && wallet.paymail) {
 
-      console.log('paymail', wallet.paymail)
+      console.log('paymail', wallet.paymail);
 
       setInputValue("");
 
       setSending(true);
       
-      let client = new BitchatClient({ app: 'pow.co', wallet })
+      const client = new BitchatClient({ app: 'pow.co', wallet });
 
-      let pendingMsg = {
-        bmap:{
+      const pendingMsg = {
+        bmap: {
           B: [
             {
               content,
@@ -146,68 +147,37 @@ const ChatComposer = ({
           ],
           tx: {
             h: "pending",
-          }
+          },
         },
-        createdAt:moment()
+        createdAt: moment(),
       };
 
       onNewMessageSent(pendingMsg);
 
-      await client.sendMessage({ content, channel })
+      await client.sendMessage({ content, channel });
 
-      setSending(false)
+      setSending(false);
 
       if (onChatImported) {
-        console.log({ pendingMsg })
+        console.log({ pendingMsg });
         onChatImported(pendingMsg);
       }
 
     }
   };
 
-  // TODO: Detect whether the user is typing
-  const handleKeyDown = (event: any) => {
-    let ctrlDown = false;
-    let ctrlKey = 17;
-    let cmdKey = 91;
-    let vKey = 86;
-    let cKey = 67;
-    const enterKey = 13;
-
-    if (event.keyCode === ctrlKey || event.keyCode === cmdKey) ctrlDown = true;
-
-    if (ctrlDown && event.keyCode === cKey) console.log("Document catch Ctrl+C");
-    if (ctrlDown && event.keyCode === vKey) console.log("Document catch Ctrl+V");
-
-    if (event.keyCode === enterKey && !event.shiftKey) {
-      event.preventDefault();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       handleSubmit();
     }
   };
 
-  const handleKeyUp = (event: any) => {
-    const enterKey = 13;
-    let ctrlDown = false;
-    let ctrlKey = 17;
-    let cmdKey = 91;
-    let vKey = 86;
-    let cKey = 67;
-
-    setRows(event.target.value.split("\n").length);
-
-    if (event.keyCode === ctrlKey || event.keyCode === cmdKey) ctrlDown = false;
-
-    if (event.keyCode === enterKey) {
-      //console.log("enter");
-      // dispatch(stopTyping(paymail));
-    } else if (event.keyCode === vKey && event.keycode === ctrlKey) {
-      //console.log("hey hey heeeyyyyy");
-    } else {
-      //console.log("other");
-      // dispatch(typing(paymail));
-      // clearTimeout(timeout);
-      // timeout = setTimeout(() => dispatch(stopTyping(paymail)), 2000);
-    }
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target as HTMLTextAreaElement;
+    const rows = value.split("\n").length;
+    setRows(rows);
+    // dispatch typing action
   };
 
   const handleChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
@@ -217,29 +187,30 @@ const ChatComposer = ({
 
   return (
     <>
-    <div className="w-full items-center border-t-0 dark:border-white/20 bg-white dark:bg-gray-800 !bg-transparent py-2">
+    <div className="w-full items-center border-t-0 bg-white py-2 dark:border-white/20 dark:bg-gray-800">
       <form
         onSubmit={handleSubmit}
         autoComplete="off"
         className="stretch mx-2 flex flex-row gap-3 last:mb-2 md:mx-4 md:last:mb-6 lg:mx-auto lg:max-w-3xl"
       >
         <div className="relative flex h-full flex-1 md:flex-col">
-          <div className="flex flex-col w-full py-2 flex-grow md:py-3 md:pl-4 relative border border-black/10 bg-white dark:border-gray-900/50 dark:text-white dark:bg-gray-700 rounded-md shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:shadow-[0_0_15px_rgba(0,0,0,0.10)]">
+          <div className="relative flex w-full grow flex-col rounded-md border border-black/10 bg-white py-2 shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-gray-700 dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] md:py-3 md:pl-4">
             <textarea
               name="msg_content"
               value={inputValue}
               rows={rows}
               onChange={handleChange}
               autoComplete="off"
-              className="m-0 w-full appearance-none resize-none border-0 bg-transparent p-0  focus:ring-0 focus:outline-none focus-visible:ring-0 dark:bg-transparent pl-2 md:pl-0"
+              className="m-0 w-full resize-none appearance-none border-0 bg-transparent p-0  pl-2 focus:outline-none focus:ring-0 focus-visible:ring-0 dark:bg-transparent md:pl-0"
               style={{ height: rows > 1 ? "48px" : "24px", maxHeight: "48px" }}
               placeholder={`${
                 sending ? "Sending..." : `Message in ${channel} chat`
               }`}
               onKeyUp={handleKeyUp}
               onKeyDown={handleKeyDown}
+              aria-label="Message input"
             />
-            <button type="submit" className="hidden" />
+            <button type="submit" className="hidden" aria-label="Send message">Send</button>
           </div>
         </div>
       </form>

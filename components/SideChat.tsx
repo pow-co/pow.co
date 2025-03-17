@@ -1,4 +1,8 @@
-import { useRef, useState, useEffect } from "react";
+import {
+ useRef, useState, useEffect, useCallback, 
+} from "react";
+import useWebSocket from 'react-use-websocket';
+import axios from 'axios';
 import { MessageItem } from "./MessageItem";
 import ChatComposer from "./ChatComposer";
 
@@ -6,15 +10,11 @@ interface SideChatProps {
     room: string;
 }
 
-import useWebSocket from 'react-use-websocket'
+export const SideChat = ({ room: channel }: SideChatProps) => {
 
-import axios from 'axios'
-
-export const SideChat = ({room: channel}: SideChatProps) => {
-
-  const [newMessages, setNewMessages] = useState<any>([])
-  const [messages, setMessages] = useState<any>([])
-  const [pending, setPending] = useState<any>()
+  const [newMessages, setNewMessages] = useState<any>([]);
+  const [messages, setMessages] = useState<any>([]);
+  const [pending, setPending] = useState<any>();
 
   const { getWebSocket } = useWebSocket(`wss://pow.co/websockets/chat/channels/${channel}`, {
 
@@ -22,71 +22,64 @@ export const SideChat = ({room: channel}: SideChatProps) => {
 
     },
     onMessage: async () => {
-      refreshMessages()
+      refreshMessages();
     },
     onClose: async () => {
 
-    }
-  })
+    },
+  });
 
   useEffect(() => {
-
-    const socket = getWebSocket()
-
-    return function() {
-
+    const cleanupSocket = () => {
+      const socket = getWebSocket();
       if (socket) {
-
-        socket.close()
-
+        socket.close();
       }
-    }
-  }, [])
+    };
 
-  const composerRef = useRef(null)
-  async function refreshMessages() {
+    return cleanupSocket;
+  }, [getWebSocket]);
 
-    axios.get(`https://pow.co/api/v1/chat/channels/${channel}`).then(({data}) =>{
+  const composerRef = useRef(null);
+  
+  const refreshMessages = useCallback(async () => {
+    axios.get(`https://www.pow.co/api/v1/chat/channels/${channel}`).then(({ data }) => {
+      console.log('FETCHED MESSAGES', data);
+      setMessages(data.messages);
+      setPending(null);
+    });
+  }, [channel]);
 
-     console.log('FETCHED MESSAGES', data)	
+  useEffect(() => {
+    refreshMessages();
+  }, [refreshMessages]);
 
-      setMessages(data.messages)
+  useEffect(() => {
+    setNewMessages([]);
+  }, []);
 
-      setPending(null)
-    })
+  const handleNewMessageSent = useCallback((newMessage: any) => {
+    setPending(newMessage);
+  }, []);
 
-  }
-
-  useEffect(() =>{
-
-    refreshMessages()
-    
-  }, [])
-
-
-    useEffect(() => {
-        setNewMessages([])
-    }, []);
-
-    return (
-        <>
-            <div className='overflow-y-auto overflow-x-hidden relative flex flex-col-reverse' style={{height: "calc(100vh - 218px)"}} >
-              {pending && (
-                  <div className='opacity-60'>
-                    <MessageItem {...pending}/>
-                  </div>
-              )}
-              {newMessages?.map((message: any) => {
-                return <MessageItem key={message.txid} {...message}/>
-              })}
-              {messages?.map((message: any) => {
-                return <MessageItem key={message.txid} {...message}/>
-              })}
-            </div>
-            <div ref={composerRef} className='p-4'>
-                <ChatComposer channel={channel} onNewMessageSent={(newMessage:any) => setPending(newMessage)} onChatImported={refreshMessages}/>
-            </div>
-        </>
-    )
-}
-
+  return (
+    <>
+      <div className="relative flex flex-col-reverse overflow-y-auto overflow-x-hidden" style={{ height: "calc(100vh - 218px)" }}>
+        {pending && (
+          <div className="opacity-60">
+            <MessageItem {...pending} />
+          </div>
+        )}
+        {newMessages?.map((message: any) => <MessageItem key={message.txid} {...message} />)}
+        {messages?.map((message: any) => <MessageItem key={message.txid} {...message} />)}
+      </div>
+      <div ref={composerRef} className="p-4">
+        <ChatComposer 
+          channel={channel} 
+          onNewMessageSent={handleNewMessageSent} 
+          onChatImported={refreshMessages}
+        />
+      </div>
+    </>
+  );
+};

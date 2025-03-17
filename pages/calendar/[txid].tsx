@@ -1,22 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
-import ThreeColumnLayout from "../../components/ThreeColumnLayout";
-import { useBitcoin } from "../../context/BitcoinContext";
-import UserIcon from "../../components/UserIcon";
 import Datepicker from "tailwind-datepicker-react";
-
 import {
-  SmartContract,
   Scrypt,
   bsv,
   HashedSet,
   PubKey,
-  TestWallet,
   ScryptProvider,
   ContractCalledEvent,
 } from "scrypt-ts";
 import axios from "axios";
-import useWallet from "../../hooks/useWallet";
 import { useRouter } from "next/router";
+import ThreeColumnLayout from "../../components/ThreeColumnLayout";
+import { useBitcoin } from "../../context/BitcoinContext";
+import UserIcon from "../../components/UserIcon";
+
+import useWallet from "../../hooks/useWallet";
 
 import { Meeting } from "../../src/contracts/meeting";
 import artifact from "../../artifacts/meeting.json";
@@ -28,16 +26,6 @@ Scrypt.init({
   apiKey: String(process.env.NEXT_PUBLIC_SCRYPT_API_KEY),
   network: bsv.Networks.livenet,
 });
-
-class Wallet extends TestWallet {
-  get network() {
-    return bsv.Networks.livenet;
-  }
-}
-
-const signer = new Wallet(new bsv.PrivateKey());
-
-const provider = new ScryptProvider();
 
 const options = {
   title: "Choose a Date",
@@ -66,7 +54,7 @@ const options = {
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-6 h-6"
+        className="h-6 w-6"
       >
         <path
           strokeLinecap="round"
@@ -82,7 +70,7 @@ const options = {
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-6 h-6"
+        className="h-6 w-6"
       >
         <path
           strokeLinecap="round"
@@ -101,13 +89,13 @@ const NewCalendarEventPage = () => {
   const { avatar, userName } = useBitcoin();
   const [eventTitle, setEventTitle] = useState("");
   const [startDate, setStartDate] = useState(new Date());
-  const [startTime, setStartTime] = useState(
-    new Date().toISOString().split("T")[1]
+  const [startTime] = useState(
+    new Date().toISOString().split("T")[1],
   );
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [endDate, setEndDate] = useState(new Date());
-  const [endTime, setEndTime] = useState(
-    new Date().toISOString().split("T")[1]
+  const [endTime] = useState(
+    new Date().toISOString().split("T")[1],
   );
   const [showEndDatePicker, setShowEndDatePicker] = useState(false);
   const [addEndDate, setAddEndDate] = useState(false);
@@ -145,7 +133,7 @@ const NewCalendarEventPage = () => {
         (event: ContractCalledEvent<Meeting>) => {
           // callback when receiving a notification
           console.log(`${event.methodName} is called with args: ${event.args}`);
-        }
+        },
       );
 
       console.log({ subscription });
@@ -170,11 +158,6 @@ const NewCalendarEventPage = () => {
     setShowStartDatePicker(state);
   };
 
-  const handleChangeStartTime = (e: any) => {
-    e.preventDefault();
-    setStartTime(e.target.value);
-  };
-
   const handleChangeEndDate = (selectedDate: Date) => {
     console.log(selectedDate);
     setEndDate(selectedDate);
@@ -184,18 +167,11 @@ const NewCalendarEventPage = () => {
     setShowEndDatePicker(state);
   };
 
-  const handleChangeEndTime = (e: any) => {
-    e.preventDefault();
-    setEndTime(e.target.value);
-  };
-  const handleAddEndDate = (e: any) => {
-    e.preventDefault();
+  const handleAddEndDate = () => {
     setAddEndDate(!addEndDate);
   };
 
-  const handleSubmitEvent = async (e: any) => {
-    e.preventDefault();
-
+  const handleSubmitEvent = async () => {
     try {
       console.log("SUBMIT!", {
         eventTitle,
@@ -206,17 +182,17 @@ const NewCalendarEventPage = () => {
         requireInvites,
       });
 
-      const { data } = await axios.post(`https://pow.co/api/v1/meetings/new`, {
+      const { data } = await axios.post(`https://www.pow.co/api/v1/meetings/new`, {
         title: eventTitle,
         description: eventTitle,
         start: startDate.getTime(),
         end: endDate.getTime(),
         owner:
-          wallet?.publicKey?.toString() ||
-          "034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8",
+          wallet?.publicKey?.toString()
+          || "034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8",
         organizer:
-          wallet?.publicKey?.toString() ||
-          "034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8",
+          wallet?.publicKey?.toString()
+          || "034e33cb5c1d3249b98624ebae1643aa421671a58c94353cbb5a81985e09cc14c8",
         url: " ",
         status: " ",
         location: " ",
@@ -250,11 +226,11 @@ const NewCalendarEventPage = () => {
 
   return (
       <ThreeColumnLayout>
-        <div className="mt-5 sm:mt-10 min-h-screen">
-          <div className="flex flex-col bg-primary-100 dark:bg-primary-700/20 sm:rounded-xl py-5">
-            <h2 className="text-2xl text-center font-bold">Create an event</h2>
+        <div className="mt-5 min-h-screen sm:mt-10">
+          <div className="flex flex-col bg-primary-100 py-5 dark:bg-primary-700/20 sm:rounded-xl">
+            <h2 className="text-center text-2xl font-bold">Create an event</h2>
             <div className="relative my-5 h-44 w-full bg-primary-200 dark:bg-primary-600/20">
-              <button className="absolute bottom-0 right-0 m-5 px-3 py-2 bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer text-white font-semibold rounded-lg transition duration-500 transform hover:-translate-y-1">
+              <button type="button" className="absolute bottom-0 right-0 m-5 cursor-pointer rounded-lg bg-gradient-to-tr from-primary-400 to-primary-500 px-3 py-2 font-semibold text-white transition duration-500 hover:-translate-y-1">
                 Add a cover image
               </button>
             </div>
@@ -262,7 +238,7 @@ const NewCalendarEventPage = () => {
               <div className="mr-5">
                 <UserIcon src={avatar!} size={46} />
               </div>
-              <div className="flex flex-col grow">
+              <div className="flex grow flex-col">
                 <h3 className="text-lg font-semibold">{userName}</h3>
                 <p className="text-sm opacity-50">Host (you)</p>
               </div>
@@ -278,8 +254,8 @@ const NewCalendarEventPage = () => {
                 placeholder="Title of the event"
               />
             </div>
-            <p className="px-5 font-semibold mb-2">Start date and time</p>
-            <div className="px-5 flex relative">
+            <p className="mb-2 px-5 font-semibold">Start date and time</p>
+            <div className="relative flex px-5">
               <Datepicker
                 options={options}
                 onChange={handleChangeStartDate}
@@ -293,7 +269,7 @@ const NewCalendarEventPage = () => {
             </div>
             <div
               onClick={handleAddEndDate}
-              className="px-5 my-5 flex text-primary-500 cursor-pointer hover:underline"
+              className="my-5 flex cursor-pointer px-5 text-primary-500 hover:underline"
             >
               {!addEndDate ? (
                 <svg
@@ -302,7 +278,7 @@ const NewCalendarEventPage = () => {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-6 h-6"
+                  className="h-6 w-6"
                 >
                   <path
                     strokeLinecap="round"
@@ -317,7 +293,7 @@ const NewCalendarEventPage = () => {
                   viewBox="0 0 24 24"
                   strokeWidth={1.5}
                   stroke="currentColor"
-                  className="w-6 h-6"
+                  className="h-6 w-6"
                 >
                   <path
                     strokeLinecap="round"
@@ -331,11 +307,11 @@ const NewCalendarEventPage = () => {
             </div>
             {addEndDate && (
               <>
-                <p className="px-5 font-semibold mb-2">End date and time</p>
-                <div className="px-5 flex relative mb-5">
+                <p className="mb-2 px-5 font-semibold">End date and time</p>
+                <div className="relative mb-5 flex px-5">
                   <Datepicker
                     options={options}
-                    onChange={handleChangeStartDate}
+                    onChange={handleChangeEndDate}
                     show={showEndDatePicker}
                     setShow={handleCloseEndDatePicker}
                   />
@@ -351,17 +327,18 @@ const NewCalendarEventPage = () => {
                 checked={requireInvites}
                 id="require-invite"
                 type="checkbox"
-                onClick={(e: any) => setRequireInvites(!requireInvites)}
-                className="w-4 h-4 accent-primary-500 bg-gray-100 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"
+                onClick={() => setRequireInvites(!requireInvites)}
+                className="h-4 w-4 rounded border-gray-300 bg-gray-100 accent-primary-500 dark:border-gray-600 dark:bg-gray-700"
               />
               <label htmlFor="require-invite" className="ml-4 ">
                 Require Invites?
               </label>
             </div>
             <button
+              type="button"
               disabled={!isContractReady}
               onClick={handleSubmitEvent}
-              className="mt-5 mx-5 py-3 bg-gradient-to-tr from-primary-400 to-primary-500 cursor-pointer text-white font-semibold rounded-lg transition duration-500 transform hover:-translate-y-1 hover:disabled:translate-y-0 disabled:opacity-60 disabled:cursor-default"
+              className="mx-5 mt-5 cursor-pointer rounded-lg bg-gradient-to-tr from-primary-400 to-primary-500 py-3 font-semibold text-white transition duration-500 hover:-translate-y-1 disabled:cursor-default disabled:opacity-60 hover:disabled:translate-y-0"
             >
               Create Event
             </button>

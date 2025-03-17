@@ -1,248 +1,143 @@
-import React, { useState, useCallback, useContext, useEffect } from 'react'
-import { useRouter } from "next/router"
+import React, { useState } from 'react';
+import { useRouter } from "next/router";
 
 import axios from 'axios';
 
-
 import 'react-markdown-editor-lite/lib/index.css';
 
-
-import { wrapRelayx } from 'stag-relayx'
-import TwetchWeb3 from "@twetch/web3"
-
 import BSocial from 'bsocial';
-import { signOpReturn } from '../utils/bap';
 
 import { toast } from 'react-hot-toast';
 
-
-import { useRelay } from '../context/RelayContext';
-import { useTuning } from '../context/TuningContext';
-import axiosInstance, { useAPI } from '../hooks/useAPI';
-
-import { FormattedMessage, useIntl } from 'react-intl';
-import { MarkdownLogo } from './MarkdownComposer';
+import { bsv } from 'scrypt-ts';
 import { useBitcoin } from '../context/BitcoinContext';
-
-
+import useWallet from '../hooks/useWallet';
+import Drawer from './Drawer';
+import WalletProviderPopUp from './WalletProviderPopUp';
 
 interface CommentComposerProps {
   replyTx: string
 }
 
-const CommentComposer = ({replyTx}: CommentComposerProps) => {
-  const router = useRouter()
-  const { relayOne } = useRelay()
-  const { paymail, wallet } = useBitcoin()
-  const [initialBoost, setInitialBoost] = useState(false)
-  const [signWithPaymail, setSignWithPaymail] = useState(true)
-  const [content, setContent] = useState("")
-
-
-    //@ts-ignore
-    const stag = wrapRelayx(relayOne)
-
+const CommentComposer = ({ replyTx }: CommentComposerProps) => {
+    const [content, setContent] = useState('');
+    const [walletPopupOpen, setWalletPopupOpen] = useState(false);
+    const { authenticated } = useBitcoin();
+    const router = useRouter();
+    const wallet = useWallet();
 
     const submitPost = async (e:any) => {
-      e.preventDefault()
-      
-      const bsocial = new BSocial('pow.co');        
+        e.preventDefault();
 
-      const post = bsocial.reply(replyTx);
+        if (!authenticated || !wallet) {
+            setWalletPopupOpen(true);
+            return;
+        }
 
-      post.setType('reply')
+        const bsocial = new BSocial('pow.co');
 
-      post.addText(content)
+        const post = bsocial.reply(replyTx);
 
-      if (signWithPaymail){
-        post.addMapData('paymail', paymail)
-      }
+        post.addMarkdown(content);
 
-      const hexArrayOps = post.getOps('hex');
+        const hexArrayOps = post.getOps('hex');
 
-      const opReturn = signOpReturn(hexArrayOps)
+        toast('Publishing Your Post to the Network', {
+            icon: '⛏️',
+            style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+            },
+        });
 
-      console.log({hexArrayOps, opReturn})
+        const output = new bsv.Transaction.Output({
+            script: bsv.Script.fromASM(`OP_0 OP_RETURN ${hexArrayOps.join(' ')}`),
+            satoshis: wallet.name === 'handcash' ? 10 : 1,
+        });
 
-      toast('Publishing Your Post to the Network', {
-        icon: '⛏️',
-        style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-        },
-      });
-      switch (wallet) {
-        case "relayx":
-          const send = {
-            to: 'johngalt@relayx.io',
-            amount: 0.001,
-            currency: 'BSV',
-            opReturn
-          }
-          console.log("relayone.send", send)
-          try {
-            let resp: any = await stag.relayone!.send(send)
+        try {
+
+            const tx = await wallet.createTransaction({ outputs: [output] });
+
             toast('Success!', {
-              icon: '✅',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
+                icon: '✅',
+                style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+                },
             });
-            console.log("relayx.response", resp)
+
             axios.post('https://b.map.sv/ingest', {
-              rawTx: resp.rawTx
+                rawTx: tx.toString(),
             })
-            .catch(error => console.error('b.map.sv.ingest.error', error))
+            .then((result) => {
+                console.debug('b.map.sv.ingest.result', result.data);
+            })
+            .catch((error) => {
+                console.error('post.submit.b.map.sv.ingest.error', error);
+            });
 
-            try {
+            axios.post('https://www.pow.co/api/v1/posts', {
+                transactions: [{
+                    tx: tx.toString(),
+                }],
+            })
+            .then((result) => {
+                console.debug('powco.posts.ingest.result', result.data);
+            })
+            .catch((error) => {
+                console.error('post.submit.powco.error', error);
+            });
 
-              await axios.get(`https://pow.co/api/v1/content/${resp.txid}`)
+            router.push(`/${tx.hash}`);
 
-            } catch(error) {
+        } catch (error) {
 
-              console.error('powco.replies.ingest.error', error)
-
-            }
-
-            router.reload()
-
-          } catch (error) {
-            console.log(error)
             toast('Error!', {
-              icon: '🐛',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
+                icon: '🐛',
+                style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+                },
             });
-          }
-          break;
-        case "twetch":
-          try {
-            const outputs = [{
-              sats:0,
-              args: opReturn,
-              address: null
-            },{
-              to: 'johngalt@relayx.io',
-              sats: 0.001 * 1e8
-            }]
-            const resp = await TwetchWeb3.abi({
-              contract: "payment",
-              outputs: outputs,
-            })
-            console.log("twetch.response", resp)
-            const bMapResult = await axios.post('https://b.map.sv/ingest', {
-              rawTx: resp.rawtx
-            })
-            toast('Success!', {
-              icon: '✅',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
-            });
-            router.reload()
 
-          } catch (error) {
-            console.log(error)
-            toast('Error!', {
-              icon: '🐛',
-              style: {
-              borderRadius: '10px',
-              background: '#333',
-              color: '#fff',
-              },
-            });
-          }
-          break;
-        case "handcash":
-          //TODO
-          break;
-        default: 
-          console.log("no wallet selected")
-      }
-    }
+        }
+    };
 
-    const te = new TextEncoder()
-    function toHex(s: string) {
-      return Array.from(te.encode(s)).map(c => c.toString(16)).join('')
-    }
-    
+    const handleChangeContent = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setContent(e.target.value);
+    };
 
-    function makeB(text:string) {
-      const pushdatas = ['19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut', text, 'text/markdown', "utf8"]
-      return pushdatas;
-    }
-    function makeMap(o:any) {
-      const pushdatas = ['1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5', 'SET'];
-      for (const k in o) {
-        pushdatas.push(k)
-        pushdatas.push(o[k])
-      }
-      return pushdatas
-    }
-
-    function createBitcom(content:string) {
-      const b = makeB(content);
-      const map = makeMap({ type: 'post', app: 'relaytest' });
-      return b.concat(['|'], map)
-    }
-
-    const handleChangeContent = (e: any) => {
-      e.preventDefault()
-      setContent(e.target.value)
-    }
-
-  return (
-     
-<form onSubmit={submitPost}>
-   <div className="w-full sm:rounded-lg">
-       <div className="px-4 py-2 bg-white rounded-lg dark:bg-primary-800/20">
-           <label htmlFor="post" className="sr-only">Your post</label>
-           <textarea 
-            id="post" 
-            rows={4} 
-            className="w-full px-0 text-sm text-gray-900 bg-transparent border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400" 
-            placeholder="Write a comment..." 
-            required
-            value={content}
-            onChange={handleChangeContent}
-          />
-       </div>
-       <div className='flex flex-col'>
-        {/* <div className='flex items-center justify-between px-3 py-2 border-t dark:border-gray-600'>
-          
-        </div> */}
-        <div className="flex items-center justify-end px-3 py-2">
-          <div className="flex items-center mr-4">
-            <input checked={signWithPaymail} id="sign-checkbox" type="checkbox" onClick={(e:any) => setSignWithPaymail(!signWithPaymail)} className="w-4 h-4 accent-primary-500 bg-gray-100 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600"/>
-            <label htmlFor="sign-checkbox" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Sign with paymail?</label>
-          </div>
-          <button type="submit" className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-primary-600 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
-              Send
-          </button>
+    return (
+        <div className="flex flex-col">
+            <form onSubmit={submitPost}>
+                <div className="flex flex-col">
+                    <textarea
+                      className="w-full appearance-none rounded-lg bg-primary-200 p-4 placeholder:opacity-90 placeholder:hover:text-white/80 focus:border-2 focus:border-primary-500 focus:outline-none dark:bg-primary-900"
+                      placeholder="Write a comment..."
+                      rows={4}
+                      value={content}
+                      onChange={handleChangeContent}
+                    />
+                    <div className="mt-4 flex justify-end">
+                        <button type="submit" className="flex h-8 w-fit cursor-pointer items-center justify-center rounded-md border-none bg-gradient-to-tr from-primary-500 to-primary-600 p-5 text-center text-base font-semibold leading-4 text-white transition duration-500 hover:-translate-y-1">Comment</button>
+                    </div>
+                </div>
+            </form>
+            <Drawer
+              selector="#walletProviderPopupControler"
+              isOpen={walletPopupOpen}
+              onClose={() => setWalletPopupOpen(false)}
+            >
+                <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
+            </Drawer>
         </div>
-
-       </div>
-   </div>
-</form>
-
-
-
-  )
-}
-
-
+    );
+};
 
 export default CommentComposer;
 
-
-const B_PREFIX = `19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut`;
-const AIP_PREFIX = `15PciHG22SNLQJXMoSUaWVi7WSqc7hCfva`;
 export const MAP_PREFIX = `1PuQa7K62MiKCtssSLKy1kh56WWU7MtUR5`;

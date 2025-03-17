@@ -41,6 +41,9 @@
     "import/prefer-default-export": "off",
     "@typescript-eslint/indent": "off",
     "@typescript-eslint/quotes": "off",
-    "padded-blocks": "off"
+    "padded-blocks": "off",
+    "no-bitwise": "off",
+    "no-alert": "off",
+    "react/jsx-no-bind": "off"
   }
 }

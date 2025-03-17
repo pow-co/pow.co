@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import axios from "axios";
 import useSWR from "swr";
 import dynamic from "next/dynamic";
@@ -16,8 +15,8 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const VisualizerPanel = () => {
   const { startTimestamp } = useTuning();
   const { data, error } = useSWR(
-    `https://pow.co/api/v1/boost/rankings/tags?start_date=${startTimestamp}`,
-    fetcher
+    `https://www.pow.co/api/v1/boost/rankings/tags?start_date=${startTimestamp}`,
+    fetcher,
   );
   const [tags, setTags] = useState<Ranking[]>([]);
   const [maxDifficulty, setMaxDifficulty] = useState<number>(0);
@@ -26,7 +25,7 @@ const VisualizerPanel = () => {
     if (data) {
       const tags = data.rankings
         .map((ranking: Ranking) => {
-          var tag = ranking.tag;
+          let { tag } = ranking;
 
           try {
             tag = Buffer.from(ranking.tag, "hex").toString();
@@ -40,17 +39,17 @@ const VisualizerPanel = () => {
           });
         })
         .filter((tag: any) => !/\s/.test(tag.tag))
-        .filter((tag: any) => !/[&\/\\#,()$~%'":?<>{}]/.test(tag.tag))
+        .filter((tag: any) => !/[&\\#,()$~%'":?<>{}]/.test(tag.tag))
         .filter(
           (tag: any) =>
-            tag.tag !=
-            "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+            tag.tag
+            !== "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
         )
-        .filter((tag: any) => tag.tag != "");
+        .filter((tag: any) => tag.tag !== "");
 
       // Set the maximum difficulty
       const maxDifficulty = Math.max(
-        ...tags.map((tag: Ranking) => tag.difficulty)
+        ...tags.map((tag: Ranking) => tag.difficulty),
       );
 
       setTags(tags);

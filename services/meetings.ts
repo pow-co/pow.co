@@ -17,20 +17,18 @@ export interface Meeting {
     ticketPrice: number;
 }
 
-export async function getMeeting({ txid }: {txid: string}): Promise<Meeting | null> {
+export async function getMeeting({ txid }: { txid: string }): Promise<Meeting | null> {
 
     try {
 
-        const { data } = await axios.get(`https://pow.co/api/v1/meetings/${txid}`)
+        const { data } = await axios.get(`https://www.pow.co/api/v1/meetings/${txid}`);
 
-        return data.meeting as Meeting
+        return data.meeting as Meeting;
 
-    } catch(error) {
+    } catch (error) {
 
-        return null
+        return null;
 
     }
-
-
 
 }

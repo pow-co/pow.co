@@ -1,12 +1,12 @@
 import {
  ContractTransaction, MethodCallOptions, PubKey, Signer, TxOutputRef, bsv, buildPublicKeyHashScript, findSig, hash160, toByteString,
 } from "scrypt-ts";
-import { Issue } from "../src/contracts/issue";
 import axios from "axios";
+import { Issue } from "../src/contracts/issue";
 
 import artifact from "../artifacts/issue.json";
 
-Issue.loadArtifact(artifact)
+Issue.loadArtifact(artifact);
 
 export async function addComment(args: {
   issue: Issue,
@@ -14,7 +14,7 @@ export async function addComment(args: {
   signer: Signer
 }): Promise<[Issue, bsv.Transaction]> {
 
-  console.log('addComment', args.issue, args.comment, args.signer)
+  console.log('addComment', args.issue, args.comment, args.signer);
 
   const signingPubkey = await args.signer.getDefaultPubKey();
 
@@ -48,9 +48,9 @@ export async function addComment(args: {
 
   });
 
-  console.log('did bind')
+  console.log('did bind');
 
-  await args.issue.connect(args.signer)
+  await args.issue.connect(args.signer);
 
   const { tx } = await args.issue.methods.addComment(
     toByteString(args.comment, true),
@@ -111,8 +111,7 @@ export async function addBounty(args: { issue: Issue, satoshis: bigint, signer: 
 
   export async function assignIssue(args: { issue: Issue, assignee: bsv.PublicKey, signer: Signer }): Promise<[Issue, bsv.Transaction]> {
 
-
-    await args.issue.connect(args.signer)
+    await args.issue.connect(args.signer);
     
     args.issue.bindTxBuilder('assign', async (
       current: Issue,
@@ -157,7 +156,7 @@ export async function addBounty(args: { issue: Issue, satoshis: bigint, signer: 
 
 export async function completeIssue(args: { issue: Issue, signer: Signer }): Promise<[Issue, bsv.Transaction]> {
 
-    await args.issue.connect(args.signer)
+    await args.issue.connect(args.signer);
 
   args.issue.bindTxBuilder('complete', async (
     current: Issue,
@@ -243,20 +242,18 @@ export interface NewIssue {
     return issue;
   }
 
-  export async function getIssue({ txid }: {txid: string}): Promise<Issue | null> {
+  export async function getIssue({ txid }: { txid: string }): Promise<Issue | null> {
 
     try {
 
-        const { data } = await axios.get(`https://pow.co/api/v1/issues/${txid}`)
+        const { data } = await axios.get(`https://www.pow.co/api/v1/issues/${txid}`);
 
-        return data.issue as Issue
+        return data.issue as Issue;
 
-    } catch(error) {
+    } catch (error) {
 
-        return null
+        return null;
 
     }
-
-
 
 }
