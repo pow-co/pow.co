@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useBitcoin } from '../context/BitcoinContext';
-import { useRelay } from '../context/RelayContext';
-import { useTwetch } from '../context/TwetchContext';
-import { useHandCash } from '../context/HandCashContext';
-import { useSensilet } from '../context/SensiletContext';
+// import { useRelay } from '../context/RelayContext';
+// import { useTwetch } from '../context/TwetchContext';
+// import { useHandCash } from '../context/HandCashContext';
+// import { useSensilet } from '../context/SensiletContext';
 import { useYours } from '../context/YoursContext';
 import { useLocalWallet } from '../context/LocalWalletContext';
 
@@ -14,10 +14,10 @@ interface WalletProviderProps {
 
 const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   const { setWallet } = useBitcoin();
-  const { relayxAuthenticate, relayxWallet } = useRelay();
-  const { twetchAuthenticate, twetchWallet } = useTwetch();
-  const { handcashAuthenticate, handcashAuthenticated } = useHandCash();
-  const { sensiletAuthenticate, sensiletWallet } = useSensilet();
+  // const { relayxAuthenticate, relayxWallet } = useRelay();
+  // const { twetchAuthenticate, twetchWallet } = useTwetch();
+  // const { handcashAuthenticate, handcashAuthenticated } = useHandCash();
+  // const { sensiletAuthenticate, sensiletWallet } = useSensilet();
   const { yoursAuthenticate, yoursWallet } = useYours();
   const { localWallet } = useLocalWallet();
   
@@ -27,6 +27,7 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
   async function handleSelectWallet(name: string) { 
     switch (name) {
       case 'relayx': {
+        /*
         try {
           if (!relayxWallet) {
             await relayxAuthenticate();
@@ -36,9 +37,12 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
         } catch (error) {
           console.error('error selecting relay wallet', error);
         }
+        */
         break;
       }
       case 'twetch': {
+        break;
+        /*
         try {
           if (!twetchWallet) {
             await twetchAuthenticate();
@@ -48,10 +52,12 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
         } catch (error) {
           console.error('error selecting twetch wallet', error);
         }
-        break;
+          */
       }
       case 'handcash': {
+        /*
         try {
+          return
           if (!handcashAuthenticated) {
             await handcashAuthenticate();
           }
@@ -60,9 +66,11 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
         } catch (error) {
           console.error('error selecting handcash wallet', error);
         }
+        */
         break;
       }
       case 'sensilet': {
+        /*
         try {
           if (!sensiletWallet) {
             await sensiletAuthenticate();
@@ -72,6 +80,7 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
         } catch (error) {
           console.error('error selecting sensilet wallet', error);
         }
+        */
         break;
       }
       case 'yours': {
@@ -133,27 +142,28 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
             <p className="text-center text-2xl font-bold text-gray-800 dark:text-gray-200">
               Connect Wallet
             </p>
+
             <button 
               type="button"
-              onClick={() => handleSelectWallet('relayx')}
+              onClick={() => handleSelectWallet('yours')}
               className="mt-5 flex w-full cursor-pointer flex-row items-center rounded-lg bg-primary-200 px-3 py-2.5 text-primary-600 hover:bg-primary-300 dark:bg-primary-700/20 dark:text-primary-100 hover:dark:bg-primary-700/40"
             >
               <div className="h-5 w-5 rounded">
                 <Image 
-                  src="/relayx.svg" 
+                  src="/yours.png" 
                   width={20} 
                   height={20} 
-                  alt="RelayX logo"
+                  alt="Yours logo"
                   className="h-5 w-5 rounded" 
                 />
               </div>
-              <p className="ml-2.5 text-gray-800 dark:text-gray-200">RelayX</p>
+              <p className="ml-2.5 text-gray-800 dark:text-gray-200">Yours</p>
               <div className="grow" />
             </button>
             
             <button
               type="button"
-              className="mt-3 flex w-full cursor-pointer flex-row items-center rounded-lg bg-primary-200 px-3 py-2.5 text-primary-600 hover:bg-primary-300 dark:bg-primary-700/20 dark:text-primary-100 hover:dark:bg-primary-700/40"
+              className="mt-3 flex w-full cursor-pointer flex-row items-center rounded-lg bg-gray-300 px-3 py-2.5 text-primary-600 hover:bg-gray-400 dark:bg-gray-700 dark:text-primary-100 hover:dark:bg-gray-600"
               onClick={() => handleSelectWallet('handcash')}
             >
               <div className="flex h-5 w-5 justify-center rounded-full">
@@ -165,7 +175,7 @@ const WalletProviderPopUp = ({ onClose }: WalletProviderProps) => {
                   className="h-5 w-5 rounded-full"
                 />
               </div>
-              <p className="ml-2.5 text-gray-800 dark:text-gray-200 ">HandCash</p>
+              <p className="ml-2.5 text-gray-800 dark:text-gray-200 ">HandCash (Disabled)</p>
               <div className="grow" />
             </button>
             
