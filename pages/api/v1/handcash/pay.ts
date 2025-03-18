@@ -17,7 +17,7 @@ const handCashConnect = new HandCashConnect({
 });
 
 async function createScriptShortcode({ script }: { script: bsv.Script }): Promise<string> {
-  const { data } = await axios.post('https://pow.co/api/v1/script-shortcodes', {
+  const { data } = await axios.post('https://www.pow.co/api/v1/script-shortcodes', {
     script: script.toHex(),
   });
 

@@ -3,9 +3,10 @@ import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import BSocial from 'bsocial';
 import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/router';
 import wrapRelayx from 'stag-relayx';
 import TwetchWeb3 from '@twetch/web3';
-import { useRouter } from 'next/router';
+import Image from 'next/image';
 import { useRelay } from '../context/RelayContext';
 import { useBitcoin } from '../context/BitcoinContext';
 
@@ -15,9 +16,15 @@ function buf2hex(buffer: ArrayBuffer) {
     .join('');
 }
 
+// Define a type for the files
+interface FileWithPreview extends File {
+  preview: string;
+  name: string;
+}
+
 export default function MyDropzone() {
   const router = useRouter();
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<FileWithPreview[]>([]);
   // const [opReturn, setOpReturn] = useState()
   const { relayOne } = useRelay();
   const { paymail, wallet } = useBitcoin();
@@ -76,15 +83,16 @@ export default function MyDropzone() {
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: { 'image/*': [] } });
 
   const thumbs = files.map((file) => (
-    // @ts-ignore
     <div className="infline-flex m-4 h-full w-full rounded-lg p-2" key={file.name}>
       <div className="flex min-w-0 overflow-hidden">
-        <img
-        // @ts-ignore
+        <Image
           src={file.preview}
-          className="block h-full w-auto rounded-lg"
+          className="block h-auto w-auto rounded-lg"
+          alt={`Preview of ${file.name}`}
+          width={300}
+          height={300}
+          style={{ objectFit: 'contain' }}
           // Revoke data uri after image is loaded
-          // @ts-ignore
           onLoad={() => { URL.revokeObjectURL(file.preview); }}
         />
       </div>
@@ -98,7 +106,7 @@ export default function MyDropzone() {
       // @ts-ignore
         files.forEach((file) => URL.revokeObjectURL(file.preview));
       }),
-    [],
+    [files],
   );
 
   const stag = wrapRelayx(relayOne);
@@ -154,45 +162,45 @@ export default function MyDropzone() {
             },
           });
 
-          console.log("post.submit.relayx.response", resp)
+          console.log("post.submit.relayx.response", resp);
 
           try {
 
             axios.post('https://b.map.sv/ingest', {
-                rawTx: resp.rawTx
+                rawTx: resp.rawTx,
             })
-            .then(result => {
-              console.debug('b.map.sv.ingest.result', result.data)
+            .then((result) => {
+              console.debug('b.map.sv.ingest.result', result.data);
             })
-            .catch(error => {
-              console.error('post.submit.b.map.sv.ingest.error', error)
-            })
+            .catch((error) => {
+              console.error('post.submit.b.map.sv.ingest.error', error);
+            });
 
-          } catch(error) {
-              console.error('post.submit.b.map.sv.ingest.error', error)
+          } catch (error) {
+              console.error('post.submit.b.map.sv.ingest.error', error);
           }
 
           try {
 
-            axios.post('https://pow.co/api/v1/posts', {
+            axios.post('https://www.pow.co/api/v1/posts', {
                 transactions: [{
-                  tx: resp.rawTx
-                }]
+                  tx: resp.rawTx,
+                }],
             })
-            .then(result => {
-              console.debug('powco.posts.ingest.result', result.data)
+            .then((result) => {
+              console.debug('powco.posts.ingest.result', result.data);
             })
-            .catch(error => {
-              console.error('post.submit.powco.error', error)
-            })
+            .catch((error) => {
+              console.error('post.submit.powco.error', error);
+            });
 
-          } catch(error) {
+          } catch (error) {
 
-              console.error('post.submit.powco.error', error)
+              console.error('post.submit.powco.error', error);
 
           }
 
-          router.push(`/${resp.txid}`)
+          router.push(`/${resp.txid}`);
 
         } catch (error) {
           toast('Error!', {

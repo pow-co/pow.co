@@ -1,45 +1,49 @@
 import Link from 'next/link';
+import { useState, useCallback } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import ThreeColumnLayout from '../components/ThreeColumnLayout';
 import Loader from '../components/Loader';
 import { useTuning } from '../context/TuningContext';
 import { useAPI } from '../hooks/useAPI';
-import BoostContentCard, { Ranking } from '../components/BoostContentCard';
+import { Ranking } from '../components/BoostContentCard';
 import FindOrCreate from '../components/FindOrCreate';
 import { useBitcoin } from '../context/BitcoinContext';
 import CardErrorBoundary from '../components/CardErrorBoundary';
 import BoostContentCardV2 from '../components/BoostContentCardV2';
 import { SideChat } from '../components/SideChat';
-import { useSubdomain } from '../hooks/subdomain'
-import PanelLayout from '../components/PanelLayout'
-import { useState } from 'react'
+import PanelLayout from '../components/PanelLayout';
 import Drawer from '../components/Drawer';
 import WalletProviderPopUp from '../components/WalletProviderPopUp';
 
-import InfiniteScroll from 'react-infinite-scroll-component';
-
-import TokenMeetProfile from '../components/profile/TokenMeetProfile'
+import TokenMeetProfile from '../components/profile/TokenMeetProfile';
 
 export default function Home() {
 
-  const { subdomain } = useSubdomain()
   const { filter } = useTuning();
   const { authenticated, walletPopupOpen, setWalletPopupOpen } = useBitcoin();
   const { data, error, loading } = useAPI(filter === 'last-day' ? '/powco/feeds/multi-day' : `/boost/rankings/${filter}`, '');
-  //const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
+  // const { data, error, loading } = useAPI(`/boost/rankings/${filter}`, '');
 
-  const [cursor, setCursor] = useState<number>(10)
-  const [hasMore, setHasMore] = useState<boolean>(true)
-  const postsPerSlice = 10
+  const [cursor, setCursor] = useState<number>(10);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const postsPerSlice = 10;
+  const subdomain = null;
 
-  const [livestream, setLivestream] = useState()
+  const handleCloseWalletPopup = useCallback(() => {
+    setWalletPopupOpen(false);
+  }, [setWalletPopupOpen]);
+
+  const fetchMore = useCallback(() => {
+    setCursor(cursor + postsPerSlice); 
+  }, [cursor, postsPerSlice]);
 
   if (error) {
     return (
       <ThreeColumnLayout>
-        <div className='h-screen'>
+        <div className="h-screen">
          <p>
             Error, something happened
-        </p>   
+         </p>   
         </div>
       </ThreeColumnLayout>
     );
@@ -48,14 +52,14 @@ export default function Home() {
   if (subdomain) {
     return (
         <PanelLayout>
-            <div className='grid grid-cols-12 w-full h-full'>
-                <div className='col-span-12 xl:col-span-8 xl:pr-4'>
-                    <TokenMeetProfile channel={subdomain}/>
+            <div className="grid h-full w-full grid-cols-12">
+                <div className="col-span-12 xl:col-span-8 xl:pr-4">
+                    <TokenMeetProfile channel={subdomain} />
                 </div>
-                <div className='col-span-12 xl:col-span-4 '>
-                    <div className=''>
-                        <h3 className='p-3 text-lg font-bold'>Live Chat in {subdomain}</h3>
-                        <SideChat room={subdomain.toString()} />
+                <div className="col-span-12 xl:col-span-4 ">
+                    <div className="">
+                        <h3 className="p-3 text-lg font-bold">Live Chat in {subdomain}</h3>
+                        <SideChat room="powco" />
                     </div>
                 </div>
             </div>
@@ -63,36 +67,25 @@ export default function Home() {
     );
   }
 
-  async function fetchMore() {
-
-    console.log('FETCH MORE', cursor)
-
-    setCursor(cursor + postsPerSlice) 
-
-  }
-
   const { rankings } = data || [];
   let { days } = data || [];
 
-  let postPerDays = days?.map((rankings: Ranking[]) => rankings.length)
+  const postPerDays = days?.map((rankings: Ranking[]) => rankings.length);
 
-  days = [rankings, days].flat()
+  days = [rankings, days].flat();
 
-  if (cursor > days.length && days?.length > 2 && hasMore) {
-    console.log("CURSOR", { cursor, length: days?.length })
-    setHasMore(false)
+  if (cursor > days?.length && days?.length > 2 && hasMore) {
+    setHasMore(false);
   }
-
-  // console.log("RANKINGS", rankings)
 
   return (
     <ThreeColumnLayout>
       <Drawer
-          selector="#walletProviderPopupController"
-          isOpen={walletPopupOpen}
-          onClose={() => setWalletPopupOpen(false)}
-        >
-          <WalletProviderPopUp onClose={() => setWalletPopupOpen(false)} />
+        selector="#walletProviderPopupController"
+        isOpen={walletPopupOpen}
+        onClose={handleCloseWalletPopup}
+      >
+          <WalletProviderPopUp onClose={handleCloseWalletPopup} />
       </Drawer>
       {authenticated && (
       <div className="mt-5 sm:mt-10">
@@ -119,13 +112,12 @@ export default function Home() {
       <div className="col-span-12 min-h-screen lg:col-span-6">
         <div className="mb-[200px] mt-5 lg:mt-10">
           {loading ? <Loader /> : (
-            <>
-              <InfiniteScroll
-                dataLength={cursor}
-                hasMore={hasMore}
-                next={fetchMore}
-                loader={<div className="mt-5 sm:mt-10"><Loader /></div>}
-              >
+            <InfiniteScroll
+              dataLength={cursor}
+              hasMore={hasMore}
+              next={fetchMore}
+              loader={<div className="mt-5 sm:mt-10"><Loader /></div>}
+            >
                 <div>
                   {filter !== "last-day" && rankings?.slice(0, cursor).map((post: Ranking, index: number) => (
                     <CardErrorBoundary key={post.content_txid}>
@@ -134,33 +126,18 @@ export default function Home() {
                   ))}
                   {filter === "last-day" && days?.slice(0, cursor).map((daysPost: Ranking, index: number) => (
                     <CardErrorBoundary key={daysPost.content_txid}>
-                      {(index + 1 > postPerDays[0] && index + 1 === postPerDays[0] + 1) && <div className="flex items-center py-5">
+                      {(index + 1 > postPerDays[0] && index + 1 === postPerDays[0] + 1) && (
+<div className="flex items-center py-5">
                         <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
-                        <div className="mx-5 text-lg font-semibold text-gray-600 dark:text-gray-300">{`days before`}</div>
+                        <div className="mx-5 text-lg font-semibold text-gray-600 dark:text-gray-300">days before</div>
                         <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
-                      </div>}
-                      <BoostContentCardV2 rank={(index+1 <= postPerDays[0] ? index + 1: undefined)} {...daysPost} />
+</div>
+)}
+                      <BoostContentCardV2 rank={(index + 1 <= postPerDays[0] ? index + 1 : undefined)} {...daysPost} />
                     </CardErrorBoundary>
                   ))}
                 </div>
-              </InfiniteScroll>
-              {/*
-              {days?.map((daysRankings: Ranking[], index: number) => (
-                <div key={`ranking_days_${index + 1}`}>
-                  <div className="flex items-center py-5">
-                    <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
-                    <div className="mx-5 text-lg font-semibold text-gray-600 dark:text-gray-300">{`${index + 1} ${index + 1 > 1 ? 'days' : 'day'} before`}</div>
-                    <div className="border-bottom grow border border-gray-600 dark:border-gray-300" />
-                  </div>
-                  {daysRankings?.map((daysPost: Ranking, index: number) => (
-                    <CardErrorBoundary key={daysPost.content_txid}>
-                      <BoostContentCardV2 {...daysPost} />
-                    </CardErrorBoundary>
-                  ))}
-                </div>
-              ))}
-              */}
-            </>
+            </InfiniteScroll>
           )}
         </div>
       </div>

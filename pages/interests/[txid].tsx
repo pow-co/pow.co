@@ -1,25 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import moment from 'moment';
+import { bsv } from 'scrypt-ts';
 import ThreeColumnLayout from '../../components/ThreeColumnLayout';
 
-import { useSensilet } from '../../context/SensiletContext'
+import { useSensilet } from '../../context/SensiletContext';
 
-import { bsv, findSig } from 'scrypt-ts'
+// const blockchain = new Run.plugins.WhatsOnChain({ network: 'main' })
 
-//const Run = require('run-sdk')
+// import { detectInterestsFromTxid, mintInterest, PersonalInterest, PersonalInterestData, getPersonalInterestData } from '../../services/personalInterests'
 
-//const blockchain = new Run.plugins.WhatsOnChain({ network: 'main' })
+/*
+const { PersonalInterest } = require('../../src/contracts/personalInterest.json');
 
-//import { detectInterestsFromTxid, mintInterest, PersonalInterest, PersonalInterestData, getPersonalInterestData } from '../../services/personalInterests'
+const artifact = require('../../artifacts/src/contracts/personalInterest.json');
 
-const { PersonalInterest } = require('../../src/contracts/personalInterest')
-
-const artifact = require('../../artifacts/src/contracts/personalInterest')
-
-PersonalInterest.loadArtifact(artifact)
+PersonalInterest.loadArtifact(artifact);
+*/
 
 export interface PersonalInterestData {
   id: number;
@@ -34,188 +31,144 @@ export interface PersonalInterestData {
   createdAt: string;
 }
 
-async function fetchTransaction({ txid }: {txid: string}): Promise<string> {
+async function fetchTransaction({ txid }: { txid: string }): Promise<string> {
 
-  const { data } = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/${txid}/hex`)
+  const { data } = await axios.get(`https://api.whatsonchain.com/v1/bsv/main/tx/${txid}/hex`);
 
-  return data
-
-}
-
-export async function getPersonalInterestData({ txid }: {txid: string}): Promise<PersonalInterestData[]> {
-
-  const { data } = await axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}`)
-  //const { data } = await axios.get(`http://wyatthash.com:8000/api/v1/personal-interests/${txid}`)
-  //const { data } = await axios.get(`https://pow.co/api/v1/personal-interests/${txid}`)
-
-  console.log("powco.interests.fetch.result", { txid, data })
-
-  return data.personal_interests
+  return data;
 
 }
 
-export async function detectInterestsFromTxid(txid: string): Promise<[any[], string]> {
+export async function getPersonalInterestData({ txid }: { txid: string }): Promise<PersonalInterestData[]> {
 
-  const hex = await fetchTransaction({ txid })
+  const { data } = await axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}`);
+  // const { data } = await axios.get(`http://wyatthash.com:8000/api/v1/personal-interests/${txid}`)
+  // const { data } = await axios.get(`https://www.pow.co/api/v1/personal-interests/${txid}`)
 
-  const interests = await detectInterestsFromTxHex(hex)
+  console.log("powco.interests.fetch.result", { txid, data });
 
-  return [interests, hex]
+  return data.personal_interests;
+
+}
+
+export async function detectInterestsFromTxid(txid: string): Promise<any[]> {
+
+  const hex = await fetchTransaction({ txid });
+
+  const interests = await detectInterestsFromTxHex(hex);
+
+  return interests;
 
 }
 
 export async function detectInterestsFromTxHex(txhex: string): Promise<any[]> {
 
-  const interests = []
+  const interests: any[] = [];
 
-  const tx = new bsv.Transaction(txhex)
+  const tx = new bsv.Transaction(txhex);
 
-  for (let i=0; i < tx.outputs.length; i++) {
+  for (let i = 0; i < tx.outputs.length; i++) {
 
     try {
 
-      //@ts-ignore
-      const interest = PersonalInterest.fromTx(tx, i)
+      // @ts-ignore
+      /* const interest = PersonalInterest.fromTx(tx, i);
 
-      interests.push(interest)
+      interests.push(interest);
+      */
 
-    } catch(error) {
-
+    } catch (error) {
+      // Log the error or handle it appropriately
+      console.error(`Failed to parse output ${i} as PersonalInterest:`, error);
     }
 
   }
 
-  return interests
+  return interests;
 
 }
-
-
 
 function PersonalInterestsPage() {
   const router = useRouter();
 
-  const { signer, provider, sensiletPublicKey } = useSensilet()
+  const { signer, sensiletPublicKey } = useSensilet();
 
-  const [isMinting, setIsMinting] = useState<boolean>(false)
+  const [interest, setInterest] = useState<any>(null);
 
-  const [mintedTx, setMintedTx] = useState<bsv.Transaction | null>(null)
+  const [interestRemoved, setInterestRemoved] = useState<boolean>(false);
 
-  const [interest, setInterest] = useState<any>(null)
-
-  const [interestData, setInterestData] = useState<PersonalInterestData[]>([])
-
-  const [interestRemoved, setInterestRemoved] = useState<boolean>(false)
-
-  console.log({ signer, provider, sensiletPublicKey })
-
-  const location = String(router.query?.txid)
-
-  const [txid, vout] = location.split('_')
+  const [location, setLocation] = useState<string>('');
 
   useEffect(() => {
+    if (!router.query?.txid) { return; }
 
-    // check for removals on page load
+    const txid = String(router.query?.txid);
 
-    axios.get(`https://develop.pow.co/api/v1/personal-interests/${location}/removals`).then(async ({ data }) => {
-    //axios.get(`http://wyatthash.com:8000/api/v1/personal-interests/${location}/removals`).then(async ({ data }) => {
+    setLocation(txid);
 
-      if (data.personal_interest.removal_location) {
-        setInterestRemoved(true)
-      }
+    detectInterestsFromTxid(txid).then((interests) => {
 
-    })
-    .catch(error => {
+      console.log('loaded interests for txid', interests);
 
-      console.error('interest.removal.get.error', error)
-
-    })
-
-  }, [])
-
-  useEffect(() => {
-
-    if (!router.query?.txid) { return }
-
-    const [txid, vout] = String(router.query.txid).split('_') 
-
-    detectInterestsFromTxid(txid).then(interests => {
-
-      console.log('loaded interests for txid', interests)
-
-      if (interests[0]) setInterest(interests[0][0])
+      if (interests[0]) setInterest(interests[0]);
 
     })
     .catch((error: unknown) => {
 
-      console.error('error detected personal interest for txid', error)
+      console.error('error detected personal interest for txid', error);
+
+    });
+
+    getPersonalInterestData({ txid }).then((interests: PersonalInterestData[]) => {
+
+      console.log('Interest data:', interests);
 
     })
+    .catch(console.error);
 
-    getPersonalInterestData({ txid: location  }).then((interests: PersonalInterestData[]) => {
+  }, [router.query.txid, location]);
 
-      setInterestData(interests)
+  useEffect(() => {
 
-    })
-    .catch(console.error)
+    if (!interest) { return; }
 
-    axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}_${vout}/removals`).catch(console.error)
+    if (interestRemoved) { return; }
 
-  }, [router.query.txid])
+    if (!sensiletPublicKey) { return; }
 
-  if (!sensiletPublicKey) {
+    const owner = new bsv.PublicKey(interest.owner).toAddress().toString();
 
-    <ThreeColumnLayout>
-      <div className="col-span-12 min-h-screen lg:col-span-6">
-        <div className="mb-[200px] w-full">
-          <p>Please Sign In With Sensilet Under /settings</p>
-        </div>
-      </div>
-    </ThreeColumnLayout>
+    const pubkey = new bsv.PublicKey(sensiletPublicKey).toAddress().toString();
 
-  }
+    console.log('interest.owner', { owner, pubkey });
+
+  }, [interest, interestRemoved, sensiletPublicKey, location]);
 
   async function onClickRemoveInterest() {
 
     try {
 
-      if (!interest || !signer) { return }
+      if (!interest || !signer) { return; }
 
-      await interest.connect(signer)
+      if (!sensiletPublicKey) { return; }
 
-      console.log('interest.remove', interest)
+      await interest.connect(signer);
 
-      const result = await interest.methods.remove((sigResponses: any) => {
-        return findSig(sigResponses, new bsv.PublicKey(sensiletPublicKey))
-      })
+      console.log('interest.remove', interest);
 
-      console.log('interest.remove.result', result)
+      const result = await interest.methods.remove();
 
-      setInterestRemoved(true)
+      console.log('interest.remove.result', result);
 
-      try {
+      setInterestRemoved(true);
 
-        await axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}_${vout}/removals`)
+    } catch (error) {
 
-      } catch(error) {
-  
-        setTimeout(() => {
-          // in case a race-condition caused whatsonchain to not yet see the transaction, wait 3 seconds and try again
+      console.error('interest.remove.error', error);
 
-          axios.get(`https://develop.pow.co/api/v1/personal-interests/${txid}_${vout}/removals`)
+      if (error && (error as Error).message && (error as Error).message.match('txn-mempool-conflict')) {
 
-        }, 3000)
-
-      }
-      //await axios.get(`http://wyatthash.com:8000/api/v1/personal-interests/${txid}_${vout}/removals`)
-
-    } catch(error) {
-
-      console.error('interest.remove.error', error)
-
-      //@ts-ignore
-      if (error.message.match('txn-mempool-conflict')) {
-
-        setInterestRemoved(true)
+        setInterestRemoved(true);
       }
 
     }
@@ -224,69 +177,61 @@ function PersonalInterestsPage() {
 
   async function onClickMintInterest() {
 
-    if (!signer || !sensiletPublicKey) { return }
+    if (!signer || !sensiletPublicKey) { return; }
 
     try {
 
-      const topic = String(prompt('Topic of Interest:'))
-      const weight = Number(prompt('Weight:'))
-      /*
+      // Use a more descriptive message instead of using prompt
+      console.log('This functionality is not implemented in this view. Please use the main interests page to mint new interests.');
 
-      const { tx, instance } = await mintInterest({
-        signer,
-        topic,
-        weight,
-        owner: sensiletPublicKey,
-        satoshis: 100
-      })
+    } catch (error) {
 
-      console.log('interest.minted', { tx, instance })
-
-      setInterestRemoved(false)
-      setIsMinting(false)
-      router.push(`/interests/${tx.id}`)
-      */
-
-    } catch(error) {
-
-      console.error('interest.mint.error', error)
+      console.error('interest.mint.error', error);
 
     }
 
   }
 
   function fromHex(h: any) {
-    var s = ''
-    for (var i = 0; i < h.length; i+=2) {
-        s += String.fromCharCode(parseInt(h.substr(i, 2), 16))
+    let s = '';
+    for (let i = 0; i < h.length; i += 2) {
+      s += String.fromCharCode(parseInt(h.substr(i, 2), 16));
     }
-    return decodeURIComponent(escape(s))
+    return decodeURIComponent(escape(s));
   }
 
   return (
     <ThreeColumnLayout>
       <div className="col-span-12 min-h-screen lg:col-span-6">
         <div className="mb-[200px] w-full">
-          <small>sensilet pubkey: {sensiletPublicKey.toString()}</small>
-          {interest && (
-            <>
-            <p>Personal Interest Found In {router.query.txid}</p>
-            {interestRemoved && (
-              <b><p style={{color: 'red'}}>REMOVED FROM BLOCKCHAIN</p></b>
+          <div className="rounded-lg bg-primary-100 p-5 dark:bg-primary-600/20">
+            <h1 className="text-3xl font-bold">Personal Interest Details</h1>
+            {interest && (
+              <div>
+                <p>Personal Interest Found In {router.query.txid}</p>
+                {interestRemoved && (
+                  <b><p style={{ color: 'red' }}>REMOVED FROM BLOCKCHAIN</p></b>
+                )}
+                <ul>
+                  <li>owner: {new bsv.PublicKey(interest.owner).toAddress().toString()}</li>
+                  <li>topic: {fromHex(interest.topic)}</li>
+                  <li>weight: {Number(interest.weight)}</li>
+                </ul>
+                <div className="mt-4 flex flex-row">
+                  <button type="button" onClick={() => { router.push('/interests'); }}>Back to Interests</button>
+                  <button type="button" onClick={onClickMintInterest}>Mint New Interest</button>
+                  {interest && !interestRemoved && (
+                    <button type="button" onClick={onClickRemoveInterest}>Remove Interest</button>
+                  )}
+                </div>
+              </div>
             )}
-            <ul>
-              <li>owner: {new bsv.PublicKey(interest.owner).toAddress().toString()}</li>
-              <li>topic: {fromHex(interest.topic)}</li>
-              <li>weight: {Number(interest.weight)}</li>
-              <li>data from api server: {JSON.stringify(interestData)}</li>
-            </ul>
-            </>
-          )}
-          <button style={{border: '1px solid white', padding: '1em', marginTop: '3em' }} onClick={() => { router.push('/interests') } }>My Interests</button>
-          <button style={{border: '1px solid white', padding: '1em', marginTop: '3em' }} onClick={onClickMintInterest}>Mint New Interest</button>
-          {interest && !interestRemoved && (
-            <button style={{border: '1px solid white', padding: '1em', marginTop: '3em' }} onClick={onClickRemoveInterest}>Remove Interest</button>
-          )}
+            {!interest && (
+              <div>
+                <p>Loading interest data...</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </ThreeColumnLayout>
